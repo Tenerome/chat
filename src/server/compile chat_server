@@ -1,1 +1,6 @@
-g++ chat_server.cpp db.cpp ../include/base64.c -o chat_server -lmysqlclient -I ../include$1
+#! /bin/bash
+
+includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
+libpath="-L../lib/ -lmysqlclient -lencode"
+g++ chat_server.cpp ../include/db.cpp -o chat_server $includepath $libpath
+echo "compiled chat_server"

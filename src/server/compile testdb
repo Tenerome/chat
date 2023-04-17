@@ -1,1 +1,6 @@
-g++ testdb.cpp ../include/db.cpp ../include/base64.c ../include/md5.cpp -o testdb -lmysqlclient -I ../include $1
+#! /bin/bash
+
+includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
+libpath="-L../lib/ -lmysqlclient -lencode"
+g++ testdb.cpp ../include/db.cpp -o testdb $includepath $libpath
+echo "compiled testdb"

@@ -1,9 +1,8 @@
 #include<Struct.h>
 #include<cstring>
 #include<iostream>
-#include"db.h"
 #include<db.h>
-#include<md5.h>
+#include<encode/md5.h>
 using std::cout;
 
 int main(){

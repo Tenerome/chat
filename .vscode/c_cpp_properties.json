@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "/usr/include/c++/11/**",
-                "/home/tenerome/Documents/C++/CHAT/include/**"
+                "/home/tenerome/Documents/chat/src/include/**"
             ],
             "defines": [],
             "cStandard": "gnu17",
