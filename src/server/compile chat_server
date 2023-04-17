@@ -1,0 +1,1 @@
+g++ chat_server.cpp db.cpp ../include/base64.c -o chat_server -lmysqlclient -I ../include$1

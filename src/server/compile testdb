@@ -1,0 +1,1 @@
+g++ testdb.cpp ../include/db.cpp ../include/base64.c ../include/md5.cpp -o testdb -lmysqlclient -I ../include $1
