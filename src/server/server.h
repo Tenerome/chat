@@ -15,6 +15,7 @@
 #include<sys/epoll.h>
 #include<arpa/inet.h>
 #include<sys/socket.h>
+#include<unistd.h>
 
 using std::cout,std::endl,std::cerr,std::cin;
 using std::ifstream;

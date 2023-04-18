@@ -2,5 +2,7 @@
 
 includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
 libpath="-L../lib/ -lmysqlclient -lencode"
-g++ chat_server.cpp ../include/db.cpp -o chat_server $includepath $libpath
+#运行时lib
+rlibpath="-Wl,-rpath=../lib/"
+g++ chat_server.cpp ../include/db.cpp -o chat_server $includepath $libpath $rlibpath
 echo "compiled chat_server"

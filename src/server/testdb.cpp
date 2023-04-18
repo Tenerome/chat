@@ -6,6 +6,6 @@
 using std::cout;
 
 int main(){
-    DB db("123456");
-    DB_Log_UP(db,"test","test123","TEST");
+    const char *str="123456";
+    cout<<MD5(str).toStr().c_str()<<"  ";
 }

@@ -11,14 +11,13 @@ int main(){
         cerr<<"chat: main: failed to connect socket"<<endl;
         exit(-1);
     }
-    user_Property *user_pro=(user_Property*)malloc(USER_PROPERTY_SIZE);
-    strcpy(user_pro->account,"c890890");
-    strcpy(user_pro->password,"mnmn87");
-    strcpy(user_pro->name,"liv");
-
+    user_Property *user_pro=new user_Property;
+    memcpy(user_pro->account,"xuanyi",sizeof("henghua"));
+    memcpy(user_pro->password,"666888",sizeof("666888"));
+    memcpy(user_pro->name,"张鑫",sizeof("张鑫"));
     char *buff=(char*)malloc(USER_PROPERTY_SIZE);//memset 两个空间大小需相同
     memcpy(buff,user_pro,USER_PROPERTY_SIZE);
     send(server_socket,buff,USER_PROPERTY_SIZE,0);
+    delete(user_pro);
     free(buff);
-    free(user_pro);
 }

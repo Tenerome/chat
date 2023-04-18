@@ -1,8 +1,9 @@
 #ifndef CLIENT_H
     #define CLIETN_H
-//lib
+//include
 #include<Signal&Macro.h>
 #include<Struct.h>
+#include<encode/md5.h>
 //system
 #include<iostream>
 #include<sys/socket.h>
