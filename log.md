@@ -163,7 +163,7 @@ DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 ```
 
-### 安全验证
+### 安全与验证
 
 #### 用户密码
 
@@ -172,6 +172,12 @@ COLLATE=utf8mb4_0900_ai_ci;
 C++ md5算法选用[GitHub - JieweiWei/md5: 用C++实现md5加密算法](https://github.com/JieweiWei/md5).
 
 加密后得到长度为32的字符串，所以结构体密码变量设置为33。
+
+用户密码加密放在客户端，加密后直接释放内存，让明文密码不出现信息传输中。
+
+#### 格式验证
+
+同样放在客户端，验证输入信息格式是否符合要求
 
 #### 数据库登陆
 
@@ -201,11 +207,35 @@ base64_decode(const char *in, unsigned int inlen, unsigned char *out);
 
 ### 设定
 
-所有变量用小写字母+数字+下划线表示
+- 所有变量用小写字母+数字+下划线表示
 
-函数用大小写字母+数字+下划线表示
+- 函数用大小写字母+数字+下划线表示
 
-宏和信号量用大写字母+数字+下划线表示
+- 宏和信号量用大写字母+数字+下划线表示
+
+- 所有的错误输出用cerr,结果输出用cout，且输出格式为：文件名+函数名+消息
+
+- bool函数中都按false,false,false...true结构，遇到错误时，输出错误信息，直到最后的true没有任何错误，true不输出信息，交给上层输出。
+
+```cpp
+bool fun(){
+    if(...){
+        cerr<<...;
+        return false;
+    }
+    if(...){
+        cerr<<...;
+        return false;
+    }
+    return true;
+}
+```
+
+遇到异常无需返回值时，用exit()退出
+
+### 内联函数
+
+db中的获取连接和检测用户功能会被多个函数复用，但因为传入的地址，所以可以使用内联函数
 
 ### 编译环境
 
@@ -216,3 +246,62 @@ task
 -I lib,-lmysqlclient
 
 批处理脚本编译
+
+### 问题和难题
+
+###### 字符串越界问题
+
+string和char*的转换中注意边界的'\0',不然可能在读取的时候读到下一个字符串的字节，必要时手动添加`str[strlen[str]]='\0';`
+
+###### C++构造函数调用另一个构造函数
+
+起初使用java那样
+
+```cpp
+class myclass{
+    myclass(int){myclass(int,0)};
+    myclass(int,int);
+};
+```
+
+结果发现错误，C++不能这么用，检索网络的解决办法是使用new
+
+```cpp
+myclass(int){
+    new (this)myclass(int,0);
+}
+```
+
+但是这样没法delete，会导致OOM，segmentation fault
+
+最后在chatgpt中检索，得到委托构造函数，才想起来C++的用法：
+
+```cpp
+myclass(int):myclass(int,0){}
+```
+
+##### memset等操作内存的函数不要乱用
+
+参考：[内存越界：corrupted double-linked list - gelon - 博客园](https://www.cnblogs.com/gelon/p/13042583.html)
+
+###### C++函数不能返回地址
+
+函数的空间属于栈空间，在函数结束时被释放掉，所以函数内申请的空间都无法返回。想要得到函数内的地址相关的信息，可以传入指针进去，或者在函数中用new，malloc申请空间，申请的是堆内存，但一定要对应的delete和free，不然会OOM
+
+###### 缺省参数
+
+函数的缺省参数声明和定义中只能有一个，不能同时都有
+
+###### if...else中的return
+
+当return 放在if...else结构中时，要保证所有的函数的返回值的可达性。如
+
+```cpp
+int fun(...){
+    if(...){
+        return 0;
+    }
+}
+```
+
+如果条件否，那么就没有返回值。

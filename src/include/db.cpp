@@ -73,6 +73,10 @@ bool DB_Log_IN(DB db, const char *account, const char *password,const char *rout
         cerr<<"inline_get_Connection error"<<endl;
         return false;
     }
+    if(!check_Existed(&db,account)){
+        cout<<account<<"does not exist"<<endl;
+        return false;
+    }
     //验证，getpass from mysql,strcmp(password,getpass)
     char query[250];
     sprintf(query,"select password from user where account='%s'",account);
