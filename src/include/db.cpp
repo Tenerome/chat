@@ -14,7 +14,8 @@ DB::~DB(){
         cout<<"mysql close normally"<<endl;
     }
 }
-inline bool inline_get_Connection(DB *db){
+
+inline bool get_Connection(DB *db){
     db->mysql=mysql_init(NULL);
     if(db->mysql==NULL){
         cerr<<"mysql_init error"<<endl;
@@ -28,9 +29,34 @@ inline bool inline_get_Connection(DB *db){
     mysql_set_character_set(db->mysql,"utf8");
     return true;
 }
+
+inline bool check_Existed(DB *db,const char *account){
+    char query[250];
+    sprintf(query,"select count(1) from user where account='%s' ",account);
+    if(mysql_query(db->mysql,query)){
+        cerr<<"inline_Check_Existed:select error:"<<mysql_error(db->mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db->mysql);
+    if(res==NULL){
+        cerr<<"inline_Check_Existed:res error"<<mysql_error(db->mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    mysql_free_result(res);
+    if(strcmp(row[0],"1")==0){
+        return true;
+    }else{
+        return false;
+    }
+}
 bool DB_Log_UP(DB db, const char *account, const char *password, const char *name){
-    if(!inline_get_Connection(&db)){
+    if(!get_Connection(&db)){
         cerr<<"inline_get_Connection error"<<endl;
+        return false;
+    }
+    if(check_Existed(&db,account)){
+        cout<<account<<" has been registed"<<endl;
         return false;
     }
     char query[250];
@@ -43,7 +69,7 @@ bool DB_Log_UP(DB db, const char *account, const char *password, const char *nam
     }
 }
 bool DB_Log_IN(DB db, const char *account, const char *password,const char *route){
-    if(!inline_get_Connection(&db)){
+    if(get_Connection(&db)){
         cerr<<"inline_get_Connection error"<<endl;
         return false;
     }

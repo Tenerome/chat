@@ -11,5 +11,5 @@
 #include<cstring>
 #include<thread>
 using std::cout,std::endl,std::cerr,std::cin;
-
+using std::string;
 #endif

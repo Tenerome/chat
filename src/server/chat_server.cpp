@@ -53,11 +53,12 @@ int main(){
     socket_event.data.fd=server_socket;
     epoll_ctl(epoll_fd,EPOLL_CTL_ADD,server_socket,&socket_event);
     while(1){
+        cout<<"waiting for connection..."<<endl;
         int event_num=epoll_wait(epoll_fd,listen_event,MAX_LISTEN,-1); 
         if(event_num<-1){                               
             break;  //无连接则继续循环等待                                    
         }
-        for(int i=0;i<event_num;i++){   //遍历返回事件
+        for(int i=0;i<event_num;i++){   //遍历返回事件,这里就是epoll和poll，select的区别，poll/select是遍历所有socket,而epoll返回的是有变化的socket
             if(!(listen_event[i].events & EPOLLIN)){
                 continue;
             }
@@ -70,7 +71,7 @@ int main(){
                 }else{
                     cout<<client_addr.sin_addr.s_addr<<":"<<client_addr.sin_port<<" connected"<<endl;
                 }
-                socket_event.events=EPOLLIN;    //EPOLLET设置为ET模式
+                socket_event.events=EPOLLIN;
                 socket_event.data.fd=client_socket;
                 if(epoll_ctl(epoll_fd,EPOLL_CTL_ADD,client_socket,&socket_event)==-1){
                     cerr<<"client epoll_ctl error"<<endl;
@@ -89,10 +90,10 @@ int main(){
                     close(session_socket);
                     cerr<<session_socket<<" client recv error"<<endl;
                 }else{//最后一种情况就只能是读到了数据
-                    user_Property *user_pro=new user_Property;
+                    user_Property *user_pro=(user_Property*)malloc(USER_PROPERTY_SIZE);
                     memcpy(user_pro,buff,USER_PROPERTY_SIZE);
                     fun(user_pro);
-                    delete(user_pro);
+                    free(user_pro);
                     free(buff);
                     cout<<"event over"<<endl;
                 }

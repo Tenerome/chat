@@ -11,13 +11,38 @@ int main(){
         cerr<<"chat: main: failed to connect socket"<<endl;
         exit(-1);
     }
-    user_Property *user_pro=new user_Property;
-    memcpy(user_pro->account,"xuanyi",sizeof("henghua"));
-    memcpy(user_pro->password,"666888",sizeof("666888"));
-    memcpy(user_pro->name,"张鑫",sizeof("张鑫"));
+    char account[8]={'\0'};
+    char password[20]={'\0'};
+    char name[18]={'\0'};
+    //TODO 格式验证
+    cout<<"input account: ";
+    cin>>account;
+    // if(account[8]!='\0'){
+    //     cerr<<"最大账户长度为8"<<endl;
+    //     exit(-1);
+    // }
+    cout<<"input password: ";
+    cin>>password;
+    // if(password[20]!='\0'){
+    //     cerr<<"最大密码长度为20"<<endl;
+    //     exit(-1);
+    // }
+    cout<<"input name: ";
+    cin>>name;
+    // if(name[18]!='\0'){
+    //     cerr<<"最大长度为6个汉字或18个字母加数字"<<endl;
+    //     exit(-1);
+    // }
+    string en_pass=MD5(password).toStr();//加密
+    //录入结构体
+    user_Property *user_pro=(user_Property*)malloc(USER_PROPERTY_SIZE);
+    strcpy(user_pro->account,account);
+    strcpy(user_pro->password,en_pass.c_str());
+    strcpy(user_pro->name,name);
+    //转入buff
     char *buff=(char*)malloc(USER_PROPERTY_SIZE);//memset 两个空间大小需相同
     memcpy(buff,user_pro,USER_PROPERTY_SIZE);
     send(server_socket,buff,USER_PROPERTY_SIZE,0);
-    delete(user_pro);
+    free(user_pro);
     free(buff);
 }

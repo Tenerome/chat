@@ -4,6 +4,7 @@
 #include<cstring>
 #include<iostream>
 #include<encode/md5.h>
+#include<stdio.h>
 using std::cout,std::endl,std::cerr;
 using std::string;
 class DB{
@@ -18,7 +19,8 @@ class DB{
         DB(const char *pass,const char *host,const char *user,const char *database,unsigned int port);
         ~DB();
 };
-inline bool inline_get_Connection(DB *db);
+inline bool get_Connection(DB *db);
+inline bool check_Existed(DB *db,const char *account);
 bool DB_Log_UP(DB db,const char *account,const char *password,const char *name);
 bool DB_Log_IN(DB db,const char *account,const char *password,const char *route);
 #endif 
