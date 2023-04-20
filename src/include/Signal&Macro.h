@@ -2,13 +2,11 @@
     #define SIGNAL__MACRO_H
 //=====signal======
 //total signal
-#define SIGNAL_LOGUP 0
-#define SIGNAL_LOGIN 1
-#define SIGNAL_OFFLINE 2
-#define SIGNAL_MESSAGE 3
-#define SIGNAL_ADD_FRIEND 4
-#define SIGNAL_DEL_FRIEND 5
-#define SIGANL_CONTACT_FRIEND 6
+#define SIGNAL_FALSE 0
+#define SIGNAL_TRUE 1
+#define SIGNAL_ACCOUNT_REGISTED 3
+#define SIGNAL_ACCOUNT_NOT_REGISTED 4
+#define SIGNAL_WRONG_PASSWORD 5
 //message flag
 #define TEXT_MESSAGE 0
 #define IMAGE_MESSAGE 1

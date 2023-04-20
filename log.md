@@ -46,6 +46,33 @@
 
 8. 用户退出客户端时，客户端会向服务器发送退出请求，服务器会将用户从在线列表中移除
 
+### 各层的业务逻辑
+
+#### 登入系统
+
+##### 注册与登陆
+
+1. 用户进入登陆页面，显示登陆窗口
+2. 输入账户密码登陆
+3. 如果账户不存在，跳转注册页面注册
+4. 密码正确登陆成功，否则登陆失败
+
+#### 好友
+
+##### 添加好友
+
+1. 用户发起添加好友请求，需要提供对方帐号信息。
+
+2. 系统接收到请求后，首先需要验证用户账号是否合法，以及对方账号是否存在。
+
+3. 如果对方账号存在，则需要验证当前用户是否已经和对方成为好友关系。如果已经是好友，则无法重复添加。还需要检验用户是否在线，在线这继续，离线则缓存申请。
+
+4. 如果还不是好友，则系统会向对方发送添加好友请求，对方可以选择同意或拒绝。
+
+5. 如果对方同意添加好友，则系统会在两个用户之间建立好友关系，并通知双方。
+
+6. 如果对方拒绝添加好友，则会提示当前用户添加失败。
+
 ### 消息格式设计
 
 1. 文本消息格式：一般采用纯文本格式，即将文本消息转换为字符串进行传输，接收方收到消息后直接显示字符串内容。
@@ -59,7 +86,7 @@
 在实际开发中，还可以根据实际需求和数据类型，自定义消息格式。需要注意的是，消息格式的设计需要充分考虑到数据的传输速度和稳定性，避免消息传输过程中出现丢包、延迟等问题。
 
 ### 信令系统
-
+//TODO
 0：注册 1：登陆 2：下线(主动) 3：发信息 4：添加好友 5：删除好友 6：备注好友
 
 ```cpp
@@ -117,7 +144,7 @@ struct friend{
 
 安装docker
 
-pull mysql
+pull mysql，并映射本地端口，本地目录
 
 ```docker
 sudo docker run -p 3306:3306 --name mysql -v /home/docker/mysql/logs:/logs -v /home/docker/mysql/data:/mysql_data -e MYSQL_ROOT_PASSWORD=123456 -d mysql
@@ -147,7 +174,8 @@ sqlapi++:https://www.sqlapi.com/
 
 #### 数据库表结构
 
-创建user表
+用户表
+用户表是IM系统中最基础的表，记录用户的基本信息，如用户名、密码、昵称、头像等。每个用户都有一个唯一的ID作为主键。
 
 ```sql
     uid int auto_increment NOT NULL,
@@ -162,6 +190,21 @@ ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 ```
+
+好友关系表
+好友关系表记录了用户之间的好友关系，包括好友的ID、好友分组、备注等信息。这个表可以使用两个字段来表示好友之间的关系，例如A和B互为好友，则在这个表中会出现两条记录：A的ID和B的ID以及B的ID和A的ID。
+
+好友分组表
+好友分组表用于记录用户好友的分组情况，包括分组名称、所属用户ID等信息。每个用户可以创建多个好友分组，将自己的好友进行分类管理。
+
+消息表
+消息表用于记录用户之间的聊天记录，包括发送者ID、接收者ID、消息内容、发送时间等信息。这个表可以使用索引加速查询，提高系统的性能。
+
+群组表
+群组表用于记录IM系统中的群组信息，包括群组名称、群组ID、群组头像等信息。每个群组可以包含多个成员，每个成员可以有不同的权限和角色。
+
+群组成员表
+群组成员表用于记录群组中的成员信息，包括成员ID、所属群组ID、成员角色等信息。每个成员可以有不同的权限和角色，在群组中扮演不同的角色。
 
 ### 安全与验证
 
@@ -204,7 +247,7 @@ base64_decode(const char *in, unsigned int inlen, unsigned char *out);
 ```
 
 ### 心跳检测
-
+//TODO
 ### 设定
 
 - 所有变量用小写字母+数字+下划线表示
@@ -215,37 +258,43 @@ base64_decode(const char *in, unsigned int inlen, unsigned char *out);
 
 - 所有的错误输出用cerr,结果输出用cout，且输出格式为：文件名+函数名+消息
 
-- bool函数中都按false,false,false...true结构，遇到错误时，输出错误信息，直到最后的true没有任何错误，true不输出信息，交给上层输出。
+- inlien函数只有两种状态返回，成功或者失败。而上层的函数都有可能多个返回值，所以设置成int型，返回值在信令中预定义
 
-```cpp
-bool fun(){
+````cpp
+int log_up(){
     if(...){
-        cerr<<...;
-        return false;
+        return SIGNAL_REGISTED;
     }
     if(...){
-        cerr<<...;
-        return false;
+        return SIGNAL_LOGUP_SUCCEED;
     }
-    return true;
 }
-```
+````
+上层的函数通过读取返回值来做出不同的操作
 
-遇到异常无需返回值时，用exit()退出
 
 ### 内联函数
 
-db中的获取连接和检测用户功能会被多个函数复用，但因为传入的地址，所以可以使用内联函数
+db中的获取连接和检测用户等功能会被多个函数复用，但因为传入的地址，所以可以使用内联函数
 
 ### 编译环境
 
-include
+除了基础GCC库，额外用到的库不依赖系统环境变量，把用到的头文件，库文件找出来放在项目include/,lib/ 目录下，并手动编译动态库，运行时也需要打上库路径
+- 编译动态库
+````bash
+g++ a.c b.cpp -fPIC -shared -o libxxx.so
+````
+- 批处理编译
+````bash
+#! /bin/bash
 
-task
-
--I lib,-lmysqlclient
-
-批处理脚本编译
+includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
+libpath="-L../lib/ -lmysqlclient -lencode"
+#运行时lib
+rlibpath="-Wl,-rpath=../lib/"
+g++ chat_server.cpp ../include/db.cpp -o chat_server $includepath $libpath $rlibpath
+echo "compiled chat_server"
+````
 
 ### 问题和难题
 
