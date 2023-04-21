@@ -1,13 +1,10 @@
 #include<db.h>
-
+#include<vector>
 int main(){
     DB db("123456");
-    if(DB_Log_IN(db,"test123","123456","127.0.0.1:2234")){
-        cout<<"log in succeed"<<endl;
+    vector<string> contact_list=Get_Contact_List(db,"test123");
+    for(auto it=contact_list.begin();it!=contact_list.end();++it){
+        cout<<*it<<"  ";
     }
-    if(check_Online())
-    // if(DB_Log_OUT(db,"test123")){
-    //     cout<<"log out succeed"<<endl;
-    // }
-
+    
 }

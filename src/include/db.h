@@ -5,11 +5,13 @@
 #include<cstring>
 #include<stdio.h>
 #include<iostream>
+#include<vector>
 //include
 #include<encode/md5.h>
 #include<Signal&Macro.h>
 using std::cout,std::endl,std::cerr;
 using std::string;
+using std::vector;
 class DB{
     public:
         MYSQL *mysql;
@@ -22,12 +24,26 @@ class DB{
         DB(const char *pass,const char *host,const char *user,const char *database,unsigned int port);
         ~DB();
 };
+//inline
+
 inline bool get_Connection(DB *db);
 inline bool check_Existed(DB *db,const char *account);
 inline bool check_Online(DB *db,const char *account);
-int DB_Log_UP(DB db,const char *account,const char *password,const char *name);
-int DB_Log_IN(DB db,const char *account,const char *password,const char *route);
-int DB_Log_OUT(DB db,const char *account);
-int DB_Add_Friend(DB db,const char *account,const char *friends);
-int get_Route(DB db,const char *account,char *route);
+inline string getName_by_account(DB *db,const char *account);
+inline string get_Route(DB *db,const char *account);
+//user
+
+int Log_UP(DB db,const char *account,const char *password,const char *name);
+int Log_IN(DB db,const char *account,const char *password,const char *route);
+int Log_OUT(DB db,const char *account);
+//contacts
+
+int Before_Add_Contact(DB db,const char *account,const char *contact);
+int Add_Contact(DB db,const char *account,const char *contact);
+int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname);
+int Del_Contact(DB db,const char *account,const char *contact);
+vector<string> Get_Contact_List(DB db,const char *account);
+//message
+
+int Before_Send_Message(DB db,const char *from_account,const char *to_account,const char *message);
 #endif 

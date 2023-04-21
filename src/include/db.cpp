@@ -76,12 +76,44 @@ inline bool check_Online(DB *db,const char *account){
 
 }
 
+inline string getName_by_account(DB *db,const char *account){
+    char query[250];
+    sprintf(query,"select name from user where account='%s'",account);
+    if(mysql_query(db->mysql,query)){
+        cerr<<"db-getName_by_account:select error:"<<mysql_error(db->mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db->mysql);
+    if(res==NULL){
+        cerr<<"db-get_Name_by_account:mysql store result error:"<<mysql_error(db->mysql);
+        exit(-1);
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    mysql_free_result(res);
+    return row[0];
+}
+inline string get_Route(DB *db,const char *account){
+    char query[250];
+    sprintf(query,"select route from user where account='%s'",account);
+    if(mysql_query(db->mysql,query)){
+       cerr<<"db-get_Route:get route error:"<<mysql_error(db->mysql)<<endl;
+       exit(-1); 
+    }
+    MYSQL_RES *res=mysql_store_result(db->mysql);
+    if(res==NULL){
+        cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db->mysql);
+        exit(-1);
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    mysql_free_result(res);
+    return row[0];
+}
 //=================状态更新===========================
 
 //account log up,return values:
 //SIGNAL_ACCOUNT_REGISTED
 //SIGNAL_FALSE / SIGNAL_TRUE
-int DB_Log_UP(DB db, const char *account, const char *password, const char *name){
+int Log_UP(DB db, const char *account, const char *password, const char *name){
     if(!get_Connection(&db)){
         exit(-1);
     }
@@ -92,7 +124,7 @@ int DB_Log_UP(DB db, const char *account, const char *password, const char *name
     char query[250];
     sprintf(query,"insert into user(account,password,name) values('%s','%s','%s')",account,password,name);
     if(mysql_query(db.mysql,query)){
-        cerr<<"db-DB_Log_UP:insert error:"<<mysql_error(db.mysql)<<endl;
+        cerr<<"db-Log_UP:insert error:"<<mysql_error(db.mysql)<<endl;
         return SIGNAL_FALSE;
     }else{
         return SIGNAL_TRUE;
@@ -102,7 +134,7 @@ int DB_Log_UP(DB db, const char *account, const char *password, const char *name
 //SIGNAL_ACCOUNT_NOT_REGISTED
 //SIGNAL_WRONG_PASSWORD
 //SIGNAL_FALSE / SIGNAL_TRUE
-int DB_Log_IN(DB db, const char *account, const char *password,const char *route){
+int Log_IN(DB db, const char *account, const char *password,const char *route){
 
     if(!get_Connection(&db)){
         exit(-1);
@@ -115,25 +147,25 @@ int DB_Log_IN(DB db, const char *account, const char *password,const char *route
     char query[250];
     sprintf(query,"select password from user where account='%s'",account);
     if(mysql_query(db.mysql,query)){
-       cerr<<"db-DB_Log_IN:get password error:"<<mysql_error(db.mysql)<<endl;
+       cerr<<"db-Log_IN:get password error:"<<mysql_error(db.mysql)<<endl;
        exit(-1);
     }
     MYSQL_RES* res=mysql_store_result(db.mysql);
     if(res==NULL){
-        cerr<<"db-DB_Log_IN:mysql_store_result error:"<<mysql_error(db.mysql)<<endl;
+        cerr<<"db-Log_IN:mysql_store_result error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
+    mysql_free_result(res);
     // if(strcmp(row[0],MD5(password).toStr().c_str())!=0){
     if(strcmp(row[0],password)!=0){
         cout<<"password error,please input again"<<endl;
         return SIGNAL_WRONG_PASSWORD;
     }
-    mysql_free_result(res);
     //log in
     sprintf(query,"update user set status=1,route='%s' where account='%s'",route,account);
     if(mysql_query(db.mysql,query)){
-        cerr<<"db-DB_Log_IN:log in error:"<<mysql_error(db.mysql)<<endl;
+        cerr<<"db-Log_IN:log in error:"<<mysql_error(db.mysql)<<endl;
         return SIGNAL_FALSE;
     }else{
         return SIGNAL_TRUE;
@@ -141,52 +173,144 @@ int DB_Log_IN(DB db, const char *account, const char *password,const char *route
 }
 //account actively log out,return vales:
 //SIGNAL_FALSE / SIGNAL_TRUE
-int DB_Log_OUT(DB db,const char *account){
+int Log_OUT(DB db,const char *account){
     if(!get_Connection(&db)){
         exit(-1);
     }
     char query[250];
     sprintf(query,"update user set status=0,route='NULL' where account ='%s'",account);
     if(mysql_query(db.mysql,query)){
-       cerr<<"db-DB_Log_OUT:log out error:"<<mysql_error(db.mysql)<<endl;
+       cerr<<"db-Log_OUT:log out error:"<<mysql_error(db.mysql)<<endl;
        return SIGNAL_FALSE; 
     }
     return SIGNAL_TRUE;
 }
 //==========================好友================
 
-int DB_Add_Friend(DB db,const char *account,const char *friends){
+//before add contact works:return values:
+//SIGNAL_ACCOUNT_NOT_REGISTED
+//SIGNAL_ACCOUNT_ONLINE
+//SIGNAL_BUFFER_ADD_CONTACT
+int Before_Add_Contact(DB db,const char *account,const char *contact){
     if(!get_Connection(&db)){
         exit(-1);
     }
-    if(!check_Existed(&db,account)){
-        cout<<account<<"does not exist"<<endl;
+    if(!check_Existed(&db,contact)){
+        cout<<contact<<"does not exist"<<endl;
         return SIGNAL_ACCOUNT_NOT_REGISTED;
     }
-    if(check_Online(&db,account)){
-        //发送申请请求
-        
-    }else{
-        //添加到缓存表
+    if(check_Online(&db,contact)){
+        return SIGNAL_ACCOUNT_ONLINE;
+    }else{//缓存申请记录
+        char query[250];
+        sprintf(query,"insert into message(from_account,to_account,add_flag) values('%s','%s','%d')",account,contact,1);
+        if(mysql_query(db.mysql,query)){
+            cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
+            exit(-1);
+        }
+        return SIGNAL_BUFFER_ADD_CONTACT;
+
     }
 }
 
-// bool get_Route(DB db,const char *account,char *route){
-//     if(!get_Connection(&db)){
-//         exit(-1);
-//     }
-//     char query[250];
-//     sprintf(query,"select route from user where account='%s'",account);
-//     if(mysql_query(db.mysql,query)){
-//        cerr<<"db-get_Route:get route error:"<<mysql_error(db.mysql)<<endl;
-//        return false; 
-//     }
-//     MYSQL_RES *res=mysql_store_result(db.mysql);
-//     if(res==NULL){
-//         cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
-//         return false;
-//     }
-//     MYSQL_ROW row=mysql_fetch_row(res);
-//     mysql_free_result(res);
-//     strcpy(route,row[0]);
-// }
+//after check add contact,return values:
+//SIGNAL_FALSE / SIGNAL_TRUE
+int Add_Contact(DB db,const char *account,const char *contact){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    string account_name=getName_by_account(&db,account);
+    string contact_name=getName_by_account(&db,contact);
+    char query[250];
+    char query1[250];
+    sprintf(query,"insert into contacts values('%s','%s','%s')",account,contact,contact_name.c_str());
+    sprintf(query1,"insert into contacts values('%s','%s','%s')",contact,account,account_name.c_str());
+    mysql_autocommit(db.mysql,0);//mysql event
+    int ret=mysql_query(db.mysql,query);
+    int ret1=mysql_query(db.mysql,query1);
+    if(ret==0&&ret1==0){
+        mysql_commit(db.mysql);
+        return SIGNAL_TRUE;
+    }else{
+        mysql_rollback(db.mysql);
+        return SIGNAL_FALSE;
+    }
+
+}
+int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    char query[250];
+    sprintf(query,"update contacts set nickname='%s' where account='%s' and contact='%s'",nickname,account,contact);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Set_Nickname:update error"<<mysql_error(db.mysql)<<endl;
+        return SIGNAL_FALSE;
+    }else{
+        return SIGNAL_TRUE;
+    }
+}
+int Del_Contact(DB db,const char *account,const char *contact){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    char query[250];
+    char query1[250];
+    sprintf(query,"delete from contacts where account='%s' and contact='%s'",account,contact);
+    sprintf(query1,"delete from contacts where account='%s' and contact='%s'",contact,account);
+    mysql_autocommit(db.mysql,0);
+    int ret=mysql_query(db.mysql,query);
+    int ret1=mysql_query(db.mysql,query1);
+    if(ret==0 && ret1==0){
+        mysql_commit(db.mysql);
+        return SIGNAL_TRUE;
+    }else{
+        mysql_rollback(db.mysql);
+        return SIGNAL_FALSE;
+    }
+
+}
+vector<string> Get_Contact_List(DB db,const char *account){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    char query[250];
+    sprintf(query,"select nickname from contacts where account='%s'",account);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Get_Contact_List:select error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==NULL){
+        cerr<<"db-Get_Contact_List:mysql store result error:"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_ROW row;
+    vector<string> contact_list;
+    while((row=mysql_fetch_row(res))!=NULL){
+        contact_list.push_back(row[0]);
+    }
+    mysql_free_result(res);
+    return contact_list;
+}
+//===============message==========
+
+//before send message,return values:
+//SIGNAL_ACCOUNT_ONLINE
+//SIGNAL_BUFFER_SEND_MESSAGE
+int Before_Send_Message(DB db,const char *from_account,const char *to_account,const char *message){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    if(check_Online(&db,to_account)){
+        return SIGNAL_ACCOUNT_ONLINE;
+    }else{
+        char query[1250];
+        sprintf(query,"insert into message(from_account,to_account,message_data,buffer_status) values('%s','%s','%s','%d')",from_account,to_account,message,1);
+        if(mysql_query(db.mysql,query)){
+            cerr<<"db-Before_Send_Message:insert error"<<mysql_error(db.mysql)<<endl;
+            exit(-1);
+        }
+        return SIGNAL_BUFFER_SEND_MESSAGE;
+    }
+}
