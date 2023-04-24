@@ -337,6 +337,22 @@ myclass(int){
 myclass(int):myclass(int,0){}
 ```
 
+### UI
+
+采用qml
+
+#ECF0F1:文字
+
+#BDC3C7：组件
+
+#95A5A6：三级UI
+
+#7F8C8D:二级UI
+
+#7B7D7D:一级UI
+
+### problem
+
 ##### memset等操作内存的函数不要乱用
 
 参考：[内存越界：corrupted double-linked list - gelon - 博客园](https://www.cnblogs.com/gelon/p/13042583.html)

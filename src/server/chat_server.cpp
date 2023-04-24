@@ -17,7 +17,7 @@ bool log_Up(user_Property *user_pro){
         cout<<"base64 decode succeed"<<endl;
     }
     DB db(out);
-    if(DB_Log_UP(db,user_pro->account,user_pro->password,user_pro->name)){
+    if(Log_UP(db,user_pro->account,user_pro->password,user_pro->name)){
         cout<<"log up succeed"<<endl;
         return true;
     }else{
@@ -90,12 +90,14 @@ int main(){
                     close(session_socket);
                     cerr<<session_socket<<" client recv error"<<endl;
                 }else{//最后一种情况就只能是读到了数据
-                    user_Property *user_pro=(user_Property*)malloc(USER_PROPERTY_SIZE);
-                    memcpy(user_pro,buff,USER_PROPERTY_SIZE);
-                    fun(user_pro);
-                    free(user_pro);
-                    free(buff);
-                    cout<<"event over"<<endl;
+                    // user_Property *user_pro=(user_Property*)malloc(USER_PROPERTY_SIZE);
+                    // memcpy(user_pro,buff,USER_PROPERTY_SIZE);
+                    // fun(user_pro);
+                    // free(user_pro);
+                    // free(buff);
+                    // cout<<"event over"<<endl;
+                    cout<<buff<<endl;
+                    send(session_socket,"server recv message",50,0);
                 }
                 
                 }

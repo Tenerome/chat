@@ -108,6 +108,26 @@ inline string get_Route(DB *db,const char *account){
     mysql_free_result(res);
     return row[0];
 }
+inline bool Check_Add_Flag(DB *db,const char *account){
+    char query[250];
+    sprintf(query,"select add_flag from message where account='%s'",account);
+    if(mysql_query(db->mysql,query)){
+        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db->mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db->mysql);
+    if(res==NULL){
+        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db->mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    mysql_free_result(res);
+    if(strcmp(row[0],"1")==0){
+        return true;
+    }else{
+        return false;
+    }
+}
 //=================状态更新===========================
 
 //account log up,return values:
@@ -314,3 +334,15 @@ int Before_Send_Message(DB db,const char *from_account,const char *to_account,co
         return SIGNAL_BUFFER_SEND_MESSAGE;
     }
 }
+// int Get_New_Contact(DB db,const char *account,const char *contact){
+//     if(!get_Connection(&db)){
+//         exit(-1);
+//     }
+//     if(Check_Add_Flag(&db,account)){
+
+//     }
+// }
+
+// string Get_Message_Buffer(DB db,const char *account){
+
+// }

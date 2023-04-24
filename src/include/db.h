@@ -31,6 +31,8 @@ inline bool check_Existed(DB *db,const char *account);
 inline bool check_Online(DB *db,const char *account);
 inline string getName_by_account(DB *db,const char *account);
 inline string get_Route(DB *db,const char *account);
+inline bool Check_Add_Flag(DB *db,const char *account);
+
 //user
 
 int Log_UP(DB db,const char *account,const char *password,const char *name);
@@ -46,4 +48,6 @@ vector<string> Get_Contact_List(DB db,const char *account);
 //message
 
 int Before_Send_Message(DB db,const char *from_account,const char *to_account,const char *message);
+int Get_New_Contact(DB db,const char *account);
+string Get_Message_Buffer(DB db,const char *account);
 #endif 

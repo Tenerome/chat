@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>CusClient.qml</file>
+        <file>CusTextField.qml</file>
+        <file>CusMainPage.qml</file>
+        <file>CusLogPage.qml</file>
+        <file>DefConst.qml</file>
+    </qresource>
+</RCC>

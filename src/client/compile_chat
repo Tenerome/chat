@@ -1,8 +1,0 @@
-#! /bin/bash
-
-includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
-libpath="-L../lib/ -lmysqlclient -lencode"
-#运行时lib
-rlibpath="-Wl,-rpath=../lib/"
-g++ chat.cpp -o chat $includepath $libpath $rlibpath
-echo "compiled chat"
