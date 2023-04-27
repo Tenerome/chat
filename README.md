@@ -339,6 +339,26 @@ myclass(int):myclass(int,0){}
 
 ### UI
 
+qt6
+
+安装
+
+配置
+
+库apt install lib
+
+创建chat_client   qbs  6.2   debug 先运行一次生成chat_client debug
+
+FluentUI，重新构建
+
+生成qmltypes
+
+```bash
+./qmlplugindump --nonrelatable FluentUI 1.0 /bin > /bin/Fluent/plugin.qmltypes
+```
+
+导入到debug/debug desktop,也就是chat_client 同级目录下，就可以调用模块。同时也有代码提示
+
 采用qml
 
 #ECF0F1:文字

@@ -5,6 +5,6 @@
         <file>CusTextField.qml</file>
         <file>CusMainPage.qml</file>
         <file>CusLogPage.qml</file>
-        <file>DefConst.qml</file>
+        <file>DefConst.js</file>
     </qresource>
 </RCC>
