@@ -1,10 +1,14 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>CusClient.qml</file>
-        <file>CusTextField.qml</file>
-        <file>CusMainPage.qml</file>
-        <file>CusLogPage.qml</file>
-        <file>DefConst.js</file>
+        <file>qml/global/CusClient.qml</file>
+        <file>qml/global/DefConst.js</file>
+        <file>qml/window/CusLoginWindow.qml</file>
+        <file>qml/window/CusLogupWindow.qml</file>
+        <file>qml/window/CusMainWindow.qml</file>
+        <file>qml/global/CusSideMenuBar.qml</file>
+        <file>qml/global/CusDefine.qml</file>
+        <file>qml/page/CusChatPage.qml</file>
+        <file>qml/global/CusMessageBox.qml</file>
     </qresource>
 </RCC>

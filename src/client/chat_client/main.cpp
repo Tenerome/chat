@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "Socket.h"
+#include "src/Socket/Socket.h"
 
 int main(int argc, char *argv[])
 {

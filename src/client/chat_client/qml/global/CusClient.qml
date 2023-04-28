@@ -1,8 +1,10 @@
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Dialogs 1.3
 import mycpp.Client 1.0
+import FluentUI 1.0
 
 Item {
+    property alias client_socket: client_socket
     Client {
         id: client_socket
     }
@@ -19,17 +21,20 @@ Item {
             }
         }
     }
-    MessageDialog {
+    signal close_by_Dialog
+    FluContentDialog {
         id: client_dialog
         title: "client error"
-        text: "Connection failed"
-        standardButtons: StandardButton.Retry | StandardButton.Close
-        onAccepted: {
-            console.log("retry to connect server")
-        }
-        onRejected: {
+        message: "Connection failed"
+        negativeText: "Quit"
+        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
+        onNegativeClicked: {
             client_timer.stop()
-            mainWin.close()
+            close_by_Dialog()
+        }
+        positiveText: "Retry"
+        onPositiveClicked: {
+            showSuccess("retry to connect socket")
         }
     }
 }
