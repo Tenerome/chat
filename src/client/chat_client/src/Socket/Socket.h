@@ -11,6 +11,7 @@ public:
     Q_INVOKABLE bool connect(QString ip,quint16 port);
     Q_INVOKABLE bool sendMessage(QString sendstr);
     Q_INVOKABLE QString recvMessage();
+    Q_INVOKABLE bool getConnectStatus();//TODEL
 
 signals:
 

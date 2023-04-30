@@ -14,12 +14,6 @@ FluWindow {
         onClose_by_Dialog: {
             window.close()
         }
-        Connections {
-            target: login_btn
-            function onSendMessage(str) {
-                cus_client.client_socket.sendMessage(str)
-            }
-        }
     }
     FluAppBar {
         id: appbar

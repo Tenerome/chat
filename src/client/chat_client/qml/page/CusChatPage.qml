@@ -5,82 +5,79 @@ import QtQuick.Controls 2.5
 import "qrc:/qml/global/"
 import FluentUI 1.0
 
+//TODEL
 Page {
     id: page
     leftPadding: 10
     rightPadding: 0
     bottomPadding: 10
+    CusClient {
+        id: cus_client
+        onClose_by_Dialog: {
+            window.close()
+        }
+        onRecvOneMessage: recv => {
+                              if (recv !== "")
+                              listmodel.append({
+                                                   "detail": recv,
+                                                   "position": 1
+                                               })
+                          }
+    }
     ColumnLayout {
         FluScrollablePage {
             id: textscroll
             width: page.width
             height: page.height - 300
-
-            //            height: 1000
             Rectangle {
                 id: recarea
                 width: textscroll.width - 30
                 height: textscroll.height
                 border.color: "#a3bfc2"
-
                 radius: 10
-
+                //                color: "#00FFFFFF"
                 //message ballon
                 ListView {
+                    id: listview
                     width: parent.width
                     height: parent.height
                     add: Transition {
-                        //设置增加Item时的动画 from 100,100  to不设置 就是默认在ListView
+                        //add animation
                         NumberAnimation {
                             properties: "x,y"
                             from: 100
                             duration: 100
                         }
                     }
-                    id: listview
-                    spacing: 50 //control the message ballon column spacing
+                    spacing: 30 //control the message ballon column spacing
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
                     delegate: Component {
                         Rectangle {
-                            width: parent.width
-                            height: label.height
-                            opacity: 0.8
-                            border.color: "#00FFFFFF"
-                            color: "#00FFFFFF"
-                            radius: 10
-                            BorderImage {
-                                //聊天气泡
-                                id: qipao
-                                source: "qrc:/res/icon/msg_ballon.png"
-                                width: label.width + 100
-                                height: label.height <= 200 ? 200 : label.height + 200
-                                //  width:20
-                                border.left: 10
-                                border.right: 10
-                                border.top: 10
-                                border.bottom: 10
-
-                                //                                anchors.bottomMargin: 30
-                                x: parent.width - width
-
-                                Text {
-                                    id: label
-                                    width: label.text.length <= 10 ? label.text.length * 12 : 250
-                                    font.pixelSize: 20
-                                    anchors.centerIn: parent
-                                    anchors.leftMargin: 10
-                                    wrapMode: Text.Wrap //多行文本 超过width就自动换行
-                                    text: detail
-                                }
+                            id: ballon
+                            width: label.width + 100
+                            height: label.height <= 120 ? 120 : label.height + 20
+                            color: "#4D10CCEE"
+                            radius: 20
+                            x: position < 1 ? listview.width
+                                              - width : 0 //control the position of message ballon
+                            Text {
+                                id: label
+                                width: label.text.length <= 10 ? label.text.length * 12 : 250
+                                font.pixelSize: 20
+                                anchors.centerIn: parent
+                                anchors.leftMargin: 10
+                                wrapMode: Text.Wrap //多行文本 超过width就自动换行
+                                text: detail
                             }
                         }
                     }
                     model: ListModel {
                         id: listmodel
                         ListElement {
-                            detail: ""
+                            detail: "==Your chat start here=="
+                            position: 0
                         }
                     }
                 }
@@ -100,11 +97,23 @@ Page {
             FluFilledButton {
                 id: send_btn
                 text: "send"
+                Component.onCompleted: {
+                    //clear the init detail
+                    listmodel.clear()
+                }
+
                 onClicked: {
-                    listmodel.append({
-                                         "detail": "You:" + multi_textbox.text
-                                     })
-                    multi_textbox.text = ""
+                    if (multi_textbox.text !== "") {
+                        listmodel.append({
+                                             "detail": Qt.formatDateTime(
+                                                           new Date(),
+                                                           "MM.dd HH:mm:ss") + " You:\n"
+                                                       + multi_textbox.text,
+                                             "position": 0
+                                         })
+                        cus_client.client_socket.sendMessage(multi_textbox.text)
+                        multi_textbox.text = ""
+                    }
                 }
             }
             spacing: 50

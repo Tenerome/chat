@@ -18,20 +18,6 @@ FluObject {
             navigationView.push("qrc:/qml/page/CusChatPage.qml")
         }
     }
-    FluPaneItem {
-        title: "Test"
-        //        icon: FluentIcons.Home
-        //        cusIcon: Image {
-        //            anchors.centerIn: parent
-        //            //            source:
-        //            sourceSize: Qt.size(30, 30)
-        //            width: 18
-        //            height: 18
-        //        }
-        onTap: {
-            navigationView.push("qrc:/qml/page/CusTest.qml")
-        }
-    }
 
     //    FluPaneItemExpander {
     //        title: "basic_input"

@@ -4,26 +4,24 @@ import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import Qt.labs.platform 1.1
 import FluentUI 1.0
-import "qrc:/qml/global"
+import "qrc:/qml/global/"
 
 FluWindow {
     id: window
     title: "chat"
     width: 1200
     height: 900
+    minimumWidth: 1200
+    minimumHeight: 900
+    maximumWidth: 1200
+    maximumHeight: 900
     closeDestory: false
-    CusClient {
-        id: cus_client
-        onClose_by_Dialog: {
-            window.close()
-        }
-        //        Connections {
-        //            target: logup_btn
-        //            function onSendMessage(str) {
-        //                cus_client.client_socket.sendMessage(str)
-        //            }
-        //        }
-    }
+    //    CusClient {
+    //        id: cus_client
+    //        onClose_by_Dialog: {
+    //            window.close()
+    //        }
+    //    }
     closeFunc: function (event) {
         close_app.open()
         event.accepted = false
@@ -48,14 +46,11 @@ FluWindow {
                 }
             }
         }
-        onActivated: reason => {
-                         //raise window
-                         if (reason === SystemTrayIcon.Trigger) {
-                             window.show()
-                             window.raise()
-                             window.requestActivate()
-                         }
-                     }
+        onActivated: {
+            window.show()
+            window.raise()
+            window.requestActivate()
+        }
     }
 
     FluContentDialog {

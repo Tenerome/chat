@@ -4,9 +4,8 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 //===========FlentUI===
 import FluentUI 1.0
-//============custom lib====
-import "qrc:/qml/global"
 
+//============custom lib====
 Window {
     id: mainWin
     Component.onCompleted: {
