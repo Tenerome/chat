@@ -1,7 +1,7 @@
 #! /bin/bash
 
-includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
-libpath="-L../lib/ -lmysqlclient -lencode"
-rlibpath="-Wl,-rpath=../lib/"
-g++ testdb.cpp ../include/db.cpp -o testdb $includepath $libpath $rlibpath $1
+includepath="-I./include/ -I./include/encode/ -I./include/mysql/"
+libpath="-L./lib/ -lmysqlclient -lencode"
+rlibpath="-Wl,-rpath=./lib/"
+g++ testdb.cpp ./include/db.cpp -o testdb $includepath $libpath $rlibpath $1
 echo "compiled testdb"

@@ -54,7 +54,7 @@
 
 1. 用户进入登陆页面，显示登陆窗口
 2. 输入账户密码登陆
-3. 如果账户不存在，跳转注册页面注册
+3. 如果账户不存在，点击注册页面注册
 4. 密码正确登陆成功，否则登陆失败
 
 #### 好友
@@ -96,15 +96,7 @@
 ...
 ```
 
-### 结构体
-
-#### 信令结构体
-
-```cpp
-struct signal{
-    unsigned int signal:4;
-}
-```
+### ~~结构体~~（弃用，改用json）
 
 4位二进制，16个状态
 
@@ -139,6 +131,8 @@ struct friend{
 }
 ```
 
+### JSON
+
 ### 数据库
 
 #### 采用docker部署数据库
@@ -157,21 +151,7 @@ docker start
 sudo docker start mysql
 ```
 
-#### ~~使用mysql connector C++~~使用sqlapi++
-
-sqlapi++:https://www.sqlapi.com/
-
-下载linux Trial Version
-
-选取头文件:myAPI.h, samisc.h, SQLAPI.h, mysql/*
-
-库文件:
-
-首先`g++ --version` ,`uname -a`->选binaries g++ 10 amd64
-
-添加到ld.conf`sudo vim ld.so.conf`;`sudo ldconfig`;
-
-编译的时候添加库路径`g++ -L../lib -lsqlapi`
+#### 使用mysql connector C++
 
 #### 数据库表结构
 
@@ -247,11 +227,15 @@ unsigned int
 base64_decode(const char *in, unsigned int inlen, unsigned char *out);
 ```
 
-### 心跳检测
+### ~~心跳检测~~（弃用，改用epoll编程）
+
+本来学了多线程，想用select+thread循环监听socket，但是看到epoll可以从触发方式上改变监听机制，改用epoll
 
 //TODO
 
 ### 设定
+
+#### C++
 
 - 所有变量用小写字母+数字+下划线表示
 
@@ -276,6 +260,14 @@ int log_up(){
 
 上层的函数通过读取返回值来做出不同的操作
 
+#### QML
+
+id：小写+下划线
+
+Component：大小写+下划线
+
+Signal：大写+下划线
+
 ### 内联函数
 
 db中的获取连接和检测用户等功能会被多个函数复用，但因为传入的地址，所以可以使用内联函数
@@ -294,32 +286,53 @@ db中的获取连接和检测用户等功能会被多个函数复用，但因为
   
   ```bash
   #! /bin/bash
+  includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
+  libpath="-L../lib/ -lmysqlclient -lencode"
+  #运行时lib
+  rlibpath="-Wl,-rpath=../lib/"
+  g++ chat_server.cpp ../include/db.cpp -o chat_server $includepath $libpath $rlibpath
+  echo "compiled chat_server"
   ```
-
-includepath="-I../include/ -I../include/encode/ -I../include/mysql/"
-libpath="-L../lib/ -lmysqlclient -lencode"
-#运行时lib
-rlibpath="-Wl,-rpath=../lib/"
-g++ chat_server.cpp ../include/db.cpp -o chat_server $includepath $libpath $rlibpath
-echo "compiled chat_server"
-
-```
-### 问题和难题
-
-###### 字符串越界问题
-
-string和char*的转换中注意边界的'\0',不然可能在读取的时候读到下一个字符串的字节，必要时手动添加`str[strlen[str]]='\0';`
-
-###### C++构造函数调用另一个构造函数
-
-起初使用java那样
-
-```cpp
-class myclass{
+  
+  ### UI
+  
+  qt6
+  
+  安装
+  
+  配置
+  
+  库apt install lib
+  
+  创建chat_client qbs 6.2 debug 先运行一次生成chat_client debug
+  
+  FluentUI，重新构建
+  
+  生成qmltypes
+  
+  ```bash
+  ./qmlplugindump --nonrelatable FluentUI 1.0 /bin > /bin/Fluent/plugin.qmltypes
+  ```
+  
+  导入到debug/debug desktop,也就是chat_client 同级目录下，就可以调用模块。同时也有代码提示
+  
+  ### 问题和难题
+  
+  ###### 字符串越界问题
+  
+  string和char*的转换中注意边界的'\0',不然可能在读取的时候读到下一个字符串的字节，必要时手动添加`str[strlen[str]]='\0';`
+  
+  ###### C++构造函数调用另一个构造函数
+  
+  起初使用java那样
+  
+  ```
+  ```cpp
+  class myclass{
     myclass(int){myclass(int,0)};
     myclass(int,int);
-};
-```
+  };
+  ```
 
 结果发现错误，C++不能这么用，检索网络的解决办法是使用new
 
@@ -336,42 +349,6 @@ myclass(int){
 ```cpp
 myclass(int):myclass(int,0){}
 ```
-
-### UI
-
-qt6
-
-安装
-
-配置
-
-库apt install lib
-
-创建chat_client   qbs  6.2   debug 先运行一次生成chat_client debug
-
-FluentUI，重新构建
-
-生成qmltypes
-
-```bash
-./qmlplugindump --nonrelatable FluentUI 1.0 /bin > /bin/Fluent/plugin.qmltypes
-```
-
-导入到debug/debug desktop,也就是chat_client 同级目录下，就可以调用模块。同时也有代码提示
-
-采用qml
-
-#ECF0F1:文字
-
-#BDC3C7：组件
-
-#95A5A6：三级UI
-
-#7F8C8D:二级UI
-
-#7B7D7D:一级UI
-
-### problem
 
 ##### memset等操作内存的函数不要乱用
 
@@ -398,12 +375,3 @@ int fun(...){
 ```
 
 如果条件否，那么就没有返回值。
-
-```
-### 前端
-先写好服务端，客户端什么方便用什么
-QT
-IMGUI//纯C++GUI库
-PYTHON，PYQT
-electron
-```

@@ -9,6 +9,10 @@ FluWindow {
     title: "chat:logup"
     width: 800
     height: 600
+    maximumWidth: 800
+    maximumHeight: 600
+    minimumWidth: 800
+    minimumHeight: 600
     CusClient {
         id: cus_client
         onClose_by_Dialog: {

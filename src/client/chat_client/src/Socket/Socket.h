@@ -5,19 +5,15 @@
 
 class Client:public QObject{
   Q_OBJECT
+private:
+    QTcpSocket *client_socket;
 public:
     explicit Client(QObject *parent=nullptr);
     ~Client();
     Q_INVOKABLE bool connect(QString ip,quint16 port);
     Q_INVOKABLE bool sendMessage(QString sendstr);
     Q_INVOKABLE QString recvMessage();
-    Q_INVOKABLE bool getConnectStatus();//TODEL
+    Q_INVOKABLE bool getConnectStatus();
 
-signals:
-
-public slots:
-
-private:
-    QTcpSocket *client_scoket;
 };
 #endif // SOCKET_H

@@ -4,13 +4,14 @@
             "name": "Linux",
             "includePath": [
                 "/usr/include/c++/11/**",
-                "/home/tenerome/Documents/chat/src/include/**"
+                "/home/tenerome/Documents/chat/src/server/include/**"
             ],
             "defines": [],
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
             "compilerPath": "/usr/bin/g++-11",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "compileCommands": "${workspaceFolder}/src/client/build-chat_client-Desktop_Qt_5_15_2_GCC_64bit-Debug/.qtc_clangd/compile_commands.json"
         }
     ],
     "version": 4

@@ -9,29 +9,38 @@ Item {
         id: client_socket
     }
     signal recvOneMessage(string str)
-    Component.onCompleted: {
-        client_timer.running = true
-        recv_message_timer.running = true
-    }
     Timer {
         id: recv_message_timer
         interval: 100
+        running: true
         repeat: true
         onTriggered: {
             if (client_socket.getConnectStatus()) {
                 var recv = client_socket.recvMessage()
                 recvOneMessage(recv)
+            } else {
+                client_timer.start()
             }
         }
     }
+    FluProgressRing {
+        id: progress_ring
+        x: 365
+        y: 130
+        visible: false
+    }
     Timer {
         id: client_timer
-        interval: 500
+        interval: 2000
         repeat: true
+        running: true
         onTriggered: {
             if (client_socket.connect("127.0.0.1", "8888")) {
+                showSuccess("connect to server")
+                progress_ring.visible = false
                 stop()
             } else {
+                progress_ring.visible = true
                 client_dialog.open()
             }
         }
@@ -49,7 +58,7 @@ Item {
         }
         positiveText: "Retry"
         onPositiveClicked: {
-            showSuccess("retry to connect socket")
+            showInfo("retry to connect")
         }
     }
 }
