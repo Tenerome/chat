@@ -1,4 +1,3 @@
-//pragma Singleton
 import QtQuick 2.9
 import FluentUI 1.0
 

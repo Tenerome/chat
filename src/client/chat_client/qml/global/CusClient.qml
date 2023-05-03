@@ -31,7 +31,7 @@ Item {
     }
     Timer {
         id: client_timer
-        interval: 2000
+        interval: 1000
         repeat: true
         running: true
         onTriggered: {

@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.5
 import FluentUI 1.0
 import "qrc:/qml/global"
+import "../global/Define.js" as Define
 
 FluWindow {
     id: window
@@ -18,12 +19,6 @@ FluWindow {
         onClose_by_Dialog: {
             window.close()
         }
-        Connections {
-            target: logup_btn
-            function onSendMessage(str) {
-                cus_client.client_socket.sendMessage(str)
-            }
-        }
     }
     FluAppBar {
         id: appbar
@@ -37,7 +32,19 @@ FluWindow {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-
+        FluProgressRing {
+            //progress ring
+            id: progress_ring
+            Layout.alignment: Qt.AlignHCenter
+            Timer {
+                interval: 1000
+                repeat: false
+                running: true
+                onTriggered: {
+                    progress_ring.destroy()
+                }
+            }
+        }
         FluTextBox {
             id: textbox_account
             placeholderText: "Input your account"
@@ -81,13 +88,12 @@ FluWindow {
             text: "log up"
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
-            signal sendMessage(string str)
-            function returnString() {
-                return textbox_account.text + "EOF" + textbox_name.text + "EOF"
-                        + textbox_password.text
-            }
             onClicked: {
-                sendMessage(returnString())
+                var send_json = '{"flag":"' + Define.SOCKET_LOG_UP + '","account":"'
+                        + textbox_account.text + '","name":"' + textbox_name.text
+                        + '","password":"' + textbox_password.text + '"}'
+                cus_client.client_socket.sendMessage(send_json)
+                //                console.log(send_json) //TODEL
             }
         }
     }

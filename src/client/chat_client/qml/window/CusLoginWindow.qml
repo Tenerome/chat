@@ -31,7 +31,19 @@ FluWindow {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-
+        FluProgressRing {
+            //progress ring
+            id: progress_ring
+            Layout.alignment: Qt.AlignHCenter
+            Timer {
+                interval: 1000
+                repeat: false
+                running: true
+                onTriggered: {
+                    progress_ring.destroy()
+                }
+            }
+        }
         FluTextBox {
             id: textbox_account
             placeholderText: "Input your account"

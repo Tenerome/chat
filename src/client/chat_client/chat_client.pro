@@ -11,8 +11,7 @@ SOURCES += \
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH ="../build-chat_client-Desktop_Qt_5_15_2_GCC_64bit-Debug/"
-
+QML_IMPORT_PATH +="../build-chat_client-Desktop_Qt_5_15_2_GCC_64bit-Debug/"
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 

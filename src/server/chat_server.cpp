@@ -97,6 +97,11 @@ int main(){
                     // free(buff);
                     // cout<<"event over"<<endl;
                     cout<<buff<<endl;
+                    json recv_json=json::parse(buff);
+                    string account=recv_json["account"];
+                    string name=recv_json["name"];
+                    string password=recv_json["password"];
+                    cout<<account<<" "<<name<<" "<<password<<endl;
                     send(session_socket,"server recv message",50,0);
                 }
                 

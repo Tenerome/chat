@@ -16,12 +16,12 @@ FluWindow {
     maximumWidth: 1200
     maximumHeight: 900
     closeDestory: false
-    //    CusClient {
-    //        id: cus_client
-    //        onClose_by_Dialog: {
-    //            window.close()
-    //        }
-    //    }
+    CusClient {
+        id: cus_client
+        onClose_by_Dialog: {
+            window.close()
+        }
+    }
     closeFunc: function (event) {
         close_app.open()
         event.accepted = false

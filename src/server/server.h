@@ -8,6 +8,7 @@
 #include<Signal&Macro.h>
 #include<Struct.h>
 #include<base64.h>
+#include<json.hpp>
 //system
 #include<iostream>
 #include<fstream>
@@ -19,5 +20,6 @@
 
 using std::cout,std::endl,std::cerr,std::cin;
 using std::ifstream;
-
+using std::string;
+using json=nlohmann::json;
 #endif

@@ -11,8 +11,8 @@
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "-I",
-                "/home/tenerome/Documents/C++/CHAT/include/",
-                "-lmysqlclient"
+                "/home/tenerome/Documents/chat/src/server/include/",
+                // "-lmysqlclient"
             ],
             "options": {
                 "cwd": "${fileDirname}"

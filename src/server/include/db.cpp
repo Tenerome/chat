@@ -131,29 +131,29 @@ inline bool Check_Add_Flag(DB *db,const char *account){
 //=================状态更新===========================
 
 //account log up,return values:
-//SIGNAL_ACCOUNT_REGISTED
-//SIGNAL_FALSE / SIGNAL_TRUE
+//SQL_ACCOUNT_REGISTED
+//SQL_FALSE / SQL_TRUE
 int Log_UP(DB db, const char *account, const char *password, const char *name){
     if(!get_Connection(&db)){
         exit(-1);
     }
     if(check_Existed(&db,account)){
         cout<<account<<" has been registed"<<endl;
-        return SIGNAL_ACCOUNT_REGISTED;
+        return SQL_ACCOUNT_REGISTED;
     }
     char query[250];
     sprintf(query,"insert into user(account,password,name) values('%s','%s','%s')",account,password,name);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Log_UP:insert error:"<<mysql_error(db.mysql)<<endl;
-        return SIGNAL_FALSE;
+        return SQL_FALSE;
     }else{
-        return SIGNAL_TRUE;
+        return SQL_TRUE;
     }
 }
 //account log in,return values:
-//SIGNAL_ACCOUNT_NOT_REGISTED
-//SIGNAL_WRONG_PASSWORD
-//SIGNAL_FALSE / SIGNAL_TRUE
+//SQL_ACCOUNT_NOT_REGISTED
+//SQL_WRONG_PASSWORD
+//SQL_FALSE / SQL_TRUE
 int Log_IN(DB db, const char *account, const char *password,const char *route){
 
     if(!get_Connection(&db)){
@@ -161,7 +161,7 @@ int Log_IN(DB db, const char *account, const char *password,const char *route){
     }
     if(!check_Existed(&db,account)){
         cout<<account<<"does not exist"<<endl;
-        return SIGNAL_ACCOUNT_NOT_REGISTED;
+        return SQL_ACCOUNT_NOT_REGISTED;
     }
     //验证，getpass from mysql,strcmp(password,getpass)
     char query[250];
@@ -180,19 +180,19 @@ int Log_IN(DB db, const char *account, const char *password,const char *route){
     // if(strcmp(row[0],MD5(password).toStr().c_str())!=0){
     if(strcmp(row[0],password)!=0){
         cout<<"password error,please input again"<<endl;
-        return SIGNAL_WRONG_PASSWORD;
+        return SQL_WRONG_PASSWORD;
     }
     //log in
     sprintf(query,"update user set status=1,route='%s' where account='%s'",route,account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Log_IN:log in error:"<<mysql_error(db.mysql)<<endl;
-        return SIGNAL_FALSE;
+        return SQL_FALSE;
     }else{
-        return SIGNAL_TRUE;
+        return SQL_TRUE;
     }
 }
 //account actively log out,return vales:
-//SIGNAL_FALSE / SIGNAL_TRUE
+//SQL_FALSE / SQL_TRUE
 int Log_OUT(DB db,const char *account){
     if(!get_Connection(&db)){
         exit(-1);
@@ -201,26 +201,26 @@ int Log_OUT(DB db,const char *account){
     sprintf(query,"update user set status=0,route='NULL' where account ='%s'",account);
     if(mysql_query(db.mysql,query)){
        cerr<<"db-Log_OUT:log out error:"<<mysql_error(db.mysql)<<endl;
-       return SIGNAL_FALSE; 
+       return SQL_FALSE; 
     }
-    return SIGNAL_TRUE;
+    return SQL_TRUE;
 }
 //==========================好友================
 
 //before add contact works:return values:
-//SIGNAL_ACCOUNT_NOT_REGISTED
-//SIGNAL_ACCOUNT_ONLINE
-//SIGNAL_BUFFER_ADD_CONTACT
+//SQL_ACCOUNT_NOT_REGISTED
+//SQL_ACCOUNT_ONLINE
+//SQL_BUFFER_ADD_CONTACT
 int Before_Add_Contact(DB db,const char *account,const char *contact){
     if(!get_Connection(&db)){
         exit(-1);
     }
     if(!check_Existed(&db,contact)){
         cout<<contact<<"does not exist"<<endl;
-        return SIGNAL_ACCOUNT_NOT_REGISTED;
+        return SQL_ACCOUNT_NOT_REGISTED;
     }
     if(check_Online(&db,contact)){
-        return SIGNAL_ACCOUNT_ONLINE;
+        return SQL_ACCOUNT_ONLINE;
     }else{//缓存申请记录
         char query[250];
         sprintf(query,"insert into message(from_account,to_account,add_flag) values('%s','%s','%d')",account,contact,1);
@@ -228,13 +228,13 @@ int Before_Add_Contact(DB db,const char *account,const char *contact){
             cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
             exit(-1);
         }
-        return SIGNAL_BUFFER_ADD_CONTACT;
+        return SQL_BUFFER_ADD_CONTACT;
 
     }
 }
 
 //after check add contact,return values:
-//SIGNAL_FALSE / SIGNAL_TRUE
+//SQL_FALSE / SQL_TRUE
 int Add_Contact(DB db,const char *account,const char *contact){
     if(!get_Connection(&db)){
         exit(-1);
@@ -250,10 +250,10 @@ int Add_Contact(DB db,const char *account,const char *contact){
     int ret1=mysql_query(db.mysql,query1);
     if(ret==0&&ret1==0){
         mysql_commit(db.mysql);
-        return SIGNAL_TRUE;
+        return SQL_TRUE;
     }else{
         mysql_rollback(db.mysql);
-        return SIGNAL_FALSE;
+        return SQL_FALSE;
     }
 
 }
@@ -265,9 +265,9 @@ int Set_Nickname(DB db,const char *account,const char *contact,const char *nickn
     sprintf(query,"update contacts set nickname='%s' where account='%s' and contact='%s'",nickname,account,contact);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Set_Nickname:update error"<<mysql_error(db.mysql)<<endl;
-        return SIGNAL_FALSE;
+        return SQL_FALSE;
     }else{
-        return SIGNAL_TRUE;
+        return SQL_TRUE;
     }
 }
 int Del_Contact(DB db,const char *account,const char *contact){
@@ -283,10 +283,10 @@ int Del_Contact(DB db,const char *account,const char *contact){
     int ret1=mysql_query(db.mysql,query1);
     if(ret==0 && ret1==0){
         mysql_commit(db.mysql);
-        return SIGNAL_TRUE;
+        return SQL_TRUE;
     }else{
         mysql_rollback(db.mysql);
-        return SIGNAL_FALSE;
+        return SQL_FALSE;
     }
 
 }
@@ -316,14 +316,14 @@ vector<string> Get_Contact_List(DB db,const char *account){
 //===============message==========
 
 //before send message,return values:
-//SIGNAL_ACCOUNT_ONLINE
-//SIGNAL_BUFFER_SEND_MESSAGE
+//SQL_ACCOUNT_ONLINE
+//SQL_BUFFER_SEND_MESSAGE
 int Before_Send_Message(DB db,const char *from_account,const char *to_account,const char *message){
     if(!get_Connection(&db)){
         exit(-1);
     }
     if(check_Online(&db,to_account)){
-        return SIGNAL_ACCOUNT_ONLINE;
+        return SQL_ACCOUNT_ONLINE;
     }else{
         char query[1250];
         sprintf(query,"insert into message(from_account,to_account,message_data,buffer_status) values('%s','%s','%s','%d')",from_account,to_account,message,1);
@@ -331,7 +331,7 @@ int Before_Send_Message(DB db,const char *from_account,const char *to_account,co
             cerr<<"db-Before_Send_Message:insert error"<<mysql_error(db.mysql)<<endl;
             exit(-1);
         }
-        return SIGNAL_BUFFER_SEND_MESSAGE;
+        return SQL_BUFFER_SEND_MESSAGE;
     }
 }
 // int Get_New_Contact(DB db,const char *account,const char *contact){
