@@ -1,4 +1,4 @@
-#include "server.h"
+#include "chat_server.h"
 using std::string;
 bool get_Password(const char *path,char *out){
     char in[16];
@@ -7,31 +7,82 @@ bool get_Password(const char *path,char *out){
         cerr<<"base64 decode failed,maybe you need to run as root or check other configure"<<endl;
         return false;
     }
-    out[strlen((char*)out)-1]='\0';//添加结束标志
+    out[strlen((char*)out)-1]='\0';//
     return true;
 }
 
-bool log_Up(user_Property *user_pro){
+bool mid_Log_UP(DB db,const char *json_string,int session_socket){
+    json log_up_json=json::parse(json_string);
+    string account=log_up_json["account"];
+    string name=log_up_json["name"];
+    string password=log_up_json["password"];
+    switch(Log_UP(db,account.c_str(),password.c_str(),name.c_str())){
+        case SQL_ACCOUNT_REGISTED:
+            send(session_socket,"The account has been registed",SOCKET_SIZE,0);
+            return false;
+        case SQL_FALSE:
+            return false;
+        case SQL_TRUE:
+            send(session_socket,"Log up succeed",SOCKET_SIZE,0);
+            return true;
+        default:
+            cerr<<"chat_server:Log Up Error"<<endl;
+            exit(-1);
+    }
+}
+
+bool mid_Log_IN(DB db,const char *json_string,int session_socket){
+    json log_in_json=json::parse(json_string);
+    string account=log_in_json["account"];
+    string password=log_in_json["password"];
+    switch(Log_IN(db,account.c_str(),password.c_str(),"127.0.0.1")){
+        case SQL_ACCOUNT_NOT_REGISTED:
+            send(session_socket,"account not registed",SOCKET_SIZE,0);
+            return false;
+        case SQL_WRONG_PASSWORD:
+            send(session_socket,"wrong password",SOCKET_SIZE,0);
+            return false;
+        case SQL_FALSE:
+            return false;
+        case SQL_TRUE:
+            send(session_socket,"log in succeed",SOCKET_SIZE,0);
+            return true;
+        default:
+            cerr<<"chat_server:log in error"<<endl;
+            exit(-1);
+    }
+
+}
+void parseJson(const char *json_string,int session_socket){
     char out[16];
     if(get_Password("pass.dat",out)){
         cout<<"base64 decode succeed"<<endl;
     }
     DB db(out);
-    if(Log_UP(db,user_pro->account,user_pro->password,user_pro->name)){
-        cout<<"log up succeed"<<endl;
-        return true;
-    }else{
-        return false;
+
+    json recv_json=json::parse(json_string);
+    string flag=recv_json["flag"];
+    switch(flag[0]){
+        case SOCKET_LOG_UP:
+            if(mid_Log_UP(db,json_string,session_socket)){
+                cout<<"log up succeed!!!"<<endl;
+            }else{
+                cerr<<"log up failed!!!"<<endl;
+            }
+            break;
+        case SOCKET_LOG_IN:
+            if(mid_Log_IN(db,json_string,session_socket)){
+                cout<<"log in succeed!!!"<<endl;
+            }else{
+                cerr<<"log in failed!!!"<<endl;
+            }
+            break;
+        default:
+            cerr<<"chat_server:parseJson error"<<endl;
+            break;
     }
 }
 
-void fun(user_Property *user_pro){//TODO alter name
-    if(log_Up(user_pro)){
-        cout<<"chat_server: fun: succeed"<<endl;
-    }else{
-        cerr<<"server: fun: failed"<<endl;
-    }
-}
 int main(){
     int server_socket=socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in server_addr;
@@ -79,8 +130,8 @@ int main(){
                 } //将获取到的新连接加入到epoll实例中
             }else{//如果不是fd，说明是客户端发送了数据
                 int session_socket=listen_event[i].data.fd; 	//获取连接，建立通信
-                char *buff=(char*)malloc(USER_PROPERTY_SIZE);
-                int ret = recv(session_socket,buff,84,0); //非阻塞如果没有数据那么就返回-1
+                char *buff=(char*)malloc(SOCKET_SIZE);
+                int ret = recv(session_socket,buff,SOCKET_SIZE,0); //非阻塞如果没有数据那么就返回-1
                 if(ret==0){//读到0,说明客户端关闭,从epoll实例中删除客户端socket
                     epoll_ctl(epoll_fd,EPOLL_CTL_DEL,session_socket,NULL);
                     close(session_socket);
@@ -90,19 +141,20 @@ int main(){
                     close(session_socket);
                     cerr<<session_socket<<" client recv error"<<endl;
                 }else{//最后一种情况就只能是读到了数据
-                    // user_Property *user_pro=(user_Property*)malloc(USER_PROPERTY_SIZE);
-                    // memcpy(user_pro,buff,USER_PROPERTY_SIZE);
-                    // fun(user_pro);
-                    // free(user_pro);
-                    // free(buff);
-                    // cout<<"event over"<<endl;
-                    cout<<buff<<endl;
-                    json recv_json=json::parse(buff);
-                    string account=recv_json["account"];
-                    string name=recv_json["name"];
-                    string password=recv_json["password"];
-                    cout<<account<<" "<<name<<" "<<password<<endl;
-                    send(session_socket,"server recv message",50,0);
+                    cout<<buff<<endl;//TODEL
+                    try{
+                        parseJson(buff,session_socket);
+                    }
+                    catch(const std::exception& e){
+                        std::cerr << e.what() << '\n';
+                    }
+                    //finally
+                    // close(session_socket);
+                    
+                    
+                    
+                    
+                    // send(session_socket,"server recv message",50,0);
                 }
                 
                 }

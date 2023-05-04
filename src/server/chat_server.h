@@ -1,12 +1,11 @@
-#ifndef SERVER_H
-    #define SERVER_H
+#ifndef CHAT_SERVER_H
+    #define CHAT_SERVER_H
 
 #define SERVER_PORT 8888
 //server
 #include "db.h"
 //lib
 #include<Signal&Macro.h>
-#include<Struct.h>
 #include<base64.h>
 #include<json.hpp>
 //system

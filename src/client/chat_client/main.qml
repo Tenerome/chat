@@ -4,11 +4,24 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 //===========FlentUI===
 import FluentUI 1.0
-
 //============custom lib====
+import "./qml/global"
+
 Window {
     id: mainWin
+    CusClient {
+        id: cus_client
+        onClose_by_Dialog: {
+            window.close()
+        }
+        onRecvOneMessage: recv => {
+                              if (recv !== "") {
+                                  showInfo(recv)
+                              }
+                          }
+    }
     Component.onCompleted: {
+        var cuscli = CusClient
         FluApp.init(mainWin)
         FluApp.routes = {
             "/test": "qrc:/test.qml",

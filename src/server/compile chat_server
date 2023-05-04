@@ -6,3 +6,5 @@ libpath="-L./lib/ -lmysqlclient -lencode"
 rlibpath="-Wl,-rpath=./lib/"
 g++ chat_server.cpp ./include/db.cpp -o chat_server $includepath $libpath $rlibpath
 echo "compiled chat_server"
+echo "run chat_server:"
+sudo ./chat_server

@@ -22,7 +22,6 @@ class DB{
         unsigned int port;
         DB(const  char *pass);
         DB(const char *pass,const char *host,const char *user,const char *database,unsigned int port);
-        ~DB();
 };
 //inline
 

@@ -11,13 +11,13 @@
 #define SQL_BUFFER_ADD_CONTACT 7
 #define SQL_BUFFER_SEND_MESSAGE 8
 //===========socket signal======
-#define SOCKET_LOG_UP 0
-#define SOCKET_LOG_IN 1
+#define SOCKET_LOG_UP '0'
+#define SOCKET_LOG_IN '1'
 //message flag
 #define TEXT_MESSAGE 0
 #define IMAGE_MESSAGE 1
 #define VOICE_MESSAGE 3
 //======macro======
-#define MESSAGE_SIZE 1024
+#define SOCKET_SIZE 2048
 #define MAX_LISTEN 1024
 #endif

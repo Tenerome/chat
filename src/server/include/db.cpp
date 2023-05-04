@@ -9,23 +9,17 @@ DB::DB(const char *pass,const char *host,const char *user,const char *database,u
     this->database=database;
     this->port=port;
 }
-DB::~DB(){
-    if(mysql!=NULL){
-        mysql_close(mysql);
-    }
-}
-
 //=======================inline，复用的函数=============
 
 //connect to mysql
 inline bool get_Connection(DB *db){
-    db->mysql=mysql_init(NULL);
-    if(db->mysql==NULL){
+    db->mysql=mysql_init(nullptr);
+    if(db->mysql==nullptr){
         cerr<<"db-get_Connection:mysql_init error"<<endl;
         return false;
     }
-    mysql_real_connect(db->mysql,db->host.c_str(),db->user.c_str(),db->password.c_str(),db->database.c_str(),db->port,NULL,0);
-    if(db->mysql==NULL){
+    mysql_real_connect(db->mysql,db->host.c_str(),db->user.c_str(),db->password.c_str(),db->database.c_str(),db->port,nullptr,0);
+    if(db->mysql==nullptr){
         cerr<<"db-get_Connection:mysql_real_connect error"<<endl;
         return false;
     }
@@ -41,7 +35,7 @@ inline bool check_Existed(DB *db,const char *account){
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-inline_Check_Existed:res error:"<<mysql_error(db->mysql)<<endl;
         exit(-1);
     }
@@ -62,7 +56,7 @@ inline bool check_Online(DB *db,const char *account){
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-Check_Online:res error:"<<mysql_error(db->mysql)<<endl;
         exit(-1);
     }
@@ -84,7 +78,7 @@ inline string getName_by_account(DB *db,const char *account){
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-get_Name_by_account:mysql store result error:"<<mysql_error(db->mysql);
         exit(-1);
     }
@@ -100,7 +94,7 @@ inline string get_Route(DB *db,const char *account){
        exit(-1); 
     }
     MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db->mysql);
         exit(-1);
     }
@@ -116,7 +110,7 @@ inline bool Check_Add_Flag(DB *db,const char *account){
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db->mysql)<<endl;
         exit(-1);
     }
@@ -171,7 +165,7 @@ int Log_IN(DB db, const char *account, const char *password,const char *route){
        exit(-1);
     }
     MYSQL_RES* res=mysql_store_result(db.mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-Log_IN:mysql_store_result error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
@@ -301,13 +295,13 @@ vector<string> Get_Contact_List(DB db,const char *account){
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==NULL){
+    if(res==nullptr){
         cerr<<"db-Get_Contact_List:mysql store result error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
     MYSQL_ROW row;
     vector<string> contact_list;
-    while((row=mysql_fetch_row(res))!=NULL){
+    while((row=mysql_fetch_row(res))!=nullptr){
         contact_list.push_back(row[0]);
     }
     mysql_free_result(res);

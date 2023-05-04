@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.5
 import FluentUI 1.0
 import "qrc:/qml/global"
+import "../global/Define.js" as Define
 
 FluWindow {
     id: window
@@ -13,12 +14,17 @@ FluWindow {
     maximumHeight: 600
     minimumWidth: 800
     minimumHeight: 600
-    CusClient {
-        id: cus_client
-        onClose_by_Dialog: {
-            window.close()
-        }
-    }
+    //    CusClient {
+    //        id: cus_client
+    //        onClose_by_Dialog: {
+    //            window.close()
+    //        }
+    //        onRecvOneMessage: recv => {
+    //                              if (recv !== "") {
+    //                                  showInfo(recv)
+    //                              }
+    //                          }
+    //    }
     FluAppBar {
         id: appbar
         title: "Log in"
@@ -63,12 +69,13 @@ FluWindow {
             text: "log in"
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
-            signal sendMessage(string str)
             onClicked: {
                 //TODO format control
-                sendMessage(textbox_account.text + textbox_password.text)
-                FluApp.navigate("/main")
-                window.close()
+                var send_json = '{"flag":"' + Define.SOCKET_LOG_IN + '","account":"'
+                        + textbox_account.text + '","password":"' + textbox_password.text + '"}'
+                cus_client.client_socket.sendMessage(send_json)
+                //                FluApp.navigate("/main")
+                //                window.close()
             }
         }
         FluFilledButton {

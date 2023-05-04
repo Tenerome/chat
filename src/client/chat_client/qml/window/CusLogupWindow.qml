@@ -19,6 +19,11 @@ FluWindow {
         onClose_by_Dialog: {
             window.close()
         }
+        onRecvOneMessage: recv => {
+                              if (recv !== "") {
+                                  showInfo(recv)
+                              }
+                          }
     }
     FluAppBar {
         id: appbar
@@ -36,6 +41,7 @@ FluWindow {
             //progress ring
             id: progress_ring
             Layout.alignment: Qt.AlignHCenter
+            y: 150
             Timer {
                 interval: 1000
                 repeat: false
@@ -93,7 +99,6 @@ FluWindow {
                         + textbox_account.text + '","name":"' + textbox_name.text
                         + '","password":"' + textbox_password.text + '"}'
                 cus_client.client_socket.sendMessage(send_json)
-                //                console.log(send_json) //TODEL
             }
         }
     }
