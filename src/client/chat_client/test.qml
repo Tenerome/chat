@@ -9,6 +9,5 @@ Window {
     Rectangle {
         anchors.fill: parent
         color: "white"
-        CusClient.load()
     }
 }

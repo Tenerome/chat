@@ -37,20 +37,6 @@ FluWindow {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-        FluProgressRing {
-            //progress ring
-            id: progress_ring
-            Layout.alignment: Qt.AlignHCenter
-            y: 150
-            Timer {
-                interval: 1000
-                repeat: false
-                running: true
-                onTriggered: {
-                    progress_ring.destroy()
-                }
-            }
-        }
         FluTextBox {
             id: textbox_account
             placeholderText: "Input your account"
@@ -98,7 +84,7 @@ FluWindow {
                 var send_json = '{"flag":"' + Define.SOCKET_LOG_UP + '","account":"'
                         + textbox_account.text + '","name":"' + textbox_name.text
                         + '","password":"' + textbox_password.text + '"}'
-                cus_client.client_socket.sendMessage(send_json)
+                $Client.sendMessage(send_json)
             }
         }
     }

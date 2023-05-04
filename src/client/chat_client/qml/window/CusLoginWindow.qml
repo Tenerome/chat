@@ -14,17 +14,21 @@ FluWindow {
     maximumHeight: 600
     minimumWidth: 800
     minimumHeight: 600
-    //    CusClient {
-    //        id: cus_client
-    //        onClose_by_Dialog: {
-    //            window.close()
-    //        }
-    //        onRecvOneMessage: recv => {
-    //                              if (recv !== "") {
-    //                                  showInfo(recv)
-    //                              }
-    //                          }
-    //    }
+    CusClient {
+        id: cus_client
+        onClose_by_Dialog: {
+            window.close()
+        }
+        onRecvOneMessage: recv => {
+                              if (recv !== "") {
+                                  showInfo(recv)
+                              }
+                              if (recv === "log in succeed") {
+                                  FluApp.navigate("/main")
+                                  window.close()
+                              }
+                          }
+    }
     FluAppBar {
         id: appbar
         title: "Log in"
@@ -47,6 +51,7 @@ FluWindow {
                 running: true
                 onTriggered: {
                     progress_ring.destroy()
+                    showSuccess("Connect to server")
                 }
             }
         }
@@ -73,7 +78,7 @@ FluWindow {
                 //TODO format control
                 var send_json = '{"flag":"' + Define.SOCKET_LOG_IN + '","account":"'
                         + textbox_account.text + '","password":"' + textbox_password.text + '"}'
-                cus_client.client_socket.sendMessage(send_json)
+                $Client.sendMessage(send_json)
                 //                FluApp.navigate("/main")
                 //                window.close()
             }
