@@ -1,5 +1,5 @@
 #include "chat_server.h"
-using std::string;
+
 bool get_Password(const char *path,char *out){
     char in[16];
     ifstream(path)>>in;
@@ -35,7 +35,7 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
     json log_in_json=json::parse(json_string);
     string account=log_in_json["account"];
     string password=log_in_json["password"];
-    switch(Log_IN(db,account.c_str(),password.c_str(),"127.0.0.1")){
+    switch(Log_IN(db,account.c_str(),password.c_str(),to_string(session_socket).c_str())){
         case SQL_ACCOUNT_NOT_REGISTED:
             send(session_socket,"account not registed",SOCKET_SIZE,0);
             return false;
@@ -53,6 +53,17 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
     }
 
 }
+
+void mid_Log_OUT(int session_socket){
+    char out[16];
+    if(get_Password("pass.dat",out)){
+        cout<<"base64 decode succeed"<<endl;
+    }
+    DB db(out);
+    if(Log_OUT(db,session_socket)==SQL_TRUE){
+        cout<<session_socket<<" log out succeed"<<endl;
+    }
+}
 void parseJson(const char *json_string,int session_socket){
     char out[16];
     if(get_Password("pass.dat",out)){
@@ -65,16 +76,16 @@ void parseJson(const char *json_string,int session_socket){
     switch(flag[0]){
         case SOCKET_LOG_UP:
             if(mid_Log_UP(db,json_string,session_socket)){
-                cout<<"log up succeed!!!"<<endl;
+                cout<<session_socket<<" log up succeed"<<endl;
             }else{
-                cerr<<"log up failed!!!"<<endl;
+                cerr<<session_socket<<" log up failed"<<endl;
             }
             break;
         case SOCKET_LOG_IN:
             if(mid_Log_IN(db,json_string,session_socket)){
-                cout<<"log in succeed!!!"<<endl;
+                cout<<session_socket<<" log in succeed"<<endl;
             }else{
-                cerr<<"log in failed!!!"<<endl;
+                cerr<<session_socket<<" log in failed!!!"<<endl;
             }
             break;
         default:
@@ -128,12 +139,16 @@ int main(){
                     cerr<<"client epoll_ctl error"<<endl;
                     exit(-1);
                 } //将获取到的新连接加入到epoll实例中
+                ip_socket.insert(pair<string,int>(to_string(client_socket),client_socket));
+                cout<<"map:"<<ip_socket[to_string(client_socket)]<<endl;//TODEL 
             }else{//如果不是fd，说明是客户端发送了数据
                 int session_socket=listen_event[i].data.fd; 	//获取连接，建立通信
                 char *buff=(char*)malloc(SOCKET_SIZE);
                 int ret = recv(session_socket,buff,SOCKET_SIZE,0); //非阻塞如果没有数据那么就返回-1
-                if(ret==0){//读到0,说明客户端关闭,从epoll实例中删除客户端socket
+                if(ret==0){//读到0,说明客户端关闭,从epoll实例中删除客户端socket,并删除ip_socket键值对
                     epoll_ctl(epoll_fd,EPOLL_CTL_DEL,session_socket,NULL);
+                    ip_socket.erase(to_string(session_socket));//删除键值对
+                    mid_Log_OUT(session_socket);//db log out
                     close(session_socket);
                     cout<<session_socket<<" client closed connection"<<endl;
                 }else if(ret<0){//出错,删除，报错

@@ -41,6 +41,7 @@ inline bool check_Existed(DB *db,const char *account){
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
+    //typeid(row[0])name 输出Pc，也就是一个字符型指针 char*
     if(strcmp(row[0],"1")==0){
         return true;
     }else{
@@ -187,12 +188,12 @@ int Log_IN(DB db, const char *account, const char *password,const char *route){
 }
 //account actively log out,return vales:
 //SQL_FALSE / SQL_TRUE
-int Log_OUT(DB db,const char *account){
+int Log_OUT(DB db,int session_socket){
     if(!get_Connection(&db)){
         exit(-1);
     }
     char query[250];
-    sprintf(query,"update user set status=0,route='NULL' where account ='%s'",account);
+    sprintf(query,"update user set status=0,route=-1 where route ='%d'",session_socket);
     if(mysql_query(db.mysql,query)){
        cerr<<"db-Log_OUT:log out error:"<<mysql_error(db.mysql)<<endl;
        return SQL_FALSE; 

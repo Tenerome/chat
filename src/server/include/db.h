@@ -36,7 +36,7 @@ inline bool Check_Add_Flag(DB *db,const char *account);
 
 int Log_UP(DB db,const char *account,const char *password,const char *name);
 int Log_IN(DB db,const char *account,const char *password,const char *route);
-int Log_OUT(DB db,const char *account);
+int Log_OUT(DB db,int session_socket);
 //contacts
 
 int Before_Add_Contact(DB db,const char *account,const char *contact);

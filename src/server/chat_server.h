@@ -16,9 +16,15 @@
 #include<arpa/inet.h>
 #include<sys/socket.h>
 #include<unistd.h>
-
+#include<map>
+//namespace
 using std::cout,std::endl,std::cerr,std::cin;
 using std::ifstream;
 using std::string;
+using std::to_string;
+using std::map;
+using std::pair;
 using json=nlohmann::json;
+//global variable
+map<string,int> ip_socket;
 #endif
