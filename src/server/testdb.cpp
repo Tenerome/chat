@@ -2,7 +2,7 @@
 #include"chat_server.h"
 int main(){
     DB db("123456");
-    cout<<Before_Add_Contact(db,"lala","mmm");
+    cout<<  Before_Add_Contact(db,"lala","mmm");
 
 }
 

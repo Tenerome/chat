@@ -13,6 +13,7 @@
 //===========socket signal======
 #define SOCKET_LOG_UP '0'
 #define SOCKET_LOG_IN '1'
+#define SOCKET_ADD_CONTACT '2'
 //message flag
 #define TEXT_MESSAGE 0
 #define IMAGE_MESSAGE 1

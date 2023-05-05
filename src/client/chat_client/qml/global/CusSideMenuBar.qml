@@ -4,17 +4,26 @@ import FluentUI 1.0
 FluObject {
     property var navigationView
     FluPaneItem {
-        title: "Chat"
-        //        icon: FluentIcons.Home
-        //        cusIcon: Image {
-        //            anchors.centerIn: parent
-        //            //            source:
-        //            sourceSize: Qt.size(30, 30)
-        //            width: 18
-        //            height: 18
-        //        }
+        title: "Add Contact"
         onTap: {
-            navigationView.push("qrc:/qml/page/CusChatPage.qml")
+            navigationView.push("qrc:/qml/page/CusAddContactPage.qml")
+        }
+    }
+    FluPaneItemExpander {
+        title: "Contact"
+        FluPaneItem {
+            title: "Chat"
+            //        icon: FluentIcons.Home
+            //        cusIcon: Image {
+            //            anchors.centerIn: parent
+            //            //            source:
+            //            sourceSize: Qt.size(30, 30)
+            //            width: 18
+            //            height: 18
+            //        }
+            onTap: {
+                navigationView.push("qrc:/qml/page/CusChatPage.qml")
+            }
         }
     }
 

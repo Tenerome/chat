@@ -1,5 +1,8 @@
 #include "chat_server.h"
 
+void Send(int socket,const char *buffer){
+    send(socket,buffer,SOCKET_SIZE,0);
+}
 bool get_Password(const char *path,char *out){
     char in[16];
     ifstream(path)>>in;
@@ -16,44 +19,110 @@ bool mid_Log_UP(DB db,const char *json_string,int session_socket){
     string account=log_up_json["account"];
     string name=log_up_json["name"];
     string password=log_up_json["password"];
+
+    json send_json;
     switch(Log_UP(db,account.c_str(),password.c_str(),name.c_str())){
         case SQL_ACCOUNT_REGISTED:
-            send(session_socket,"The account has been registed",SOCKET_SIZE,0);
+            send_json["flag"]=SQL_ACCOUNT_REGISTED;
+            send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
             return false;
         case SQL_FALSE:
             return false;
         case SQL_TRUE:
-            send(session_socket,"Log up succeed",SOCKET_SIZE,0);
+            send_json["flag"]=SQL_TRUE;
+            send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
             return true;
         default:
             cerr<<"chat_server:Log Up Error"<<endl;
             exit(-1);
     }
 }
+bool mid_Log_UP(DB db,const char *json_string,int session_socket){
+    json temp_json=json::parse(json_string);
+    string account=temp_json["account"];
+    string name=temp_json["name"];
+    string password=temp_json["password"];
+    temp_json.clear();
+    bool ret;
+    switch(Log_UP(db,account.c_str(),password.c_str(),name.c_str())){
+        case SQL_ACCOUNT_REGISTED:
+            temp_json["flag"]=SQL_ACCOUNT_REGISTED;
+            ret=false;
+            break;
+        case SQL_FALSE:
+            ret=false;
+            break;
+        case SQL_TRUE:
+            temp_json["flag"]=SQL_TRUE;
+            ret=true;
+            break;
+        default:
+            cerr<<"chat_server:log up error"<<endl;
+            exit(-1);
+    }
+    if(temp_json.empty()){
+        return ret;
+    }else{
+        Send(session_socket,temp_json.dump().c_str());
+        return ret;
+    }
 
+}
 bool mid_Log_IN(DB db,const char *json_string,int session_socket){
-    json log_in_json=json::parse(json_string);
-    string account=log_in_json["account"];
-    string password=log_in_json["password"];
+    json temp_json=json::parse(json_string);
+    string account=temp_json["account"];
+    string password=temp_json["password"];
+    temp_json.clear();
+    bool ret;
     switch(Log_IN(db,account.c_str(),password.c_str(),to_string(session_socket).c_str())){
         case SQL_ACCOUNT_NOT_REGISTED:
-            send(session_socket,"account not registed",SOCKET_SIZE,0);
-            return false;
+            temp_json["flag"]=SQL_ACCOUNT_NOT_REGISTED;
+            ret=false;
+            break;
         case SQL_WRONG_PASSWORD:
-            send(session_socket,"wrong password",SOCKET_SIZE,0);
-            return false;
+            temp_json["flag"]=SQL_WRONG_PASSWORD;
+            ret=false;
+            break;
         case SQL_FALSE:
-            return false;
+            ret=false;
+            break;
         case SQL_TRUE:
-            send(session_socket,"log in succeed",SOCKET_SIZE,0);
-            return true;
+            temp_json["flag"]=SQL_TRUE;
+            ret=true;
+            break;
         default:
             cerr<<"chat_server:log in error"<<endl;
             exit(-1);
     }
+    if(temp_json.empty()){
+        return ret;
+    }else{
+        Send(session_socket,temp_json.dump().c_str());
+        return ret;
+    }
 
 }
+// bool mid_Add_Contact(DB db,const char *json_string,int session_socket){
+//     json add_contact_json=json::parse(json_string);
+//     string account=add_contact_json["account"];
+//     string contact=add_contact_json["contact"];
 
+//     json send_json;
+//     switch(Before_Add_Contact(db,account.c_str(),contact.c_str())){
+//         case SQL_ACCOUNT_NOT_REGISTED:
+//             send_json["flag"]=SQL_ACCOUNT_NOT_REGISTED;
+//             send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
+//             return false;
+//         case SQL_ACCOUNT_ONLINE:
+//             send_json["flag"]=SQL_ACCOUNT_ONLINE:
+//             send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
+//         case SQL_BUFFER_ADD_CONTACT:
+//             send_json["flag"]=
+//             send(session_socket,"account not registed",SOCKET_SIZE,0);
+//             return false;
+//     }
+
+// }
 void mid_Log_OUT(int session_socket){
     char out[16];
     if(get_Password("pass.dat",out)){
@@ -85,8 +154,11 @@ void parseJson(const char *json_string,int session_socket){
             if(mid_Log_IN(db,json_string,session_socket)){
                 cout<<session_socket<<" log in succeed"<<endl;
             }else{
-                cerr<<session_socket<<" log in failed!!!"<<endl;
+                cerr<<session_socket<<" log in failed"<<endl;
             }
+            break;
+        case SOCKET_ADD_CONTACT:
+
             break;
         default:
             cerr<<"chat_server:parseJson error"<<endl;

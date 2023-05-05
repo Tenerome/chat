@@ -6,6 +6,7 @@ import "qrc:/qml/global"
 import "../global/Define.js" as Define
 
 FluWindow {
+
     id: window
     title: "chat:login"
     width: 800
@@ -21,11 +22,21 @@ FluWindow {
         }
         onRecvOneMessage: recv => {
                               if (recv !== "") {
-                                  showInfo(recv)
-                              }
-                              if (recv === "log in succeed") {
-                                  FluApp.navigate("/main")
-                                  window.close()
+                                  var recv_json = JSON.parse(recv)
+                                  var flag = recv_json["flag"]
+                                  switch (flag) {
+                                      case Define.RECV_ACCOUNT_NOT_REGISTED:
+                                      showError("This account does not exist")
+                                      break
+                                      case Define.RECV_WRONG_PASSWORD:
+                                      showError("The password is wrong")
+                                      break
+                                      case Define.RECV_TRUE:
+                                      Define.account = textbox_account.text
+                                      FluApp.navigate("/main")
+                                      window.close()
+                                      break
+                                  }
                               }
                           }
     }
@@ -34,7 +45,6 @@ FluWindow {
         title: "Log in"
         width: parent.width
     }
-
     ColumnLayout {
         anchors {
             left: parent.left
@@ -51,7 +61,6 @@ FluWindow {
                 running: true
                 onTriggered: {
                     progress_ring.destroy()
-                    showSuccess("Connect to server")
                 }
             }
         }
@@ -79,8 +88,6 @@ FluWindow {
                 var send_json = '{"flag":"' + Define.SOCKET_LOG_IN + '","account":"'
                         + textbox_account.text + '","password":"' + textbox_password.text + '"}'
                 $Client.sendMessage(send_json)
-                //                FluApp.navigate("/main")
-                //                window.close()
             }
         }
         FluFilledButton {

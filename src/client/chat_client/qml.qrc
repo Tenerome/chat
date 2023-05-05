@@ -10,5 +10,6 @@
         <file>res/icon/msg_ballon.png</file>
         <file>test.qml</file>
         <file>qml/global/Define.js</file>
+        <file>qml/page/CusAddContactPage.qml</file>
     </qresource>
 </RCC>
