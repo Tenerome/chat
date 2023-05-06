@@ -1,8 +1,12 @@
 import QtQuick 2.9
 import FluentUI 1.0
+import "../global/Define.js" as Define
 
 FluObject {
     property var navigationView
+    FluPaneItemHeader {
+        title: Define.account
+    }
     FluPaneItem {
         title: "Add Contact"
         onTap: {

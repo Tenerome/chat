@@ -202,11 +202,11 @@ int Log_OUT(DB db,int session_socket){
 }
 //==========================好友================
 
-//before add contact works:return values:
+//Send Add Contact Request:return values:
 //SQL_ACCOUNT_NOT_REGISTED
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_ADD_CONTACT
-int Before_Add_Contact(DB db,const char *account,const char *contact){
+int Send_Add_Contact_Request(DB db,const char *account,const char *contact,string &route){
     if(!get_Connection(&db)){
         exit(-1);
     }
@@ -215,6 +215,7 @@ int Before_Add_Contact(DB db,const char *account,const char *contact){
         return SQL_ACCOUNT_NOT_REGISTED;
     }
     if(check_Online(&db,contact)){
+        route=get_Route(&db,contact);
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存申请记录
         char query[250];
@@ -225,6 +226,28 @@ int Before_Add_Contact(DB db,const char *account,const char *contact){
         }
         return SQL_BUFFER_ADD_CONTACT;
 
+    }
+}
+
+//answer add contact request,return values:
+//SQL_ACCOUNT_ONLINE
+//SQL_BUFFER_ADD_CONTACT
+int Answer_Add_Contact(DB db,const char *account,const char *contact,string &route){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    if(check_Online(&db,contact)){
+        route=get_Route(&db,contact);
+        return SQL_ACCOUNT_ONLINE;
+    }else{//缓存申请
+        //TODO
+        char query[250];
+        sprintf(query,"update message set add_buffer=1 where from_account='%s' and to_account='%s' ",contact,account);
+        if(mysql_query(db.mysql,query)){
+            cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
+            exit(-1);
+        }
+        return SQL_BUFFER_ADD_CONTACT;
     }
 }
 

@@ -25,13 +25,13 @@ FluWindow {
                                   var recv_json = JSON.parse(recv)
                                   var flag = recv_json["flag"]
                                   switch (flag) {
-                                      case Define.RECV_ACCOUNT_NOT_REGISTED:
+                                      case Define.CLIENT_ACCOUNT_NOT_REGISTED:
                                       showError("This account does not exist")
                                       break
-                                      case Define.RECV_WRONG_PASSWORD:
+                                      case Define.CLIENT_WRONG_PASSWORD:
                                       showError("The password is wrong")
                                       break
-                                      case Define.RECV_TRUE:
+                                      case Define.CLIENT_TRUE:
                                       Define.account = textbox_account.text
                                       FluApp.navigate("/main")
                                       window.close()

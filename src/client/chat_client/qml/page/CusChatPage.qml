@@ -11,6 +11,8 @@ Page {
     leftPadding: 10
     rightPadding: 0
     bottomPadding: 10
+    width: parent.width
+    height: parent.height
     CusClient {
         id: cus_client
         onClose_by_Dialog: {
@@ -27,11 +29,11 @@ Page {
     ColumnLayout {
         FluScrollablePage {
             id: textscroll
-            width: page.width
+            width: 200
             height: page.height - 300
             Rectangle {
                 id: recarea
-                width: textscroll.width - 30
+                width: textscroll.width
                 height: textscroll.height
                 border.color: "#a3bfc2"
                 radius: 10
@@ -111,7 +113,7 @@ Page {
                                                        + multi_textbox.text,
                                              "position": 0
                                          })
-                        cus_client.client_socket.sendMessage(multi_textbox.text)
+                        $Client.sendMessage(multi_textbox.text)
                         multi_textbox.text = ""
                     }
                 }

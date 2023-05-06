@@ -12,6 +12,7 @@
 using std::cout,std::endl,std::cerr;
 using std::string;
 using std::vector;
+using std::stoi;//string to int
 class DB{
     public:
         MYSQL *mysql;
@@ -39,8 +40,9 @@ int Log_IN(DB db,const char *account,const char *password,const char *route);
 int Log_OUT(DB db,int session_socket);
 //contacts
 
-int Before_Add_Contact(DB db,const char *account,const char *contact);
+int Send_Add_Contact_Request(DB db,const char *account,const char *contact,string &route);
 int Add_Contact(DB db,const char *account,const char *contact);
+int Answer_Add_Contact(DB db,const char *account,const char *contact,string &route);
 int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname);
 int Del_Contact(DB db,const char *account,const char *contact);
 vector<string> Get_Contact_List(DB db,const char *account);

@@ -1,6 +1,7 @@
 #include "chat_server.h"
 
 void Send(int socket,const char *buffer){
+    cout<<"socket:"<<socket<<"buffer:"<<buffer<<endl;//TODEL
     send(socket,buffer,SOCKET_SIZE,0);
 }
 bool get_Password(const char *path,char *out){
@@ -15,29 +16,6 @@ bool get_Password(const char *path,char *out){
 }
 
 bool mid_Log_UP(DB db,const char *json_string,int session_socket){
-    json log_up_json=json::parse(json_string);
-    string account=log_up_json["account"];
-    string name=log_up_json["name"];
-    string password=log_up_json["password"];
-
-    json send_json;
-    switch(Log_UP(db,account.c_str(),password.c_str(),name.c_str())){
-        case SQL_ACCOUNT_REGISTED:
-            send_json["flag"]=SQL_ACCOUNT_REGISTED;
-            send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
-            return false;
-        case SQL_FALSE:
-            return false;
-        case SQL_TRUE:
-            send_json["flag"]=SQL_TRUE;
-            send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
-            return true;
-        default:
-            cerr<<"chat_server:Log Up Error"<<endl;
-            exit(-1);
-    }
-}
-bool mid_Log_UP(DB db,const char *json_string,int session_socket){
     json temp_json=json::parse(json_string);
     string account=temp_json["account"];
     string name=temp_json["name"];
@@ -46,14 +24,14 @@ bool mid_Log_UP(DB db,const char *json_string,int session_socket){
     bool ret;
     switch(Log_UP(db,account.c_str(),password.c_str(),name.c_str())){
         case SQL_ACCOUNT_REGISTED:
-            temp_json["flag"]=SQL_ACCOUNT_REGISTED;
+            temp_json["flag"]=SERVER_ACCOUNT_REGISTED;
             ret=false;
             break;
         case SQL_FALSE:
             ret=false;
             break;
         case SQL_TRUE:
-            temp_json["flag"]=SQL_TRUE;
+            temp_json["flag"]=SERVER_TRUE;
             ret=true;
             break;
         default:
@@ -76,18 +54,18 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
     bool ret;
     switch(Log_IN(db,account.c_str(),password.c_str(),to_string(session_socket).c_str())){
         case SQL_ACCOUNT_NOT_REGISTED:
-            temp_json["flag"]=SQL_ACCOUNT_NOT_REGISTED;
+            temp_json["flag"]=SERVER_ACCOUNT_NOT_REGISTED;
             ret=false;
             break;
         case SQL_WRONG_PASSWORD:
-            temp_json["flag"]=SQL_WRONG_PASSWORD;
+            temp_json["flag"]=SERVER_WRONG_PASSWORD;
             ret=false;
             break;
         case SQL_FALSE:
             ret=false;
             break;
         case SQL_TRUE:
-            temp_json["flag"]=SQL_TRUE;
+            temp_json["flag"]=SERVER_TRUE;
             ret=true;
             break;
         default:
@@ -102,27 +80,89 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
     }
 
 }
-// bool mid_Add_Contact(DB db,const char *json_string,int session_socket){
-//     json add_contact_json=json::parse(json_string);
-//     string account=add_contact_json["account"];
-//     string contact=add_contact_json["contact"];
+bool mid_Add_Contact(DB db,const char *json_string,int session_socket){//send add rquest
+    json temp_json=json::parse(json_string);
+    string account=temp_json["account"];
+    string contact=temp_json["contact"];
+    temp_json.clear();
+    bool ret;
+    string contact_socket;
+    switch(Send_Add_Contact_Request(db,account.c_str(),contact.c_str(),contact_socket)){
+        case SQL_ACCOUNT_NOT_REGISTED:
+            temp_json["flag"]=SERVER_ACCOUNT_NOT_REGISTED;
+            ret=false;
+            break;
+        case SQL_ACCOUNT_ONLINE:
+            temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
+            temp_json["account"]=account;
+            //TODO send add request to accept client
+            cout<<"contact_socket:"<<contact_socket<<endl;//TODEL
+            Send(route_socket[contact_socket],temp_json.dump().c_str());//to contact client
+            return true;
+            // ret=true;
+            // break;
+        case SQL_BUFFER_ADD_CONTACT:
+            temp_json["flag"]=SERVER_BUFFER_ADD_CONTACT;
+            ret=true;
+            break;
+        default:
+            cerr<<"chat_server:add contact error"<<endl;
+            exit(-1);
+    }
+    if(temp_json.empty()){
+        return ret;
+    }else{
+        Send(session_socket,temp_json.dump().c_str());
+        return ret;
+    }
+}
 
-//     json send_json;
-//     switch(Before_Add_Contact(db,account.c_str(),contact.c_str())){
-//         case SQL_ACCOUNT_NOT_REGISTED:
-//             send_json["flag"]=SQL_ACCOUNT_NOT_REGISTED;
-//             send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
-//             return false;
-//         case SQL_ACCOUNT_ONLINE:
-//             send_json["flag"]=SQL_ACCOUNT_ONLINE:
-//             send(session_socket,send_json.dump().c_str(),SOCKET_SIZE,0);
-//         case SQL_BUFFER_ADD_CONTACT:
-//             send_json["flag"]=
-//             send(session_socket,"account not registed",SOCKET_SIZE,0);
-//             return false;
-//     }
+bool mid_Answer_Add_Contact(DB db,const char *json_string){
+    json temp_json=json::parse(json_string);
+    string answer_flag=temp_json["answer_flag"];
+    string account=temp_json["account"];//accept
+    string contact=temp_json["contact"];//request
+    temp_json.clear();
+    bool ret;
+    string contact_socket;
+    if(stoi(answer_flag)==SERVER_AGREE_ADD_CONTACT){
+        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),contact_socket)){
+            case SQL_ACCOUNT_ONLINE:
+                if(!Add_Contact(db,account.c_str(),contact.c_str())){
+                    cerr<<"chat_server:line 129 error"<<endl;
+                    exit(-1);
+                }
+                temp_json["flag"]=SERVER_ANSWER_YES;
+                temp_json["contact"]=account;
+                ret=true;
+                break;
+            case SQL_BUFFER_ADD_CONTACT:
+                ret=false;
+                break;
+        }
+    }else if(stoi(answer_flag)==SERVER_REJECT_ADD_CONTACT){
+        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),contact_socket)){
+            case SQL_ACCOUNT_ONLINE:
+                temp_json["flag"]=SERVER_ANSWER_NO;
+                temp_json["contact"]=account;
+                ret=true;
+                break;
+            case SQL_BUFFER_ADD_CONTACT:
+                ret=false;
+                break;
+        }
+    }else{
+        cerr<<"chat_server:mid_answer_add_contact error"<<endl;
+        exit(-1);
+    }
+    if(temp_json.empty()){
+        return ret;
+    }else{
+        Send(route_socket[contact_socket],temp_json.dump().c_str());
+        return ret;
+    }
+}
 
-// }
 void mid_Log_OUT(int session_socket){
     char out[16];
     if(get_Password("pass.dat",out)){
@@ -135,14 +175,14 @@ void mid_Log_OUT(int session_socket){
 }
 void parseJson(const char *json_string,int session_socket){
     char out[16];
-    if(get_Password("pass.dat",out)){
-        cout<<"base64 decode succeed"<<endl;
+    if(!get_Password("pass.dat",out)){
+        exit(-1);
     }
     DB db(out);
 
     json recv_json=json::parse(json_string);
     string flag=recv_json["flag"];
-    switch(flag[0]){
+    switch(stoi(flag)){
         case SOCKET_LOG_UP:
             if(mid_Log_UP(db,json_string,session_socket)){
                 cout<<session_socket<<" log up succeed"<<endl;
@@ -158,7 +198,18 @@ void parseJson(const char *json_string,int session_socket){
             }
             break;
         case SOCKET_ADD_CONTACT:
-
+            if(mid_Add_Contact(db,json_string,session_socket)){
+                cout<<session_socket<<" send add request succeed"<<endl;
+            }else{
+                cerr<<session_socket<<" send add request failed"<<endl;
+            }
+            break;
+        case SOCKET_ANSWER_ADD:
+            if(mid_Answer_Add_Contact(db,json_string)){
+                cout<<session_socket<<" answer request succeed"<<endl;
+            }else{
+                cerr<<session_socket<<" answer request failed"<<endl;
+            }
             break;
         default:
             cerr<<"chat_server:parseJson error"<<endl;
@@ -211,15 +262,15 @@ int main(){
                     cerr<<"client epoll_ctl error"<<endl;
                     exit(-1);
                 } //将获取到的新连接加入到epoll实例中
-                ip_socket.insert(pair<string,int>(to_string(client_socket),client_socket));
-                cout<<"map:"<<ip_socket[to_string(client_socket)]<<endl;//TODEL 
+                route_socket.insert(pair<string,int>(to_string(client_socket),client_socket));
+                cout<<"map:"<<route_socket[to_string(client_socket)]<<endl;//TODEL 
             }else{//如果不是fd，说明是客户端发送了数据
                 int session_socket=listen_event[i].data.fd; 	//获取连接，建立通信
                 char *buff=(char*)malloc(SOCKET_SIZE);
                 int ret = recv(session_socket,buff,SOCKET_SIZE,0); //非阻塞如果没有数据那么就返回-1
                 if(ret==0){//读到0,说明客户端关闭,从epoll实例中删除客户端socket,并删除ip_socket键值对
                     epoll_ctl(epoll_fd,EPOLL_CTL_DEL,session_socket,NULL);
-                    ip_socket.erase(to_string(session_socket));//删除键值对
+                    route_socket.erase(to_string(session_socket));//删除键值对
                     mid_Log_OUT(session_socket);//db log out
                     close(session_socket);
                     cout<<session_socket<<" client closed connection"<<endl;

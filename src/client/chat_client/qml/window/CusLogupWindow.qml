@@ -24,10 +24,10 @@ FluWindow {
                                   var recv_json = JSON.parse(recv)
                                   var flag = recv_json["flag"]
                                   switch (flag) {
-                                      case Define.RECV_ACCOUNT_REGISTED:
+                                      case Define.CLIENT_ACCOUNT_REGISTED:
                                       showError("The account has been registed")
                                       break
-                                      case Define.RECV_TRUE:
+                                      case Define.CLIENT_TRUE:
                                       showSuccess("Log up succeed")
                                       break
                                   }
