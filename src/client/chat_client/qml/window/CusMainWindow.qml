@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.3
 import Qt.labs.platform 1.1
 import FluentUI 1.0
 import "qrc:/qml/global/"
+import "../global/Define.js" as Define
 
 FluWindow {
     id: window
@@ -71,7 +72,7 @@ FluWindow {
     }
     FluNavigationView {
         id: nav_view
-        title: "Chat"
+        title: Define.account + " online"
         anchors.fill: parent
         items: cus_side_menu_bar
         z: 11

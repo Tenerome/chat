@@ -6,13 +6,11 @@ import "qrc:/qml/global/"
 import FluentUI 1.0
 
 //TODEL
-Page {
+FluContentPage {
     id: page
-    leftPadding: 10
-    rightPadding: 0
-    bottomPadding: 10
     width: parent.width
     height: parent.height
+    visible: true
     CusClient {
         id: cus_client
         onClose_by_Dialog: {
@@ -29,7 +27,7 @@ Page {
     ColumnLayout {
         FluScrollablePage {
             id: textscroll
-            width: 200
+            width: page.width - 50
             height: page.height - 300
             Rectangle {
                 id: recarea
@@ -58,7 +56,7 @@ Page {
                     delegate: Component {
                         Rectangle {
                             id: ballon
-                            width: label.width + 100
+                            width: label.width + 50
                             height: label.height <= 120 ? 120 : label.height + 20
                             color: "#4D10CCEE"
                             radius: 20
@@ -69,7 +67,7 @@ Page {
                                 width: label.text.length <= 10 ? label.text.length * 12 : 250
                                 font.pixelSize: 20
                                 anchors.centerIn: parent
-                                anchors.leftMargin: 10
+                                //                                anchors.leftMargin: 10
                                 wrapMode: Text.Wrap //多行文本 超过width就自动换行
                                 text: detail
                             }
@@ -89,13 +87,9 @@ Page {
         FluMultilineTextBox {
             id: multi_textbox
             Layout.preferredWidth: recarea.width
-            Layout.preferredHeight: 200
+            Layout.preferredHeight: 150
         }
         RowLayout {
-            Text {
-                id: inner
-            }
-
             FluFilledButton {
                 id: send_btn
                 text: "send"

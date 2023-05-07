@@ -20,4 +20,3 @@ const CLIENT_ANSWER_YES = 11
 const CLIENT_ANSWER_NO = 12
 //global variable
 var account
-var contact
