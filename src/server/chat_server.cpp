@@ -1,7 +1,7 @@
 #include "chat_server.h"
 
 void Send(int socket,const char *buffer){
-    cout<<"socket:"<<socket<<"buffer:"<<buffer<<endl;//TODEL
+    cout<<"<Send>:socket:"<<socket<<"buffer:"<<buffer<<endl;//TODEL
     send(socket,buffer,SOCKET_SIZE,0);
 }
 bool get_Password(const char *path,char *out){
@@ -87,16 +87,16 @@ bool mid_Add_Contact(DB db,const char *json_string,int session_socket){//send ad
     temp_json.clear();
     bool ret;
     string contact_socket;
-    switch(Send_Add_Contact_Request(db,account.c_str(),contact.c_str(),contact_socket)){
+    switch(Send_Add_Contact_Request(db,account.c_str(),contact.c_str())){
         case SQL_ACCOUNT_NOT_REGISTED:
             temp_json["flag"]=SERVER_ACCOUNT_NOT_REGISTED;
             ret=false;
             break;
         case SQL_ACCOUNT_ONLINE:
             temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
-            temp_json["account"]=account;
+            temp_json["contact"]=account;
             //TODO send add request to accept client
-            cout<<"contact_socket:"<<contact_socket<<endl;//TODEL
+            contact_socket=get_Route(db,contact.c_str());
             Send(route_socket[contact_socket],temp_json.dump().c_str());//to contact client
             return true;
             // ret=true;
@@ -126,12 +126,13 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
     bool ret;
     string contact_socket;
     if(stoi(answer_flag)==SERVER_AGREE_ADD_CONTACT){
-        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),contact_socket)){
+        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str())){
             case SQL_ACCOUNT_ONLINE:
                 if(!Add_Contact(db,account.c_str(),contact.c_str())){
                     cerr<<"chat_server:line 129 error"<<endl;
                     exit(-1);
                 }
+                contact_socket=get_Route(db,contact.c_str());
                 temp_json["flag"]=SERVER_ANSWER_YES;
                 temp_json["contact"]=account;
                 ret=true;
@@ -141,8 +142,9 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
                 break;
         }
     }else if(stoi(answer_flag)==SERVER_REJECT_ADD_CONTACT){
-        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),contact_socket)){
+        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str())){
             case SQL_ACCOUNT_ONLINE:
+                contact_socket=get_Route(db,contact.c_str());
                 temp_json["flag"]=SERVER_ANSWER_NO;
                 temp_json["contact"]=account;
                 ret=true;
@@ -158,6 +160,7 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
     if(temp_json.empty()){
         return ret;
     }else{
+        cout<<"================"<<temp_json.dump().c_str()<<"=========="<<endl;//TODEL
         Send(route_socket[contact_socket],temp_json.dump().c_str());
         return ret;
     }
@@ -279,7 +282,7 @@ int main(){
                     close(session_socket);
                     cerr<<session_socket<<" client recv error"<<endl;
                 }else{//最后一种情况就只能是读到了数据
-                    cout<<buff<<endl;//TODEL
+                    cout<<"<Recv>buff"<<buff<<endl;//TODEL
                     try{
                         parseJson(buff,session_socket);
                     }

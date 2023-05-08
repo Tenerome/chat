@@ -30,9 +30,11 @@ inline bool get_Connection(DB *db);
 inline bool check_Existed(DB *db,const char *account);
 inline bool check_Online(DB *db,const char *account);
 inline string getName_by_account(DB *db,const char *account);
-inline string get_Route(DB *db,const char *account);
-inline bool Check_Add_Flag(DB *db,const char *account);
 
+//get
+string get_Route(DB db,const char *account);
+bool get_Add_Flag(DB db,const char *account);
+bool get_Answer_Add(DB db,const char *account);
 //user
 
 int Log_UP(DB db,const char *account,const char *password,const char *name);
@@ -40,9 +42,9 @@ int Log_IN(DB db,const char *account,const char *password,const char *route);
 int Log_OUT(DB db,int session_socket);
 //contacts
 
-int Send_Add_Contact_Request(DB db,const char *account,const char *contact,string &route);
+int Send_Add_Contact_Request(DB db,const char *account,const char *contact);
 int Add_Contact(DB db,const char *account,const char *contact);
-int Answer_Add_Contact(DB db,const char *account,const char *contact,string &route);
+int Answer_Add_Contact(DB db,const char *account,const char *contact);
 int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname);
 int Del_Contact(DB db,const char *account,const char *contact);
 vector<string> Get_Contact_List(DB db,const char *account);

@@ -87,32 +87,61 @@ inline string getName_by_account(DB *db,const char *account){
     mysql_free_result(res);
     return row[0];
 }
-inline string get_Route(DB *db,const char *account){
+string get_Route(DB db,const char *account){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
     char query[250];
     sprintf(query,"select route from user where account='%s'",account);
-    if(mysql_query(db->mysql,query)){
-       cerr<<"db-get_Route:get route error:"<<mysql_error(db->mysql)<<endl;
+    if(mysql_query(db.mysql,query)){
+       cerr<<"db-get_Route:get route error:"<<mysql_error(db.mysql)<<endl;
        exit(-1); 
     }
-    MYSQL_RES *res=mysql_store_result(db->mysql);
+    MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==nullptr){
-        cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db->mysql);
+        cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
         exit(-1);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
     return row[0];
 }
-inline bool Check_Add_Flag(DB *db,const char *account){
-    char query[250];
-    sprintf(query,"select add_flag from message where account='%s'",account);
-    if(mysql_query(db->mysql,query)){
-        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db->mysql)<<endl;
+bool get_Add_Flag(DB db,const char *account){
+    if(!get_Connection){
         exit(-1);
     }
-    MYSQL_RES *res=mysql_store_result(db->mysql);
+    char query[250];
+    sprintf(query,"select add_flag from message where account='%s'",account);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==nullptr){
-        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db->mysql)<<endl;
+        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    mysql_free_result(res);
+    if(strcmp(row[0],"1")==0){
+        return true;
+    }else{
+        return false;
+    }
+}
+bool get_Answer_Add(DB db,const char *account){
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    char query[250];
+    sprintf(query,"select answer_add from message where account='%s'",account);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==nullptr){
+        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
@@ -206,7 +235,7 @@ int Log_OUT(DB db,int session_socket){
 //SQL_ACCOUNT_NOT_REGISTED
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_ADD_CONTACT
-int Send_Add_Contact_Request(DB db,const char *account,const char *contact,string &route){
+int Send_Add_Contact_Request(DB db,const char *account,const char *contact){
     if(!get_Connection(&db)){
         exit(-1);
     }
@@ -215,7 +244,6 @@ int Send_Add_Contact_Request(DB db,const char *account,const char *contact,strin
         return SQL_ACCOUNT_NOT_REGISTED;
     }
     if(check_Online(&db,contact)){
-        route=get_Route(&db,contact);
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存申请记录
         char query[250];
@@ -232,12 +260,11 @@ int Send_Add_Contact_Request(DB db,const char *account,const char *contact,strin
 //answer add contact request,return values:
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_ADD_CONTACT
-int Answer_Add_Contact(DB db,const char *account,const char *contact,string &route){
+int Answer_Add_Contact(DB db,const char *account,const char *contact){
     if(!get_Connection(&db)){
         exit(-1);
     }
     if(check_Online(&db,contact)){
-        route=get_Route(&db,contact);
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存申请
         //TODO
@@ -331,6 +358,7 @@ vector<string> Get_Contact_List(DB db,const char *account){
     mysql_free_result(res);
     return contact_list;
 }
+
 //===============message==========
 
 //before send message,return values:

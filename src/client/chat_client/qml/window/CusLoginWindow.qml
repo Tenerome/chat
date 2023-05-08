@@ -69,6 +69,7 @@ FluWindow {
             placeholderText: "Input your account"
             Layout.preferredWidth: 260
             Layout.alignment: Qt.AlignHCenter
+            focus: true
         }
         FluTextBox {
             id: textbox_password
@@ -77,6 +78,12 @@ FluWindow {
             placeholderText: "Input your password"
             echoMode: TextInput.Password
             Layout.alignment: Qt.AlignHCenter
+            Keys.enabled: true
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Enter - 1) {
+                    login_btn.clicked()
+                }
+            }
         }
         FluFilledButton {
             id: login_btn

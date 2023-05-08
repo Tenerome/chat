@@ -4,6 +4,7 @@ const SOCKET_LOG_UP = 0
 const SOCKET_LOG_IN = 1
 const SOCKET_ADD_CONTACT = 2
 const SOCKET_ANSWER_ADD = 3
+const SOCKET_SELECT_WHEN_START = 4
 //CLIENT signale
 const CLIENT_FALSE = 0
 const CLIENT_TRUE = 1
@@ -20,3 +21,4 @@ const CLIENT_ANSWER_YES = 11
 const CLIENT_ANSWER_NO = 12
 //global variable
 var account
+var add_page_listmodel

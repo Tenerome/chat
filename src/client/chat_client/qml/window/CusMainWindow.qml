@@ -26,7 +26,52 @@ FluWindow {
         z: 9
         width: parent.width
     }
-
+    CusClient {
+        id: cus_client
+        onClose_by_Dialog: {
+            window.close()
+        }
+        onRecvOneMessage: recv => {
+                              if (recv !== "") {
+                                  parseJson(recv)
+                              }
+                          }
+    }
+    function parseJson(recv) {
+        console.log(recv)
+        var recv_json = JSON.parse(recv)
+        var flag = recv_json["flag"]
+        var contact = recv_json["contact"]
+        switch (flag) {
+        case Define.CLIENT_ACCOUNT_NOT_REGISTED:
+            showError("This account does not exist")
+            break
+        case Define.CLIENT_ACCOUNT_ONLINE:
+            showSuccess("Send add request")
+            break
+        case Define.CLIENT_BUFFER_ADD_CONTACT:
+            showSuccess("Send add request")
+            break
+        case Define.CLIENT_ADD_CONTACT_REQUEST:
+            Define.add_page_listmodel.rappend({
+                                                  "contact": contact,
+                                                  "flag": "0"
+                                              })
+            break
+        case Define.CLIENT_ANSWER_YES:
+            Define.add_page_listmodel.append({
+                                                 "contact": contact,
+                                                 "flag": "1"
+                                             })
+            break
+        case Define.CLIENT_ANSWER_NO:
+            Define.add_page_listmodel.append({
+                                                 "contact": contact,
+                                                 "flag": "2"
+                                             })
+            break
+        }
+    }
     SystemTrayIcon {
         id: system_tray
         visible: true

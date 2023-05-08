@@ -11,54 +11,56 @@ FluContentPage {
     width: parent.width
     height: parent.height
     visible: true
-    CusClient {
-        id: cus_client
-        onClose_by_Dialog: {
-            window.close()
-        }
-        onRecvOneMessage: recv => {
-                              if (recv !== "") {
-                                  parseJson(recv)
-                              }
-                          }
+    Component.onCompleted: {
+        listmodel.clear()
+        Define.add_page_listmodel = listmodel
     }
-    function parseJson(recv) {
-        var recv_json = JSON.parse(recv)
-        var flag = recv_json["flag"]
-        var contact = recv_json["account"]
-        switch (flag) {
-        case Define.CLIENT_ACCOUNT_NOT_REGISTED:
-            showError("This account does not exist")
-            break
-        case Define.CLIENT_ACCOUNT_ONLINE:
-            showSuccess("Send add request")
-            break
-        case Define.CLIENT_BUFFER_ADD_CONTACT:
-            showSuccess("Send add request")
-            break
-        case Define.CLIENT_ADD_CONTACT_REQUEST:
-            listmodel.append({
-                                 "content": contact + " request to be your friend: ",
-                                 "flag": "1"
-                             })
-            break
-        case Define.CLIENT_ANSWER_YES:
-            //            showSuccess(contact + "agree to be your friend")
-            listmodel.append({
-                                 "content": contact + " agree to be your friend: ",
-                                 "flag": "0"
-                             })
-            break
-        case Define.CLIENT_ANSWER_NO:
-            //            showSuccess(contact + "reject to be your friend")
-            listmodel.append({
-                                 "content": contact + " reject to be your friend: ",
-                                 "flag": "0"
-                             })
-            break
-        }
-    }
-
+    //    CusClient {
+    //        id: cus_client
+    //        onClose_by_Dialog: {
+    //            window.close()
+    //        }
+    //        onRecvOneMessage: recv => {
+    //                              if (recv !== "") {
+    //                                  parseJson(recv)
+    //                              }
+    //                          }
+    //    }
+    //    function parseJson(recv) {
+    //        console.log(recv)
+    //        var recv_json = JSON.parse(recv)
+    //        var flag = recv_json["flag"]
+    //        var contact = recv_json["contact"]
+    //        switch (flag) {
+    //        case Define.CLIENT_ACCOUNT_NOT_REGISTED:
+    //            showError("This account does not exist")
+    //            break
+    //        case Define.CLIENT_ACCOUNT_ONLINE:
+    //            showSuccess("Send add request")
+    //            break
+    //        case Define.CLIENT_BUFFER_ADD_CONTACT:
+    //            showSuccess("Send add request")
+    //            break
+    //        case Define.CLIENT_ADD_CONTACT_REQUEST:
+    //            listmodel.append({
+    //                                 "contact": contact,
+    //                                 "flag": "0"
+    //                             })
+    //            break
+    //        case Define.CLIENT_ANSWER_YES:
+    //            listmodel.append({
+    //                                 "contact": contact,
+    //                                 "flag": "1"
+    //                             })
+    //            break
+    //        case Define.CLIENT_ANSWER_NO:
+    //            listmodel.append({
+    //                                 "contact": contact,
+    //                                 "flag": "2"
+    //                             })
+    //            break
+    //        }
+    //    }
     Column {
         spacing: 10
         Row {
@@ -111,20 +113,32 @@ FluContentPage {
                                 spacing: 15
                                 FluText {
                                     id: label
-                                    text: content
+                                    text: contact
+                                    color: "red"
                                     pixelSize: add_frame.height - 20
                                 }
-                                //                                FluText {
-                                //                                    text: " request to be your friend:"
-                                //                                    pixelSize: add_frame.height - 20
-                                //                                }
+                                FluText {
+                                    text: " request to be your friend:"
+                                    visible: flag === "0" ? true : false
+                                    pixelSize: add_frame.height - 20
+                                }
+                                FluText {
+                                    text: " agree to be your friend:"
+                                    visible: flag === "1" ? true : false
+                                    pixelSize: add_frame.height - 20
+                                }
+                                FluText {
+                                    text: " reject to be your friend:"
+                                    visible: flag === "2" ? true : false
+                                    pixelSize: add_frame.height - 20
+                                }
                                 FluFilledButton {
                                     id: reject_add
                                     anchors.verticalCenter: label.verticalCenter
                                     text: "Reject"
                                     normalColor: "orange"
                                     height: add_frame.height - 20
-                                    visible: flag === 1 ? true : false //control diff
+                                    visible: flag === "0" ? true : false //control diff
                                     onClicked: {
                                         var send_json = '{"flag":"' + Define.SOCKET_ANSWER_ADD
                                                 + '","answer_flag":"'
@@ -142,7 +156,7 @@ FluContentPage {
                                     text: "Agree"
                                     normalColor: "green"
                                     height: add_frame.height - 20
-                                    visible: flag === 1 ? true : false
+                                    visible: flag === "0" ? true : false
                                     onClicked: {
                                         var send_json = '{"flag":"' + Define.SOCKET_ANSWER_ADD
                                                 + '","answer_flag":"'
@@ -161,14 +175,11 @@ FluContentPage {
                         id: listmodel
                         ListElement {
                             flag: ""
-                            content: ""
+                            contact: ""
                         }
                     }
                 }
             }
         }
-    }
-    Component.onCompleted: {
-        listmodel.clear()
     }
 }

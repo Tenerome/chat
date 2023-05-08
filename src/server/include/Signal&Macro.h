@@ -29,6 +29,7 @@
 #define SOCKET_LOG_IN 1
 #define SOCKET_ADD_CONTACT 2
 #define SOCKET_ANSWER_ADD 3
+#define SOCKET_SELECT_WHEN_START 4
 //message flag
 #define TEXT_MESSAGE 0
 #define IMAGE_MESSAGE 1
