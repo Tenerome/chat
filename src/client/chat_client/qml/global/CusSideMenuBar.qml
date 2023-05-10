@@ -4,6 +4,11 @@ import "../global/Define.js" as Define
 
 FluObject {
     property var navigationView
+    Component.onCompleted: {
+        navigationView.push("qrc:/qml/page/CusChatPage.qml")
+        navigationView.push("qrc:/qml/page/CusAddContactPage.qml")
+        navigationView.push("qrc:/qml/page/CusProfile.qml")
+    }
     FluPaneItem {
         title: "profile"
         onTap: {

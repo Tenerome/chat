@@ -95,7 +95,6 @@ bool mid_Add_Contact(DB db,const char *json_string,int session_socket){//send ad
         case SQL_ACCOUNT_ONLINE:
             temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
             temp_json["contact"]=account;
-            //TODO send add request to accept client
             contact_socket=get_Route(db,contact.c_str());
             Send(route_socket[contact_socket],temp_json.dump().c_str());//to contact client
             return true;
@@ -126,7 +125,7 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
     bool ret;
     string contact_socket;
     if(stoi(answer_flag)==SERVER_AGREE_ADD_CONTACT){
-        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str())){
+        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),1)){
             case SQL_ACCOUNT_ONLINE:
                 if(!Add_Contact(db,account.c_str(),contact.c_str())){
                     cerr<<"chat_server:line 129 error"<<endl;
@@ -142,7 +141,7 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
                 break;
         }
     }else if(stoi(answer_flag)==SERVER_REJECT_ADD_CONTACT){
-        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str())){
+        switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),0)){
             case SQL_ACCOUNT_ONLINE:
                 contact_socket=get_Route(db,contact.c_str());
                 temp_json["flag"]=SERVER_ANSWER_NO;
@@ -160,10 +159,50 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
     if(temp_json.empty()){
         return ret;
     }else{
-        cout<<"================"<<temp_json.dump().c_str()<<"=========="<<endl;//TODEL
         Send(route_socket[contact_socket],temp_json.dump().c_str());
         return ret;
     }
+}
+
+bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
+    json temp_json=json::parse(json_string);
+    string account=temp_json["account"];
+    temp_json.clear();
+    bool ret=false;
+    vector<string> contact_add_list;
+    if(get_Add_Flag(db,account.c_str(),contact_add_list)){
+        for(auto it=contact_add_list.begin();it!=contact_add_list.end();++it){
+            sleep(1);
+            cout<<*it<<endl;
+            temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
+            temp_json["contact"]=*it;
+            Send(session_socket,temp_json.dump().c_str());
+        }
+    }
+    vector<string> agree_contact;
+    vector<string> reject_contact;
+    if(get_Answer_Add(db,account.c_str(),agree_contact,reject_contact)){
+        if(!agree_contact.empty()){
+            for(auto it=agree_contact.begin();it!=agree_contact.end();++it){
+                sleep(1);
+                temp_json["flag"]=SERVER_ANSWER_YES;
+                temp_json["contact"]=*it;
+                Send(session_socket,temp_json.dump().c_str());
+            }
+        }
+        if(!reject_contact.empty()){
+            for(auto it=reject_contact.begin();it!=reject_contact.end();++it){
+                sleep(1);
+                temp_json["flag"]=SERVER_ANSWER_NO;
+                temp_json["contact"]=*it;
+                Send(session_socket,temp_json.dump().c_str());
+            }
+        }
+    }
+    //getlist
+    
+    ret=true;
+    return ret;
 }
 
 void mid_Log_OUT(int session_socket){
@@ -212,6 +251,13 @@ void parseJson(const char *json_string,int session_socket){
                 cout<<session_socket<<" answer request succeed"<<endl;
             }else{
                 cerr<<session_socket<<" answer request failed"<<endl;
+            }
+            break;
+        case SOCKET_SELECT_WHEN_START:
+            if(mid_Select_When_Start(db,json_string,session_socket)){
+                cout<<session_socket<<" select buffer succeed"<<endl;
+            }else{
+                cerr<<session_socket<<" select buffer failed"<<endl;
             }
             break;
         default:
@@ -266,7 +312,6 @@ int main(){
                     exit(-1);
                 } //将获取到的新连接加入到epoll实例中
                 route_socket.insert(pair<string,int>(to_string(client_socket),client_socket));
-                cout<<"map:"<<route_socket[to_string(client_socket)]<<endl;//TODEL 
             }else{//如果不是fd，说明是客户端发送了数据
                 int session_socket=listen_event[i].data.fd; 	//获取连接，建立通信
                 char *buff=(char*)malloc(SOCKET_SIZE);
@@ -289,13 +334,8 @@ int main(){
                     catch(const std::exception& e){
                         std::cerr << e.what() << '\n';
                     }
-                    //finally
-                    // close(session_socket);
-                    
-                    
-                    
-                    
-                    // send(session_socket,"server recv message",50,0);
+                    //clear buff
+                    free(buff);
                 }
                 
                 }

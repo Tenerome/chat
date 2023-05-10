@@ -11,19 +11,19 @@ FluContentPage {
     width: parent.width
     height: parent.height
     visible: true
-    CusClient {
-        id: cus_client
-        onClose_by_Dialog: {
-            window.close()
-        }
-        onRecvOneMessage: recv => {
-                              if (recv !== "")
-                              listmodel.append({
-                                                   "detail": recv,
-                                                   "position": 1
-                                               })
-                          }
-    }
+    //    CusClient {
+    //        id: cus_client
+    //        onClose_by_Dialog: {
+    //            window.close()
+    //        }
+    //        onRecvOneMessage: recv => {
+    //                              if (recv !== "")
+    //                              listmodel.append({
+    //                                                   "detail": recv,
+    //                                                   "position": 1
+    //                                               })
+    //                          }
+    //    }
     ColumnLayout {
         FluScrollablePage {
             id: textscroll

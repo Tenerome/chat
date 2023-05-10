@@ -87,6 +87,7 @@ inline string getName_by_account(DB *db,const char *account){
     mysql_free_result(res);
     return row[0];
 }
+//return account socket
 string get_Route(DB db,const char *account){
     if(!get_Connection(&db)){
         exit(-1);
@@ -102,55 +103,13 @@ string get_Route(DB db,const char *account){
         cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
         exit(-1);
     }
+    if(mysql_num_rows(res)==0){
+        cerr<<"no log in information"<<endl;
+        exit(-1);
+    }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
     return row[0];
-}
-bool get_Add_Flag(DB db,const char *account){
-    if(!get_Connection){
-        exit(-1);
-    }
-    char query[250];
-    sprintf(query,"select add_flag from message where account='%s'",account);
-    if(mysql_query(db.mysql,query)){
-        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
-    }
-    MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==nullptr){
-        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
-    }
-    MYSQL_ROW row=mysql_fetch_row(res);
-    mysql_free_result(res);
-    if(strcmp(row[0],"1")==0){
-        return true;
-    }else{
-        return false;
-    }
-}
-bool get_Answer_Add(DB db,const char *account){
-    if(!get_Connection(&db)){
-        exit(-1);
-    }
-    char query[250];
-    sprintf(query,"select answer_add from message where account='%s'",account);
-    if(mysql_query(db.mysql,query)){
-        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
-    }
-    MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==nullptr){
-        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
-    }
-    MYSQL_ROW row=mysql_fetch_row(res);
-    mysql_free_result(res);
-    if(strcmp(row[0],"1")==0){
-        return true;
-    }else{
-        return false;
-    }
 }
 //=================状态更新===========================
 
@@ -249,7 +208,7 @@ int Send_Add_Contact_Request(DB db,const char *account,const char *contact){
         char query[250];
         sprintf(query,"insert into message(from_account,to_account,add_flag) values('%s','%s','%d')",account,contact,1);
         if(mysql_query(db.mysql,query)){
-            cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
+            cerr<<"db-Send_Add_Contact_Request:insert error:"<<mysql_error(db.mysql)<<endl;
             exit(-1);
         }
         return SQL_BUFFER_ADD_CONTACT;
@@ -260,16 +219,16 @@ int Send_Add_Contact_Request(DB db,const char *account,const char *contact){
 //answer add contact request,return values:
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_ADD_CONTACT
-int Answer_Add_Contact(DB db,const char *account,const char *contact){
+int Answer_Add_Contact(DB db,const char *account,const char *contact,int answer){
     if(!get_Connection(&db)){
         exit(-1);
     }
     if(check_Online(&db,contact)){
         return SQL_ACCOUNT_ONLINE;
-    }else{//缓存申请
-        //TODO
+    }else{//缓存
         char query[250];
-        sprintf(query,"update message set add_buffer=1 where from_account='%s' and to_account='%s' ",contact,account);
+        //contact=from,account=to
+        sprintf(query,"insert into message(from_account,to_account,answer_add) values('%s','%s','%d')",contact,account,answer);
         if(mysql_query(db.mysql,query)){
             cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
             exit(-1);
@@ -302,6 +261,96 @@ int Add_Contact(DB db,const char *account,const char *contact){
     }
 
 }
+//if true contact_add_list=add list
+bool get_Add_Flag(DB db,const char *account,vector<string> &contact_add_list){//account=to
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    char query[250];
+    sprintf(query,"select add_flag,from_account from message where to_account='%s'",account);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==nullptr){
+        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_ROW row;
+    try{
+        if(mysql_num_rows(res)==0){
+            mysql_free_result(res);
+            return false;
+        }else{
+            while((row=mysql_fetch_row(res))!=nullptr){
+                if(strcmp(row[0],"1")==0){
+                    contact_add_list.push_back(row[1]);
+                }
+            }
+            mysql_free_result(res);
+            //delete buffer
+            sprintf(query,"delete from message where to_account='%s' and add_flag=1 ",account);
+            if(mysql_query(db.mysql,query)){
+                cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+                exit(-1);
+            }
+            return true;
+        }
+    }catch(const std::exception& e){
+        std::cerr << e.what() << '\n';
+    }
+    //finally
+    return false;
+}
+//if true agree_contact=agree list,reject_contact=reject list
+bool get_Answer_Add(DB db,const char *account,vector<string> &agree_contact,vector<string> &reject_contact){//account=from
+    if(!get_Connection(&db)){
+        exit(-1);
+    }
+    char query[250];
+    sprintf(query,"select answer_add,to_account from message where from_account='%s' and answer_add is not null",account);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==nullptr){
+        cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
+        exit(-1);
+    }
+    try{
+        if(mysql_num_rows(res)==0){
+            mysql_free_result(res);
+            return false;
+        }else{
+            MYSQL_ROW row;
+            while((row=mysql_fetch_row(res))!=nullptr){
+                if(strcmp(row[0],"1")==0){
+                    agree_contact.push_back(row[1]);
+                }else if(strcmp(row[0],"0")==0){
+                    reject_contact.push_back(row[1]);
+                }else{
+                    continue;//no answer
+                }
+            }
+            mysql_free_result(res);
+            //del buffer
+            cout<<"test get in getAnswer_Add:"<<account<<endl;
+            sprintf(query,"delete from message where from_account='%s' and answer_add is not null ",account);
+            if(mysql_query(db.mysql,query)){
+                cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+                exit(-1);
+        }
+            return true;
+        }
+    }catch(const std::exception& e){
+        std::cerr << e.what() << '\n';
+    }
+    //finally
+    return false;
+}
+
 int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname){
     if(!get_Connection(&db)){
         exit(-1);
@@ -352,8 +401,11 @@ vector<string> Get_Contact_List(DB db,const char *account){
     }
     MYSQL_ROW row;
     vector<string> contact_list;
-    while((row=mysql_fetch_row(res))!=nullptr){
-        contact_list.push_back(row[0]);
+        //is null
+    if(!mysql_num_rows(res)==0){
+        while((row=mysql_fetch_row(res))!=nullptr){
+            contact_list.push_back(row[0]);
+        }
     }
     mysql_free_result(res);
     return contact_list;

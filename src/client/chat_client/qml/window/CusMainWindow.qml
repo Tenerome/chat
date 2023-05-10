@@ -21,6 +21,21 @@ FluWindow {
         close_app.open()
         event.accepted = false
     }
+    Timer {
+        id: select_timer
+        running: false
+        interval: 3000
+        repeat: false
+        onTriggered: {
+            console.log("delay 3s")
+            var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
+                    + '","account":"' + Define.account + '"}'
+            $Client.sendMessage(send_json)
+        }
+    }
+    Component.onCompleted: {
+        select_timer.start()
+    }
     FluAppBar {
         id: appbar
         z: 9
@@ -38,7 +53,6 @@ FluWindow {
                           }
     }
     function parseJson(recv) {
-        console.log(recv)
         var recv_json = JSON.parse(recv)
         var flag = recv_json["flag"]
         var contact = recv_json["contact"]
@@ -53,10 +67,11 @@ FluWindow {
             showSuccess("Send add request")
             break
         case Define.CLIENT_ADD_CONTACT_REQUEST:
-            Define.add_page_listmodel.rappend({
-                                                  "contact": contact,
-                                                  "flag": "0"
-                                              })
+            console.log(contact)
+            Define.add_page_listmodel.append({
+                                                 "contact": contact,
+                                                 "flag": "0"
+                                             })
             break
         case Define.CLIENT_ANSWER_YES:
             Define.add_page_listmodel.append({
@@ -98,8 +113,12 @@ FluWindow {
         title: "Sure to Quit"
         message: "All activity won't be retained?"
         negativeText: "Minimize"
-        buttonFlags: FluContentDialog.NeutralButton | FluContentDialog.NegativeButton
-                     | FluContentDialog.PositiveButton
+        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
+                     | FluContentDialog.NeutralButton
+        onPositiveClicked: {
+            window.destoryWindow()
+            FluApp.closeApp()
+        }
         onNegativeClicked: {
             system_tray.showMessage("Chat Notifications",
                                     "Chat has been hide in the system tray")
@@ -107,10 +126,6 @@ FluWindow {
         }
         positiveText: "Quit"
         neutralText: "Cancle"
-        onPositiveClicked: {
-            window.destoryWindow()
-            FluApp.closeApp()
-        }
     }
     CusSideMenuBar {
         id: cus_side_menu_bar
@@ -121,7 +136,8 @@ FluWindow {
         anchors.fill: parent
         items: cus_side_menu_bar
         z: 11
-        displayMode: FluNavigationView.Auto //MainEvent.displayMode
+        displayMode: FluNavigationView.Open
+        //MainEvent.displayMode
         //        logo: "qrc:/res/image/favicon.ico"
         Component.onCompleted: {
             cus_side_menu_bar.navigationView = nav_view //selected scrollpage

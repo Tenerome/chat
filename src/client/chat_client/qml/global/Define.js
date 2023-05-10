@@ -22,3 +22,4 @@ const CLIENT_ANSWER_NO = 12
 //global variable
 var account
 var add_page_listmodel
+var chat_page_listmodel

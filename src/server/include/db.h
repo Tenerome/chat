@@ -13,6 +13,7 @@ using std::cout,std::endl,std::cerr;
 using std::string;
 using std::vector;
 using std::stoi;//string to int
+using std::to_string;
 class DB{
     public:
         MYSQL *mysql;
@@ -33,8 +34,8 @@ inline string getName_by_account(DB *db,const char *account);
 
 //get
 string get_Route(DB db,const char *account);
-bool get_Add_Flag(DB db,const char *account);
-bool get_Answer_Add(DB db,const char *account);
+bool get_Add_Flag(DB db,const char *account,vector<string> &contact_add_list);
+bool get_Answer_Add(DB db,const char *account,vector<string> &agree_contact,vector<string> &reject_contact);
 //user
 
 int Log_UP(DB db,const char *account,const char *password,const char *name);
@@ -44,7 +45,7 @@ int Log_OUT(DB db,int session_socket);
 
 int Send_Add_Contact_Request(DB db,const char *account,const char *contact);
 int Add_Contact(DB db,const char *account,const char *contact);
-int Answer_Add_Contact(DB db,const char *account,const char *contact);
+int Answer_Add_Contact(DB db,const char *account,const char *contact,int answer);
 int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname);
 int Del_Contact(DB db,const char *account,const char *contact);
 vector<string> Get_Contact_List(DB db,const char *account);

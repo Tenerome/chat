@@ -12,10 +12,14 @@ Item {
         onTriggered: {
             if ($Client.getConnectStatus()) {
                 var recv = $Client.recvMessage()
-                recvOneMessage(recv)
+                if (recv !== "") {
+                    console.log("recv message:" + recv) //TODEL
+                    recvOneMessage(recv)
+                }
             } else {
                 client_timer.start()
             }
+            recv = ""
         }
     }
     FluProgressRing {
