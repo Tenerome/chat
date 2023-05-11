@@ -16,31 +16,38 @@ FluWindow {
     minimumHeight: 900
     maximumWidth: 1200
     maximumHeight: 900
+    //close event
     closeDestory: false
     closeFunc: function (event) {
         close_app.open()
         event.accepted = false
     }
-    Timer {
-        id: select_timer
-        running: false
-        interval: 3000
-        repeat: false
-        onTriggered: {
-            console.log("delay 3s")
-            var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
-                    + '","account":"' + Define.account + '"}'
-            $Client.sendMessage(send_json)
+    FluContentDialog {
+        id: close_app
+        title: "Sure to Quit"
+        message: "All activity won't be retained?"
+        negativeText: "Minimize"
+        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
+                     | FluContentDialog.NeutralButton
+        onPositiveClicked: {
+            window.destoryWindow()
+            FluApp.closeApp()
         }
+        onNegativeClicked: {
+            system_tray.showMessage("Chat Notifications",
+                                    "Chat has been hide in the system tray")
+            window.hide()
+        }
+        positiveText: "Quit"
+        neutralText: "Cancle"
     }
-    Component.onCompleted: {
-        select_timer.start()
-    }
+    //appbar and system tray
     FluAppBar {
         id: appbar
         z: 9
         width: parent.width
     }
+    //client socket
     CusClient {
         id: cus_client
         onClose_by_Dialog: {
@@ -55,7 +62,7 @@ FluWindow {
     function parseJson(recv) {
         var recv_json = JSON.parse(recv)
         var flag = recv_json["flag"]
-        var contact = recv_json["contact"]
+        var contact
         switch (flag) {
         case Define.CLIENT_ACCOUNT_NOT_REGISTED:
             showError("This account does not exist")
@@ -67,6 +74,7 @@ FluWindow {
             showSuccess("Send add request")
             break
         case Define.CLIENT_ADD_CONTACT_REQUEST:
+            contact = recv_json["contact"]
             console.log(contact)
             Define.add_page_listmodel.append({
                                                  "contact": contact,
@@ -74,17 +82,128 @@ FluWindow {
                                              })
             break
         case Define.CLIENT_ANSWER_YES:
+            contact = recv_json["contact"]
             Define.add_page_listmodel.append({
                                                  "contact": contact,
                                                  "flag": "1"
                                              })
             break
         case Define.CLIENT_ANSWER_NO:
+            contact = recv_json["contact"]
             Define.add_page_listmodel.append({
                                                  "contact": contact,
                                                  "flag": "2"
                                              })
             break
+        case Define.CLIENT_CONTACT_LIST:
+            //            contact = recv_json
+            //            for (let key in recv_json) {
+            //                if (key !== "flag") {
+            //                    contact_list.append({
+            //                                            "contact": key,
+            //                                            "nickname": recv_json[key]
+            //                                        })
+            //                }
+            //            }
+            //            break
+        }
+    }
+    property ListModel contact_list: ListModel {
+        ListElement {
+            contact: ""
+            nickname: ""
+        }
+    }
+    property ListModel add_model: ListModel {
+        ListElement {
+            contact: ""
+            flag: ""
+        }
+    }
+    property ListModel chat_model: ListModel {
+        ListElement {
+            detail: ""
+            position: 0
+        }
+    }
+
+    //start
+    Component.onCompleted: {
+        //clear listmodel
+        contact_list.clear()
+        add_model.clear()
+        chat_model.clear()
+        //set listmodel
+        Define.add_page_listmodel = add_model
+        Define.chat_page_listmodel = chat_model
+        //select when start
+        var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
+                + '","account":"' + Define.account + '"}'
+        $Client.sendMessage(send_json)
+    }
+    //    var contact_json
+    //pack FluPaneItem as an Item
+    FluObject {
+        id: cus_side_menu_bar
+        FluPaneItem {
+            title: "Add Contact"
+            onTap: {
+                nav_view.push("qrc:/qml/page/CusAddContactPage.qml")
+            }
+        }
+        FluPaneItemExpander {
+            id: inner_expander
+            title: "Contact"
+            FluPaneItem {
+                id: guest
+                title: "GST"
+                onTap: {
+                    nav_view.push("qrc:/qml/page/CusChatPage.qml")
+                }
+            }
+            FluPaneItem {
+                id: chaos
+                title: "CHS"
+                onTap: {
+                    nav_view.push("qrc:/qml/page/CusChatPage.qml")
+                }
+            }
+            Component.onCompleted: {
+                for (var i = 0; i < 3; i++) {
+                    var newPane = Qt.createQmlObject(
+                                "import FluentUI 1.0; FluPaneItem{title:'';}",
+                                inner_expander)
+                    newPane.title = i + "test"
+                    inner_expander.children.push(newPane)
+                }
+            }
+        }
+        //                    FluPaneItem {
+        //                        title: "Chat"
+        //                //        icon: FluentIcons.Home
+        //                //        cusIcon: Image {
+        //                //            anchors.centerIn: parent
+        //                //            //            source:
+        //                //            sourceSize: Qt.size(30, 30)
+        //                //            width: 18
+        //                //            height: 18
+        //                //        }
+        //                onTap: {
+        //                    console.log(contact_list)
+        //                }
+        //            }
+        //        }
+    }
+    FluNavigationView {
+        id: nav_view
+        title: Define.account + " online"
+        anchors.fill: parent
+        items: cus_side_menu_bar
+        z: 11
+        displayMode: FluNavigationView.Open
+        logo: "qrc:/res/icon/msg_ballon.png"
+        Component.onCompleted: {
+            nav_view.setCurrentIndex(0)
         }
     }
     SystemTrayIcon {
@@ -105,43 +224,6 @@ FluWindow {
             window.show()
             window.raise()
             window.requestActivate()
-        }
-    }
-
-    FluContentDialog {
-        id: close_app
-        title: "Sure to Quit"
-        message: "All activity won't be retained?"
-        negativeText: "Minimize"
-        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
-                     | FluContentDialog.NeutralButton
-        onPositiveClicked: {
-            window.destoryWindow()
-            FluApp.closeApp()
-        }
-        onNegativeClicked: {
-            system_tray.showMessage("Chat Notifications",
-                                    "Chat has been hide in the system tray")
-            window.hide()
-        }
-        positiveText: "Quit"
-        neutralText: "Cancle"
-    }
-    CusSideMenuBar {
-        id: cus_side_menu_bar
-    }
-    FluNavigationView {
-        id: nav_view
-        title: Define.account + " online"
-        anchors.fill: parent
-        items: cus_side_menu_bar
-        z: 11
-        displayMode: FluNavigationView.Open
-        //MainEvent.displayMode
-        //        logo: "qrc:/res/image/favicon.ico"
-        Component.onCompleted: {
-            cus_side_menu_bar.navigationView = nav_view //selected scrollpage
-            nav_view.setCurrentIndex(0)
         }
     }
 }

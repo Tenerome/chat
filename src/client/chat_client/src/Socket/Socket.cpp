@@ -12,7 +12,7 @@ bool Client::connect(QString ip, quint16 port){
     }
 }
 bool Client::sendMessage(QString sendstr){
-    if(client_socket->write(sendstr.toLatin1().data(),strlen(sendstr.toLatin1().data()))){
+    if(client_socket->write(sendstr.toStdString().data(),SOCKET_SIZE)){
         return true;
     }else{
         return false;

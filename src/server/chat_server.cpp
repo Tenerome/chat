@@ -1,8 +1,16 @@
 #include "chat_server.h"
 
 void Send(int socket,const char *buffer){
-    cout<<"<Send>:socket:"<<socket<<"buffer:"<<buffer<<endl;//TODEL
+    cout<<"<Send>"<<socket<<"buffer:"<<buffer<<endl;//TODEL
+    usleep(500000);
     send(socket,buffer,SOCKET_SIZE,0);
+}
+int Recv(int socket,string &recv_string){
+    usleep(100000);
+    char buff[SOCKET_SIZE-1]={'\0'};
+    int ret=recv(socket,buff,SOCKET_SIZE,0);
+    recv_string=buff;
+    return ret;
 }
 bool get_Password(const char *path,char *out){
     char in[16];
@@ -172,27 +180,29 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     vector<string> contact_add_list;
     if(get_Add_Flag(db,account.c_str(),contact_add_list)){
         for(auto it=contact_add_list.begin();it!=contact_add_list.end();++it){
-            sleep(1);
+            // sleep(1);
             cout<<*it<<endl;
             temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
             temp_json["contact"]=*it;
             Send(session_socket,temp_json.dump().c_str());
         }
     }
+    temp_json.clear();
     vector<string> agree_contact;
     vector<string> reject_contact;
     if(get_Answer_Add(db,account.c_str(),agree_contact,reject_contact)){
         if(!agree_contact.empty()){
             for(auto it=agree_contact.begin();it!=agree_contact.end();++it){
-                sleep(1);
+                // sleep(1);
                 temp_json["flag"]=SERVER_ANSWER_YES;
                 temp_json["contact"]=*it;
                 Send(session_socket,temp_json.dump().c_str());
             }
         }
+        temp_json.clear();
         if(!reject_contact.empty()){
             for(auto it=reject_contact.begin();it!=reject_contact.end();++it){
-                sleep(1);
+                // sleep(1);
                 temp_json["flag"]=SERVER_ANSWER_NO;
                 temp_json["contact"]=*it;
                 Send(session_socket,temp_json.dump().c_str());
@@ -200,7 +210,15 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         }
     }
     //getlist
-    
+    temp_json.clear();
+    map<string,string> contact_list;
+    if(Get_Contact_List(db,account.c_str(),contact_list)){
+        temp_json["flag"]=SERVER_CONTACT_LIST;
+        for(auto it=contact_list.begin();it!=contact_list.end();++it){
+            temp_json[it->first]=it->second;
+        }
+        Send(session_socket,temp_json.dump().c_str());
+    }
     ret=true;
     return ret;
 }
@@ -221,7 +239,7 @@ void parseJson(const char *json_string,int session_socket){
         exit(-1);
     }
     DB db(out);
-
+    
     json recv_json=json::parse(json_string);
     string flag=recv_json["flag"];
     switch(stoi(flag)){
@@ -314,8 +332,10 @@ int main(){
                 route_socket.insert(pair<string,int>(to_string(client_socket),client_socket));
             }else{//如果不是fd，说明是客户端发送了数据
                 int session_socket=listen_event[i].data.fd; 	//获取连接，建立通信
-                char *buff=(char*)malloc(SOCKET_SIZE);
-                int ret = recv(session_socket,buff,SOCKET_SIZE,0); //非阻塞如果没有数据那么就返回-1
+                // char buff[SOCKET_SIZE];
+                string recv_string;
+                // int ret = recv(session_socket,buff,SOCKET_SIZE,0); //非阻塞如果没有数据那么就返回-1
+                int ret=Recv(session_socket,recv_string);
                 if(ret==0){//读到0,说明客户端关闭,从epoll实例中删除客户端socket,并删除ip_socket键值对
                     epoll_ctl(epoll_fd,EPOLL_CTL_DEL,session_socket,NULL);
                     route_socket.erase(to_string(session_socket));//删除键值对
@@ -327,15 +347,15 @@ int main(){
                     close(session_socket);
                     cerr<<session_socket<<" client recv error"<<endl;
                 }else{//最后一种情况就只能是读到了数据
-                    cout<<"<Recv>buff"<<buff<<endl;//TODEL
+                    cout<<"<Recv>:"<<recv_string<<endl;//TODEL
                     try{
-                        parseJson(buff,session_socket);
+                        parseJson(recv_string.c_str(),session_socket);
                     }
                     catch(const std::exception& e){
                         std::cerr << e.what() << '\n';
                     }
                     //clear buff
-                    free(buff);
+
                 }
                 
                 }

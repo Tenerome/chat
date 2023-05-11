@@ -3,27 +3,14 @@ import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.5
 import "qrc:/qml/global/"
+import "../global/Define.js" as Define
 import FluentUI 1.0
 
-//TODEL
 FluContentPage {
     id: page
     width: parent.width
     height: parent.height
     visible: true
-    //    CusClient {
-    //        id: cus_client
-    //        onClose_by_Dialog: {
-    //            window.close()
-    //        }
-    //        onRecvOneMessage: recv => {
-    //                              if (recv !== "")
-    //                              listmodel.append({
-    //                                                   "detail": recv,
-    //                                                   "position": 1
-    //                                               })
-    //                          }
-    //    }
     ColumnLayout {
         FluScrollablePage {
             id: textscroll
@@ -35,7 +22,7 @@ FluContentPage {
                 height: textscroll.height
                 border.color: "#a3bfc2"
                 radius: 10
-                //                color: "#00FFFFFF"
+
                 //message ballon
                 ListView {
                     id: listview
@@ -73,13 +60,7 @@ FluContentPage {
                             }
                         }
                     }
-                    model: ListModel {
-                        id: listmodel
-                        ListElement {
-                            detail: "==Your chat start here=="
-                            position: 0
-                        }
-                    }
+                    model: Define.add_page_listmodel
                 }
             }
         }
@@ -93,11 +74,6 @@ FluContentPage {
             FluFilledButton {
                 id: send_btn
                 text: "send"
-                Component.onCompleted: {
-                    //clear the init detail
-                    listmodel.clear()
-                }
-
                 onClicked: {
                     if (multi_textbox.text !== "") {
                         listmodel.append({

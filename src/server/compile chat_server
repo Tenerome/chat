@@ -4,7 +4,13 @@ includepath="-I./include/ -I./include/encode/ -I./include/mysql/"
 libpath="-L./lib/ -lmysqlclient -lencode"
 #运行时lib
 rlibpath="-Wl,-rpath=./lib/"
-g++ chat_server.cpp ./include/db.cpp -o chat_server $includepath $libpath $rlibpath
+g++ chat_server.cpp ./include/db.cpp -o chat_server $includepath $libpath $rlibpath $1
 echo "compiled chat_server"
-echo "run chat_server:"
-sudo ./chat_server
+if [ $1 = "-g" ];
+then
+    echo "debug chat_server"
+    sudo gdb ./chat_server
+else
+    echo "run chat_server:"
+    sudo ./chat_server
+fi

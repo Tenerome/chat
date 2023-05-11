@@ -1,8 +1,10 @@
 #ifndef SOCKET_H
 #define SOCKET_H
+
 #include <QObject>
 #include <QTcpSocket>
 
+#define SOCKET_SIZE 2048
 class Client:public QObject{
   Q_OBJECT
 private:

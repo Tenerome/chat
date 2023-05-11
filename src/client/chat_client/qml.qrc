@@ -11,6 +11,5 @@
         <file>test.qml</file>
         <file>qml/global/Define.js</file>
         <file>qml/page/CusAddContactPage.qml</file>
-        <file>qml/page/CusProfile.qml</file>
     </qresource>
 </RCC>

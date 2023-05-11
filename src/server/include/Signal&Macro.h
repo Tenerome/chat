@@ -26,6 +26,7 @@
 #define SERVER_REJECT_ADD_CONTACT  10
 #define SERVER_ANSWER_YES 11
 #define SERVER_ANSWER_NO 12
+#define SERVER_CONTACT_LIST 13
 //===========socket signal======
 #define SOCKET_LOG_UP 0
 #define SOCKET_LOG_IN 1

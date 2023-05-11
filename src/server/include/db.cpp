@@ -9,34 +9,39 @@ DB::DB(const char *pass,const char *host,const char *user,const char *database,u
     this->database=database;
     this->port=port;
 }
+
 //=======================inline，复用的函数=============
 
 //connect to mysql
-inline bool get_Connection(DB *db){
-    db->mysql=mysql_init(nullptr);
-    if(db->mysql==nullptr){
+
+
+bool get_Connection(DB &db){
+    db.mysql=mysql_init(NULL);
+    // mysql_init(db.mysql);
+    if(db.mysql==NULL){
         cerr<<"db-get_Connection:mysql_init error"<<endl;
         return false;
     }
-    mysql_real_connect(db->mysql,db->host.c_str(),db->user.c_str(),db->password.c_str(),db->database.c_str(),db->port,nullptr,0);
-    if(db->mysql==nullptr){
+    mysql_real_connect(db.mysql,db.host.c_str(),db.user.c_str(),db.password.c_str(),db.database.c_str(),db.port,NULL,0);
+    if(db.mysql==NULL){
         cerr<<"db-get_Connection:mysql_real_connect error"<<endl;
         return false;
     }
-    mysql_set_character_set(db->mysql,"utf8");
+    mysql_set_character_set(db.mysql,"utf8");
     return true;
 }
 //check account has been/not been registed
-inline bool check_Existed(DB *db,const char *account){
+//!need getConnectin before check
+bool check_Existed(DB &db,const char *account){
     char query[250];
     sprintf(query,"select count(1) from user where account='%s' ",account);
-    if(mysql_query(db->mysql,query)){
-        cerr<<"db-Check_Existed:select error:"<<mysql_error(db->mysql)<<endl;
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Check_Existed:select error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
-    MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==nullptr){
-        cerr<<"db-inline_Check_Existed:res error:"<<mysql_error(db->mysql)<<endl;
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==NULL){
+        cerr<<"db-inline_Check_Existed:res error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
@@ -49,16 +54,17 @@ inline bool check_Existed(DB *db,const char *account){
     }
 }
 //check account online status
-inline bool check_Online(DB *db,const char *account){
+//!need getConnectin before check
+bool check_Online(DB &db,const char *account){
     char query[250];
     sprintf(query,"select status from user where account='%s'",account);
-    if(mysql_query(db->mysql,query)){
-        cerr<<"db-check_Online:get status error:"<<mysql_error(db->mysql)<<endl;
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-check_Online:get status error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
-    MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==nullptr){
-        cerr<<"db-Check_Online:res error:"<<mysql_error(db->mysql)<<endl;
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==NULL){
+        cerr<<"db-Check_Online:res error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
@@ -70,17 +76,17 @@ inline bool check_Online(DB *db,const char *account){
     }
 
 }
-
-inline string getName_by_account(DB *db,const char *account){
+//!need getConnectin before get
+string getName_by_account(DB &db,const char *account){
     char query[250];
     sprintf(query,"select name from user where account='%s'",account);
-    if(mysql_query(db->mysql,query)){
-        cerr<<"db-getName_by_account:select error:"<<mysql_error(db->mysql)<<endl;
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-getName_by_account:select error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
-    MYSQL_RES *res=mysql_store_result(db->mysql);
-    if(res==nullptr){
-        cerr<<"db-get_Name_by_account:mysql store result error:"<<mysql_error(db->mysql);
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==NULL){
+        cerr<<"db-get_Name_by_account:mysql store result error:"<<mysql_error(db.mysql);
         exit(-1);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
@@ -88,8 +94,8 @@ inline string getName_by_account(DB *db,const char *account){
     return row[0];
 }
 //return account socket
-string get_Route(DB db,const char *account){
-    if(!get_Connection(&db)){
+string get_Route(DB &db,const char *account){
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
@@ -99,7 +105,7 @@ string get_Route(DB db,const char *account){
        exit(-1); 
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==nullptr){
+    if(res==NULL){
         cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
         exit(-1);
     }
@@ -116,11 +122,11 @@ string get_Route(DB db,const char *account){
 //account log up,return values:
 //SQL_ACCOUNT_REGISTED
 //SQL_FALSE / SQL_TRUE
-int Log_UP(DB db, const char *account, const char *password, const char *name){
-    if(!get_Connection(&db)){
+int Log_UP(DB &db, const char *account, const char *password, const char *name){
+    if(!get_Connection(db)){
         exit(-1);
     }
-    if(check_Existed(&db,account)){
+    if(check_Existed(db,account)){
         cout<<account<<" has been registed"<<endl;
         return SQL_ACCOUNT_REGISTED;
     }
@@ -137,12 +143,12 @@ int Log_UP(DB db, const char *account, const char *password, const char *name){
 //SQL_ACCOUNT_NOT_REGISTED
 //SQL_WRONG_PASSWORD
 //SQL_FALSE / SQL_TRUE
-int Log_IN(DB db, const char *account, const char *password,const char *route){
+int Log_IN(DB &db, const char *account, const char *password,const char *route){
 
-    if(!get_Connection(&db)){
+    if(!get_Connection(db)){
         exit(-1);
     }
-    if(!check_Existed(&db,account)){
+    if(!check_Existed(db,account)){
         cout<<account<<"does not exist"<<endl;
         return SQL_ACCOUNT_NOT_REGISTED;
     }
@@ -154,7 +160,7 @@ int Log_IN(DB db, const char *account, const char *password,const char *route){
        exit(-1);
     }
     MYSQL_RES* res=mysql_store_result(db.mysql);
-    if(res==nullptr){
+    if(res==NULL){
         cerr<<"db-Log_IN:mysql_store_result error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
@@ -176,8 +182,8 @@ int Log_IN(DB db, const char *account, const char *password,const char *route){
 }
 //account actively log out,return vales:
 //SQL_FALSE / SQL_TRUE
-int Log_OUT(DB db,int session_socket){
-    if(!get_Connection(&db)){
+int Log_OUT(DB &db,int session_socket){
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
@@ -194,15 +200,15 @@ int Log_OUT(DB db,int session_socket){
 //SQL_ACCOUNT_NOT_REGISTED
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_ADD_CONTACT
-int Send_Add_Contact_Request(DB db,const char *account,const char *contact){
-    if(!get_Connection(&db)){
+int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
+    if(!get_Connection(db)){
         exit(-1);
     }
-    if(!check_Existed(&db,contact)){
+    if(!check_Existed(db,contact)){
         cout<<contact<<"does not exist"<<endl;
         return SQL_ACCOUNT_NOT_REGISTED;
     }
-    if(check_Online(&db,contact)){
+    if(check_Online(db,contact)){
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存申请记录
         char query[250];
@@ -219,11 +225,11 @@ int Send_Add_Contact_Request(DB db,const char *account,const char *contact){
 //answer add contact request,return values:
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_ADD_CONTACT
-int Answer_Add_Contact(DB db,const char *account,const char *contact,int answer){
-    if(!get_Connection(&db)){
+int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer){
+    if(!get_Connection(db)){
         exit(-1);
     }
-    if(check_Online(&db,contact)){
+    if(check_Online(db,contact)){
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存
         char query[250];
@@ -239,12 +245,12 @@ int Answer_Add_Contact(DB db,const char *account,const char *contact,int answer)
 
 //after check add contact,return values:
 //SQL_FALSE / SQL_TRUE
-int Add_Contact(DB db,const char *account,const char *contact){
-    if(!get_Connection(&db)){
+int Add_Contact(DB &db,const char *account,const char *contact){
+    if(!get_Connection(db)){
         exit(-1);
     }
-    string account_name=getName_by_account(&db,account);
-    string contact_name=getName_by_account(&db,contact);
+    string account_name=getName_by_account(db,account);
+    string contact_name=getName_by_account(db,contact);
     char query[250];
     char query1[250];
     sprintf(query,"insert into contacts values('%s','%s','%s')",account,contact,contact_name.c_str());
@@ -262,8 +268,8 @@ int Add_Contact(DB db,const char *account,const char *contact){
 
 }
 //if true contact_add_list=add list
-bool get_Add_Flag(DB db,const char *account,vector<string> &contact_add_list){//account=to
-    if(!get_Connection(&db)){
+bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){//account=to
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
@@ -273,7 +279,7 @@ bool get_Add_Flag(DB db,const char *account,vector<string> &contact_add_list){//
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==nullptr){
+    if(res==NULL){
         cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
@@ -283,7 +289,7 @@ bool get_Add_Flag(DB db,const char *account,vector<string> &contact_add_list){//
             mysql_free_result(res);
             return false;
         }else{
-            while((row=mysql_fetch_row(res))!=nullptr){
+            while((row=mysql_fetch_row(res))!=NULL){
                 if(strcmp(row[0],"1")==0){
                     contact_add_list.push_back(row[1]);
                 }
@@ -304,8 +310,8 @@ bool get_Add_Flag(DB db,const char *account,vector<string> &contact_add_list){//
     return false;
 }
 //if true agree_contact=agree list,reject_contact=reject list
-bool get_Answer_Add(DB db,const char *account,vector<string> &agree_contact,vector<string> &reject_contact){//account=from
-    if(!get_Connection(&db)){
+bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vector<string> &reject_contact){//account=from
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
@@ -315,7 +321,7 @@ bool get_Answer_Add(DB db,const char *account,vector<string> &agree_contact,vect
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==nullptr){
+    if(res==NULL){
         cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
@@ -325,7 +331,7 @@ bool get_Answer_Add(DB db,const char *account,vector<string> &agree_contact,vect
             return false;
         }else{
             MYSQL_ROW row;
-            while((row=mysql_fetch_row(res))!=nullptr){
+            while((row=mysql_fetch_row(res))!=NULL){
                 if(strcmp(row[0],"1")==0){
                     agree_contact.push_back(row[1]);
                 }else if(strcmp(row[0],"0")==0){
@@ -351,8 +357,8 @@ bool get_Answer_Add(DB db,const char *account,vector<string> &agree_contact,vect
     return false;
 }
 
-int Set_Nickname(DB db,const char *account,const char *contact,const char *nickname){
-    if(!get_Connection(&db)){
+int Set_Nickname(DB &db,const char *account,const char *contact,const char *nickname){
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
@@ -364,8 +370,8 @@ int Set_Nickname(DB db,const char *account,const char *contact,const char *nickn
         return SQL_TRUE;
     }
 }
-int Del_Contact(DB db,const char *account,const char *contact){
-    if(!get_Connection(&db)){
+int Del_Contact(DB &db,const char *account,const char *contact){
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
@@ -384,31 +390,32 @@ int Del_Contact(DB db,const char *account,const char *contact){
     }
 
 }
-vector<string> Get_Contact_List(DB db,const char *account){
-    if(!get_Connection(&db)){
+bool Get_Contact_List(DB &db,const char *account,map<string,string> &contact_list){
+    if(!get_Connection(db)){
         exit(-1);
     }
     char query[250];
-    sprintf(query,"select nickname from contacts where account='%s'",account);
+    sprintf(query,"select contact,nickname from contacts where account='%s'",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Contact_List:select error"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==nullptr){
+    if(res==NULL){
         cerr<<"db-Get_Contact_List:mysql store result error:"<<mysql_error(db.mysql)<<endl;
         exit(-1);
     }
-    MYSQL_ROW row;
-    vector<string> contact_list;
-        //is null
-    if(!mysql_num_rows(res)==0){
-        while((row=mysql_fetch_row(res))!=nullptr){
-            contact_list.push_back(row[0]);
+    if(mysql_num_rows(res)==0){
+        mysql_free_result(res);
+        return false;
+    }else{
+        MYSQL_ROW row;
+        while((row=mysql_fetch_row(res))!=NULL){
+            contact_list.insert(pair<string,string>(row[0],row[1]));
         }
+        mysql_free_result(res);
+        return true;
     }
-    mysql_free_result(res);
-    return contact_list;
 }
 
 //===============message==========
@@ -416,11 +423,11 @@ vector<string> Get_Contact_List(DB db,const char *account){
 //before send message,return values:
 //SQL_ACCOUNT_ONLINE
 //SQL_BUFFER_SEND_MESSAGE
-int Before_Send_Message(DB db,const char *from_account,const char *to_account,const char *message){
-    if(!get_Connection(&db)){
+int Before_Send_Message(DB &db,const char *from_account,const char *to_account,const char *message){
+    if(!get_Connection(db)){
         exit(-1);
     }
-    if(check_Online(&db,to_account)){
+    if(check_Online(db,to_account)){
         return SQL_ACCOUNT_ONLINE;
     }else{
         char query[1250];
@@ -432,15 +439,15 @@ int Before_Send_Message(DB db,const char *from_account,const char *to_account,co
         return SQL_BUFFER_SEND_MESSAGE;
     }
 }
-// int Get_New_Contact(DB db,const char *account,const char *contact){
-//     if(!get_Connection(&db)){
+// int Get_New_Contact(DB &db,const char *account,const char *contact){
+//     if(!get_Connection(db)){
 //         exit(-1);
 //     }
-//     if(Check_Add_Flag(&db,account)){
+//     if(Check_Add_Flag(db,account)){
 
 //     }
 // }
 
-// string Get_Message_Buffer(DB db,const char *account){
+// string Get_Message_Buffer(DB &db,const char *account){
 
 // }

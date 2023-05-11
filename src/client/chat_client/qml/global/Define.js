@@ -19,6 +19,7 @@ const CLIENT_AGREE_ADD_CONTACT = 9
 const CLIENT_REJECT_ADD_CONTACT = 10
 const CLIENT_ANSWER_YES = 11
 const CLIENT_ANSWER_NO = 12
+const CLIENT_CONTACT_LIST = 13
 //global variable
 var account
 var add_page_listmodel
