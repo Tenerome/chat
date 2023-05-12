@@ -59,6 +59,7 @@ FluWindow {
                               }
                           }
     }
+    signal contact_ready
     function parseJson(recv) {
         var recv_json = JSON.parse(recv)
         var flag = recv_json["flag"]
@@ -96,24 +97,12 @@ FluWindow {
                                              })
             break
         case Define.CLIENT_CONTACT_LIST:
-            //            contact = recv_json
-            //            for (let key in recv_json) {
-            //                if (key !== "flag") {
-            //                    contact_list.append({
-            //                                            "contact": key,
-            //                                            "nickname": recv_json[key]
-            //                                        })
-            //                }
-            //            }
-            //            break
+            Define.contact_string = recv
+            contact_ready()
+            break
         }
     }
-    property ListModel contact_list: ListModel {
-        ListElement {
-            contact: ""
-            nickname: ""
-        }
-    }
+
     property ListModel add_model: ListModel {
         ListElement {
             contact: ""
@@ -130,7 +119,7 @@ FluWindow {
     //start
     Component.onCompleted: {
         //clear listmodel
-        contact_list.clear()
+        //        contact_list.clear()
         add_model.clear()
         chat_model.clear()
         //set listmodel
@@ -141,7 +130,6 @@ FluWindow {
                 + '","account":"' + Define.account + '"}'
         $Client.sendMessage(send_json)
     }
-    //    var contact_json
     //pack FluPaneItem as an Item
     FluObject {
         id: cus_side_menu_bar
@@ -168,14 +156,36 @@ FluWindow {
                     nav_view.push("qrc:/qml/page/CusChatPage.qml")
                 }
             }
-            Component.onCompleted: {
-                for (var i = 0; i < 3; i++) {
-                    var newPane = Qt.createQmlObject(
-                                "import FluentUI 1.0; FluPaneItem{title:'';}",
-                                inner_expander)
-                    newPane.title = i + "test"
-                    inner_expander.children.push(newPane)
+            Connections {
+                property var parent
+                property var idx
+                target: window
+                function onContact_ready() {
+                    var con_json = JSON.parse(Define.contact_string)
+                    for (let i in con_json) {
+                        var newPane = Qt.createQmlObject(
+                                    "import FluentUI 1.0; FluPaneItem{temp_id:'del';title:'del'}",
+                                    inner_expander)
+                        if (i !== "flag") {
+                            newPane.temp_id = i
+                            newPane.title = con_json[i]
+                            inner_expander.children.push(newPane)
+                        }
+                    }
                 }
+            }
+            Component.onCompleted: {
+
+                //                for (let key in contact_json) {
+                //                    var newPane = Qt.createQmlObject(
+                //                                "import FluentUI 1.0; FluPaneItem{id:'';title:'';}",
+                //                                inner_expander)
+                //                    if (key !== "") {
+                //                        newPane.id = key
+                //                        newPane.title = contact_json[key]
+                //                        inner_expander.children.push(newPane)
+                //                    }
+                //                }
             }
         }
         //                    FluPaneItem {

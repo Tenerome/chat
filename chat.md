@@ -344,7 +344,8 @@ db中的获取连接和检测用户等功能会被多个函数复用，但因为
   生成qmltypes
 
 ```bash
-./qmlplugindump --nonrelatable FluentUI 1.0 /bin > /bin/Fluent/plugin.qmltypes
+#whereis qmlplugindump
+/home/tenerome/Qt/5.15.2/gcc_64/bin/qmlplugindump --nonrelocatable FluentUI 1.0 ./package > ./package/FluentUI/plugin.qmltypes
 ```
 
   导入到debug/debug desktop,也就是chat_client 同级目录下，就可以调用模块。同时也有代码提示

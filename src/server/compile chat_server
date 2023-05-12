@@ -1,12 +1,18 @@
 #! /bin/bash
 
-includepath="-I./include/ -I./include/encode/ -I./include/mysql/"
-libpath="-L./lib/ -lmysqlclient -lencode"
-#运行时lib
+#set include path
+includepath="-I./include/ -I./include/db/ -I./include/encode/ -I./include/mysql/"
+# spawn db,encode lib.so
+g++ -shared -fPIC ./include/db/db*.cpp $includepath -L./lib/ -lmysqlclient -o ./lib/libdb.so
+g++ -shared -fPIC ./include/encode/base64.c ./include/encode/md5.cpp  -o ./lib/libencode.so
+#set compile lib path
+libpath="-L./lib/ -lmysqlclient -lencode -ldb"
+#set runtime lib path
 rlibpath="-Wl,-rpath=./lib/"
-g++ chat_server.cpp ./include/db.cpp -o chat_server $includepath $libpath $rlibpath $1
+#compile
+g++ chat_server.cpp -o chat_server $includepath $libpath $rlibpath $1
 echo "compiled chat_server"
-if [ $1 = "-g" ];
+if [ -n "$1" ];
 then
     echo "debug chat_server"
     sudo gdb ./chat_server
