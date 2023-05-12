@@ -13,8 +13,6 @@ DB::DB(const char *pass,const char *host,const char *user,const char *database,u
 //=======================inline，复用的函数=============
 
 //connect to mysql
-
-
 bool get_Connection(DB &db){
     db.mysql=mysql_init(NULL);
     // mysql_init(db.mysql);
@@ -95,6 +93,8 @@ string getName_by_account(DB &db,const char *account){
 }
 
 //return account socket
+//complete function with getConnection and close mysql,dont 
+//use if there is another sql event below
 string get_Route(DB &db,const char *account){
     if(!get_Connection(db)){
         exit(-1);
@@ -116,5 +116,6 @@ string get_Route(DB &db,const char *account){
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
+    mysql_close(db.mysql);
     return row[0];
 }

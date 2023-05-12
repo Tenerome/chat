@@ -10,9 +10,11 @@ int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
     }
     if(!check_Existed(db,contact)){
         cout<<contact<<"does not exist"<<endl;
+        mysql_close(db.mysql);
         return SQL_ACCOUNT_NOT_REGISTED;
     }
     if(check_Online(db,contact)){
+        mysql_close(db.mysql);
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存申请记录
         char query[250];
@@ -21,6 +23,7 @@ int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
             cerr<<"db-Send_Add_Contact_Request:insert error:"<<mysql_error(db.mysql)<<endl;
             exit(-1);
         }
+        mysql_close(db.mysql);
         return SQL_BUFFER_ADD_CONTACT;
 
     }
@@ -34,6 +37,7 @@ int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer
         exit(-1);
     }
     if(check_Online(db,contact)){
+        mysql_close(db.mysql);
         return SQL_ACCOUNT_ONLINE;
     }else{//缓存
         char query[250];
@@ -43,6 +47,7 @@ int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer
             cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
             exit(-1);
         }
+        mysql_close(db.mysql);
         return SQL_BUFFER_ADD_CONTACT;
     }
 }
@@ -64,9 +69,11 @@ int Add_Contact(DB &db,const char *account,const char *contact){
     int ret1=mysql_query(db.mysql,query1);
     if(ret==0&&ret1==0){
         mysql_commit(db.mysql);
+        mysql_close(db.mysql);
         return SQL_TRUE;
     }else{
         mysql_rollback(db.mysql);
+        mysql_close(db.mysql);
         return SQL_FALSE;
     }
 
@@ -91,6 +98,7 @@ bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){/
     try{
         if(mysql_num_rows(res)==0){
             mysql_free_result(res);
+            mysql_close(db.mysql);
             return false;
         }else{
             while((row=mysql_fetch_row(res))!=NULL){
@@ -105,12 +113,14 @@ bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){/
                 cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
                 exit(-1);
             }
+            mysql_close(db.mysql);
             return true;
         }
     }catch(const std::exception& e){
         std::cerr << e.what() << '\n';
     }
     //finally
+    mysql_close(db.mysql);
     return false;
 }
 //if true agree_contact=agree list,reject_contact=reject list
@@ -132,6 +142,7 @@ bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vec
     try{
         if(mysql_num_rows(res)==0){
             mysql_free_result(res);
+            mysql_close(db.mysql);
             return false;
         }else{
             MYSQL_ROW row;
@@ -146,18 +157,19 @@ bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vec
             }
             mysql_free_result(res);
             //del buffer
-            cout<<"test get in getAnswer_Add:"<<account<<endl;
             sprintf(query,"delete from message where from_account='%s' and answer_add is not null ",account);
             if(mysql_query(db.mysql,query)){
                 cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
                 exit(-1);
-        }
+            }
+            mysql_close(db.mysql);
             return true;
         }
     }catch(const std::exception& e){
         std::cerr << e.what() << '\n';
     }
     //finally
+    mysql_close(db.mysql);
     return false;
 }
 
@@ -169,8 +181,10 @@ int Set_Nickname(DB &db,const char *account,const char *contact,const char *nick
     sprintf(query,"update contacts set nickname='%s' where account='%s' and contact='%s'",nickname,account,contact);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Set_Nickname:update error"<<mysql_error(db.mysql)<<endl;
+        mysql_close(db.mysql);
         return SQL_FALSE;
     }else{
+        mysql_close(db.mysql);
         return SQL_TRUE;
     }
 }
@@ -187,9 +201,11 @@ int Del_Contact(DB &db,const char *account,const char *contact){
     int ret1=mysql_query(db.mysql,query1);
     if(ret==0 && ret1==0){
         mysql_commit(db.mysql);
+        mysql_close(db.mysql);
         return SQL_TRUE;
     }else{
         mysql_rollback(db.mysql);
+        mysql_close(db.mysql);
         return SQL_FALSE;
     }
 
@@ -211,6 +227,7 @@ bool Get_Contact_List(DB &db,const char *account,map<string,string> &contact_lis
     }
     if(mysql_num_rows(res)==0){
         mysql_free_result(res);
+        mysql_close(db.mysql);
         return false;
     }else{
         MYSQL_ROW row;
@@ -218,6 +235,7 @@ bool Get_Contact_List(DB &db,const char *account,map<string,string> &contact_lis
             contact_list.insert(pair<string,string>(row[0],row[1]));
         }
         mysql_free_result(res);
+        mysql_close(db.mysql);
         return true;
     }
 }

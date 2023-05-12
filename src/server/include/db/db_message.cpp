@@ -8,6 +8,7 @@ int Before_Send_Message(DB &db,const char *from_account,const char *to_account,c
         exit(-1);
     }
     if(check_Online(db,to_account)){
+        mysql_close(db.mysql);
         return SQL_ACCOUNT_ONLINE;
     }else{
         char query[1250];
@@ -16,18 +17,10 @@ int Before_Send_Message(DB &db,const char *from_account,const char *to_account,c
             cerr<<"db-Before_Send_Message:insert error"<<mysql_error(db.mysql)<<endl;
             exit(-1);
         }
+        mysql_close(db.mysql);
         return SQL_BUFFER_SEND_MESSAGE;
     }
 }
-// int Get_New_Contact(DB &db,const char *account,const char *contact){
-//     if(!get_Connection(db)){
-//         exit(-1);
-//     }
-//     if(Check_Add_Flag(db,account)){
-
-//     }
-// }
-
 // string Get_Message_Buffer(DB &db,const char *account){
 
 // }

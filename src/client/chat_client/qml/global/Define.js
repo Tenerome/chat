@@ -24,5 +24,4 @@ const CLIENT_CONTACT_LIST = 13
 var account
 var add_page_listmodel
 var chat_page_listmodel
-
-var contact_string = ""
+var contact_json

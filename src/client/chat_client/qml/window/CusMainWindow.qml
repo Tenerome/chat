@@ -97,7 +97,7 @@ FluWindow {
                                              })
             break
         case Define.CLIENT_CONTACT_LIST:
-            Define.contact_string = recv
+            Define.contact_json = recv_json
             contact_ready()
             break
         }
@@ -118,8 +118,6 @@ FluWindow {
 
     //start
     Component.onCompleted: {
-        //clear listmodel
-        //        contact_list.clear()
         add_model.clear()
         chat_model.clear()
         //set listmodel
@@ -161,48 +159,19 @@ FluWindow {
                 property var idx
                 target: window
                 function onContact_ready() {
-                    var con_json = JSON.parse(Define.contact_string)
-                    for (let i in con_json) {
+                    for (let key in Define.contact_json) {
                         var newPane = Qt.createQmlObject(
                                     "import FluentUI 1.0; FluPaneItem{temp_id:'del';title:'del'}",
                                     inner_expander)
-                        if (i !== "flag") {
-                            newPane.temp_id = i
-                            newPane.title = con_json[i]
+                        if (key !== "flag") {
+                            newPane.temp_id = key
+                            newPane.title = con_json[key]
                             inner_expander.children.push(newPane)
                         }
                     }
                 }
             }
-            Component.onCompleted: {
-
-                //                for (let key in contact_json) {
-                //                    var newPane = Qt.createQmlObject(
-                //                                "import FluentUI 1.0; FluPaneItem{id:'';title:'';}",
-                //                                inner_expander)
-                //                    if (key !== "") {
-                //                        newPane.id = key
-                //                        newPane.title = contact_json[key]
-                //                        inner_expander.children.push(newPane)
-                //                    }
-                //                }
-            }
         }
-        //                    FluPaneItem {
-        //                        title: "Chat"
-        //                //        icon: FluentIcons.Home
-        //                //        cusIcon: Image {
-        //                //            anchors.centerIn: parent
-        //                //            //            source:
-        //                //            sourceSize: Qt.size(30, 30)
-        //                //            width: 18
-        //                //            height: 18
-        //                //        }
-        //                onTap: {
-        //                    console.log(contact_list)
-        //                }
-        //            }
-        //        }
     }
     FluNavigationView {
         id: nav_view
@@ -211,6 +180,7 @@ FluWindow {
         items: cus_side_menu_bar
         z: 11
         displayMode: FluNavigationView.Open
+        //TODO icon
         logo: "qrc:/res/icon/msg_ballon.png"
         Component.onCompleted: {
             nav_view.setCurrentIndex(0)
@@ -219,7 +189,7 @@ FluWindow {
     SystemTrayIcon {
         id: system_tray
         visible: true
-        //        icon.source: "qrc:/res/image/favicon.ico"
+        //TODO icon
         tooltip: "chat"
         menu: Menu {
             MenuItem {
