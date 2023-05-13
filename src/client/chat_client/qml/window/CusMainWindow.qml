@@ -27,8 +27,8 @@ FluWindow {
     }
     FluContentDialog {
         id: close_app
-        title: "Sure to Quit"
-        message: "All activity won't be retained?"
+        title: "Sure to Quit?"
+        message: "All activity won't be retained"
         negativeText: "Minimize"
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
                      | FluContentDialog.NeutralButton
@@ -104,10 +104,12 @@ FluWindow {
             contact_ready_S()
             break
         case Define.CLIENT_TEXT_MESSAGE:
-            contact_map[recv_json["contact"]].append({
-                                                         "detail": recv_json["message"],
-                                                         "position": 1
-                                                     })
+            contact = recv_json["contact"]
+            message = recv_json["message"]
+            contact_map[contact].append({
+                                            "detail": message,
+                                            "position": 1
+                                        })
             break
         }
     }

@@ -84,7 +84,7 @@ bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){/
         exit(-1);
     }
     char query[250];
-    sprintf(query,"select add_flag,from_account from message where to_account='%s'",account);
+    sprintf(query,"select add_flag,from_account from message where to_account='%s' and add_flag is not null",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
         exit(-1);

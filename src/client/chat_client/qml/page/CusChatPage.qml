@@ -54,7 +54,7 @@ FluContentPage {
                             id: ballon
                             width: label.width + 50
                             height: label.height <= 120 ? 120 : label.height + 20
-                            color: "#4D10CCEE"
+                            color: position < 1 ? "#4D10CCEE" : "#4D7B7D7D"
                             radius: 20
                             x: position < 1 ? listview.width
                                               - width : 0 //control the position of message ballon
@@ -64,7 +64,7 @@ FluContentPage {
                                 font.pixelSize: 20
                                 anchors.centerIn: parent
                                 //                                anchors.leftMargin: 10
-                                wrapMode: Text.Wrap //多行文本 超过width就自动换行
+                                wrapMode: Text.Wrap
                                 text: detail
                             }
                         }
@@ -78,6 +78,12 @@ FluContentPage {
             id: multi_textbox
             Layout.preferredWidth: recarea.width
             Layout.preferredHeight: 150
+            Keys.enabled: true
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Enter - 1) {
+                    send_btn.clicked()
+                }
+            }
         }
         RowLayout {
             FluFilledButton {

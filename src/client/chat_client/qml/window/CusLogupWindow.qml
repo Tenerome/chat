@@ -73,6 +73,12 @@ FluWindow {
             placeholderText: "verify your password"
             echoMode: TextInput.Password
             Layout.alignment: Qt.AlignHCenter
+            Keys.enabled: true
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Enter - 1) {
+                    logup_btn.clicked()
+                }
+            }
         }
         FluFilledButton {
             text: "back to login"

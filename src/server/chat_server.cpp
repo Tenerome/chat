@@ -178,6 +178,7 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     temp_json.clear();
     bool ret=false;
     vector<string> contact_add_list;
+    //get add request
     if(get_Add_Flag(db,account.c_str(),contact_add_list)){
         for(auto it=contact_add_list.begin();it!=contact_add_list.end();++it){
             // sleep(1);
@@ -190,6 +191,7 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     temp_json.clear();
     vector<string> agree_contact;
     vector<string> reject_contact;
+    //get answer add
     if(get_Answer_Add(db,account.c_str(),agree_contact,reject_contact)){
         if(!agree_contact.empty()){
             for(auto it=agree_contact.begin();it!=agree_contact.end();++it){
@@ -219,6 +221,28 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         }
         Send(session_socket,temp_json.dump().c_str());
     }
+    //get chat buffer
+    auto &message_list=contact_list;//recycle map memory
+    message_list.clear();
+    if(Get_Message_Buffer(db,account.c_str(),message_list)){
+        temp_json["flag"]=SERVER_TEXT_MESSAGE;
+        for(auto it=message_list.begin();it!=message_list.end();++it){
+            temp_json["contact"]=it->first;
+            temp_json["message"]=it->second;
+        }
+        Send(session_socket,temp_json.dump().c_str());
+    }
+    //get image buffer
+    auto &image_list=message_list;//recycle map memory
+    image_list.clear();
+    if(Get_Image_Buffer(db,account.c_str(),image_list)){
+        temp_json["flag"]=SERVER_TEXT_MESSAGE;
+        for(auto it=image_list.begin();it!=image_list.end();++it){
+            temp_json["contact"]=it->first;
+            temp_json["message"]=it->second;
+        }
+        Send(session_socket,temp_json.dump().c_str());
+    }
     ret=true;
     return ret;
 }
@@ -244,11 +268,11 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
     bool ret=false;
     string contact_socket;
     switch (stoi(message_flag)){
-        case SERVER_TEXT_MESSAFE:
+        case SERVER_TEXT_MESSAGE:
             switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),0)){
                 case SQL_ACCOUNT_ONLINE:
                     contact_socket=get_Route(db,contact.c_str());
-                    temp_json["flag"]=SERVER_TEXT_MESSAFE;
+                    temp_json["flag"]=SERVER_TEXT_MESSAGE;
                     temp_json["message"]=message;
                     temp_json["contact"]=account;
                     ret=true;
@@ -258,6 +282,23 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
                     break;
             }
             break;
+        //TODO image message
+        // case SERVER_IMAGE_MESSAGE:
+        //     switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),1)){
+        //         case SQL_ACCOUNT_ONLINE:
+        //             contact_socket=get_Route(db,contact.c_str());
+        //             temp_json["flag"]=SERVER_TEXT_MESSAGE;
+        //             temp_json["message"]=message;
+        //             temp_json["contact"]=account;
+        //             ret=true;
+        //             break;
+        //         case SQL_BUFFER_SEND_MESSAGE:
+        //             ret=false;
+        //             break;
+        //     }
+        //     break;
+
+
     }
     if(temp_json.empty()){
         return ret;

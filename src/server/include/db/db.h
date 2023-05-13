@@ -38,5 +38,6 @@ int Del_Contact(DB &db,const char *account,const char *contact);
 //message
 
 int Send_Message(DB &db,const char *from_account,const char *to_account,const char *message,int message_type);
-string Get_Message_Buffer(DB &db,const char *account);
+bool Get_Message_Buffer(DB &db,const char *account,map<string,string> &message_list);
+bool Get_Image_Buffer(DB &db,const char *account,map<string,string> &image_list);
 #endif 
