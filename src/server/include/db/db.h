@@ -37,7 +37,6 @@ int Del_Contact(DB &db,const char *account,const char *contact);
 
 //message
 
-int Before_Send_Message(DB &db,const char *from_account,const char *to_account,const char *message);
-int Get_New_Contact(DB &db,const char *account);
+int Send_Message(DB &db,const char *from_account,const char *to_account,const char *message,int message_type);
 string Get_Message_Buffer(DB &db,const char *account);
 #endif 

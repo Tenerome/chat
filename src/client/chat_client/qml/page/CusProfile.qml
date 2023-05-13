@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.5
 import FluentUI 1.0
-import "qrc:/qml/global/"
 import "../global/Define.js" as Define
 
 FluContentPage {

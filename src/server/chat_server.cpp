@@ -233,6 +233,40 @@ void mid_Log_OUT(int session_socket){
         cout<<session_socket<<" log out succeed"<<endl;
     }
 }
+
+bool mid_Send_Message(DB db,const char *json_string,int session_socket){
+    json temp_json=json::parse(json_string);
+    string message_flag=temp_json["message_flag"];
+    string account=temp_json["account"];
+    string contact=temp_json["contact"];
+    string message=temp_json["message"];
+    temp_json.clear();
+    bool ret=false;
+    string contact_socket;
+    switch (stoi(message_flag)){
+        case SERVER_TEXT_MESSAFE:
+            switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),0)){
+                case SQL_ACCOUNT_ONLINE:
+                    contact_socket=get_Route(db,contact.c_str());
+                    temp_json["flag"]=SERVER_TEXT_MESSAFE;
+                    temp_json["message"]=message;
+                    temp_json["contact"]=account;
+                    ret=true;
+                    break;
+                case SQL_BUFFER_SEND_MESSAGE:
+                    ret=false;
+                    break;
+            }
+            break;
+    }
+    if(temp_json.empty()){
+        return ret;
+    }else{
+        Send(route_socket[contact_socket],temp_json.dump().c_str());
+        return ret;
+    }
+
+}
 void parseJson(const char *json_string,int session_socket){
     char out[16];
     if(!get_Password("pass.dat",out)){
@@ -276,6 +310,13 @@ void parseJson(const char *json_string,int session_socket){
                 cout<<session_socket<<" select buffer succeed"<<endl;
             }else{
                 cerr<<session_socket<<" select buffer failed"<<endl;
+            }
+            break;
+        case SOCKET_MESSAGE:
+            if(mid_Send_Message(db,json_string,session_socket)){
+                cout<<session_socket<<" send message succeed"<<endl;
+            }else{
+                cerr<<session_socket<<" send message failed"<<endl;
             }
             break;
         default:

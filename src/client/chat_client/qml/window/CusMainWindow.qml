@@ -8,6 +8,9 @@ import "qrc:/qml/global/"
 import "../global/Define.js" as Define
 
 FluWindow {
+    signal contact_ready_S
+    signal tap_contact_S(string contact)
+    property var contact_map
     id: window
     title: "chat"
     width: 1200
@@ -59,11 +62,11 @@ FluWindow {
                               }
                           }
     }
-    signal contact_ready
     function parseJson(recv) {
         var recv_json = JSON.parse(recv)
         var flag = recv_json["flag"]
         var contact
+        var message
         switch (flag) {
         case Define.CLIENT_ACCOUNT_NOT_REGISTED:
             showError("This account does not exist")
@@ -98,37 +101,35 @@ FluWindow {
             break
         case Define.CLIENT_CONTACT_LIST:
             Define.contact_json = recv_json
-            contact_ready()
+            contact_ready_S()
+            break
+        case Define.CLIENT_TEXT_MESSAGE:
+            contact_map[recv_json["contact"]].append({
+                                                         "detail": recv_json["message"],
+                                                         "position": 1
+                                                     })
             break
         }
     }
-
-    property ListModel add_model: ListModel {
-        ListElement {
-            contact: ""
-            flag: ""
-        }
-    }
-    property ListModel chat_model: ListModel {
-        ListElement {
-            detail: ""
-            position: 0
-        }
-    }
-
-    //start
     Component.onCompleted: {
-        add_model.clear()
-        chat_model.clear()
-        //set listmodel
-        Define.add_page_listmodel = add_model
-        Define.chat_page_listmodel = chat_model
+        //create add listmodel
+        Define.add_page_listmodel = Qt.createQmlObject(
+                    "import QtQuick 2.9;ListModel{ListElement{contact:'';flag:''}}",
+                    window)
+        Define.add_page_listmodel.clear()
         //select when start
         var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
                 + '","account":"' + Define.account + '"}'
         $Client.sendMessage(send_json)
     }
     //pack FluPaneItem as an Item
+    ListModel {
+        id: chat_log
+        ListElement {
+            details: ""
+            position: 0
+        }
+    }
     FluObject {
         id: cus_side_menu_bar
         FluPaneItem {
@@ -140,35 +141,40 @@ FluWindow {
         FluPaneItemExpander {
             id: inner_expander
             title: "Contact"
-            FluPaneItem {
-                id: guest
-                title: "GST"
-                onTap: {
-                    nav_view.push("qrc:/qml/page/CusChatPage.qml")
-                }
-            }
-            FluPaneItem {
-                id: chaos
-                title: "CHS"
-                onTap: {
-                    nav_view.push("qrc:/qml/page/CusChatPage.qml")
+            Connections {
+                property var parent
+                property var idx
+                target: window
+                function onContact_ready_S() {
+                    contact_map = Define.contact_json
+                    for (let key in Define.contact_json) {
+                        var newPane = Qt.createQmlObject(
+                                    "import FluentUI 1.0; FluPaneItem{temp_id:'del';title:'del';onTap:{tap_contact_S(temp_id)}}",
+                                    inner_expander)
+                        if (key !== "flag") {
+                            //spawn FluPaneItem by contacts
+                            newPane.temp_id = key
+                            newPane.title = Define.contact_json[key]
+                            inner_expander.children.push(newPane)
+                            //fill contact_map
+                            contact_map[key] = Qt.createQmlObject(
+                                        "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
+                                        parent)
+                            contact_map[key].clear()
+                        }
+                    }
                 }
             }
             Connections {
                 property var parent
                 property var idx
                 target: window
-                function onContact_ready() {
-                    for (let key in Define.contact_json) {
-                        var newPane = Qt.createQmlObject(
-                                    "import FluentUI 1.0; FluPaneItem{temp_id:'del';title:'del'}",
-                                    inner_expander)
-                        if (key !== "flag") {
-                            newPane.temp_id = key
-                            newPane.title = con_json[key]
-                            inner_expander.children.push(newPane)
-                        }
+                function onTap_contact_S(contact) {
+                    Define.load_model = {
+                        "contact": contact,
+                        "Model": contact_map[contact]
                     }
+                    nav_view.push("qrc:/qml/page/CusChatPage.qml")
                 }
             }
         }

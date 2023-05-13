@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.5
 import FluentUI 1.0
-import "qrc:/qml/global/"
 import "../global/Define.js" as Define
 
 FluContentPage {
@@ -56,10 +55,18 @@ FluContentPage {
                     delegate: Component {
                         FluRectangle {
                             id: add_frame
-                            width: page.width
+                            width: scroll_page.width
                             height: 50
-                            //                            color: "orange"
+                            FluRectangle {
+                                width: parent.width
+                                height: parent.height
+                                z: 1
+                                radius: [10, 10, 10, 10]
+                                color: "#BD29B6F6"
+                            }
                             Row {
+                                z: 2
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 spacing: 15
                                 FluText {
                                     id: label
@@ -73,12 +80,12 @@ FluContentPage {
                                     pixelSize: add_frame.height - 20
                                 }
                                 FluText {
-                                    text: " agree to be your friend:"
+                                    text: " agree to be your friend"
                                     visible: flag === "1" ? true : false
                                     pixelSize: add_frame.height - 20
                                 }
                                 FluText {
-                                    text: " reject to be your friend:"
+                                    text: " reject to be your friend"
                                     visible: flag === "2" ? true : false
                                     pixelSize: add_frame.height - 20
                                 }

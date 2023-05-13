@@ -2,15 +2,24 @@ import QtQuick 2.9
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.5
-import "qrc:/qml/global/"
-import "../global/Define.js" as Define
 import FluentUI 1.0
+import "../global/Define.js" as Define
 
 FluContentPage {
     id: page
     width: parent.width
     height: parent.height
     visible: true
+    property var contact
+    property var chat_model
+    Component.onCompleted: {
+        for (let key in Define.load_model) {
+            if (key === "contact")
+                contact = Define.load_model[key]
+            else
+                chat_model = Define.load_model[key]
+        }
+    }
     ColumnLayout {
         FluScrollablePage {
             id: textscroll
@@ -60,7 +69,7 @@ FluContentPage {
                             }
                         }
                     }
-                    model: Define.add_page_listmodel
+                    model: chat_model
                 }
             }
         }
@@ -76,14 +85,19 @@ FluContentPage {
                 text: "send"
                 onClicked: {
                     if (multi_textbox.text !== "") {
-                        listmodel.append({
-                                             "detail": Qt.formatDateTime(
-                                                           new Date(),
-                                                           "MM.dd HH:mm:ss") + " You:\n"
-                                                       + multi_textbox.text,
-                                             "position": 0
-                                         })
-                        $Client.sendMessage(multi_textbox.text)
+                        chat_model.append({
+                                              "detail": Qt.formatDateTime(
+                                                            new Date(),
+                                                            "MM.dd HH:mm:ss") + " You:\n"
+                                                        + multi_textbox.text,
+                                              "position": 0
+                                          })
+
+                        var send_json = '{"flag":"' + Define.SOCKET_MESSAGE + '","message_flag":"'
+                                + Define.CLIENT_TEXT_MESSAGE + '","account":"'
+                                + Define.account + '","contact":"' + contact
+                                + '","message":"' + multi_textbox.text + '"}'
+                        $Client.sendMessage(send_json)
                         multi_textbox.text = ""
                     }
                 }

@@ -27,12 +27,14 @@
 #define SERVER_ANSWER_YES 11
 #define SERVER_ANSWER_NO 12
 #define SERVER_CONTACT_LIST 13
+#define SERVER_TEXT_MESSAFE 14
 //===========socket signal======
 #define SOCKET_LOG_UP 0
 #define SOCKET_LOG_IN 1
 #define SOCKET_ADD_CONTACT 2
 #define SOCKET_ANSWER_ADD 3
 #define SOCKET_SELECT_WHEN_START 4
+#define SOCKET_MESSAGE 5
 //message flag
 #define TEXT_MESSAGE 0
 #define IMAGE_MESSAGE 1
