@@ -8,9 +8,12 @@ import "qrc:/qml/global/"
 import "../global/Define.js" as Define
 
 FluWindow {
+    //================signal and property===============
     signal contact_ready_S
     signal tap_contact_S(string contact)
+    signal edit_contact_S(string contact)
     property var contact_map
+
     id: window
     title: "chat"
     width: 1200
@@ -25,6 +28,7 @@ FluWindow {
         close_app.open()
         event.accepted = false
     }
+    //========================system tray,bar,dialog================
     FluContentDialog {
         id: close_app
         title: "Sure to Quit?"
@@ -44,13 +48,34 @@ FluWindow {
         positiveText: "Quit"
         neutralText: "Cancle"
     }
-    //appbar and system tray
+
     FluAppBar {
         id: appbar
         z: 9
         width: parent.width
     }
-    //client socket
+
+    SystemTrayIcon {
+        id: system_tray
+        visible: true
+        //TODO icon
+        tooltip: "chat"
+        menu: Menu {
+            MenuItem {
+                text: "Quit"
+                onTriggered: {
+                    window.destoryWindow()
+                    FluApp.closeApp()
+                }
+            }
+        }
+        onActivated: {
+            window.show()
+            window.raise()
+            window.requestActivate()
+        }
+    }
+    //===========================client socket,parse socket===================
     CusClient {
         id: cus_client
         onClose_by_Dialog: {
@@ -62,6 +87,7 @@ FluWindow {
                               }
                           }
     }
+
     function parseJson(recv) {
         var recv_json = JSON.parse(recv)
         var flag = recv_json["flag"]
@@ -110,9 +136,11 @@ FluWindow {
                                             "detail": message,
                                             "position": 1
                                         })
+            system_tray.showMessage(contact, message)
             break
         }
     }
+    //==========================when start=======================
     Component.onCompleted: {
         //create add listmodel
         Define.add_page_listmodel = Qt.createQmlObject(
@@ -124,14 +152,79 @@ FluWindow {
                 + '","account":"' + Define.account + '"}'
         $Client.sendMessage(send_json)
     }
-    //pack FluPaneItem as an Item
-    ListModel {
-        id: chat_log
-        ListElement {
-            details: ""
-            position: 0
+    //==========================FluNavigationView==================
+    FluNavigationView {
+        id: nav_view
+        title: Define.account + " online"
+        anchors.fill: parent
+        items: cus_side_menu_bar
+        z: 11
+        displayMode: FluNavigationView.Open
+        //TODO icon
+        logo: "qrc:/res/icon/msg_ballon.png"
+        Component.onCompleted: {
+            nav_view.setCurrentIndex(0)
         }
     }
+
+    FluWindow {
+        id: edit_window
+        width: 520
+        height: 55
+        flags: edit_window | Qt.FramelessWindowHint
+        color: "#BD29B6F7"
+        RowLayout {
+            spacing: 10
+            Rectangle {
+                border.color: "gray"
+                radius: 10
+                width: 350
+                height: 45
+                TextEdit {
+                    id: new_nickname
+                    anchors.fill: parent
+                    Layout.preferredHeight: 45
+                    Layout.preferredWidth: 350
+                    verticalAlignment: TextEdit.AlignVCenter
+                    leftPadding: 2
+                    selectByMouse: true
+                    cursorVisible: true
+                    selectionColor: "#66B3FF"
+                }
+            }
+            FluFilledButton {
+                text: "edit"
+                height: 50
+            }
+            FluFilledButton {
+                text: "cancel"
+                height: 50
+                onClicked: {
+                    edit_window.visible = false
+                }
+            }
+        }
+    }
+
+    FluMenu {
+        id: pop_menu
+        FluMenuItem {
+            text: "cancel"
+        }
+        FluMenuItem {
+            text: "edit nickname"
+            onClicked: {
+                edit_window.visible = true
+            }
+        }
+        FluMenuItem {
+            text: "delete contact"
+            onClicked: {
+
+            }
+        }
+    }
+
     FluObject {
         id: cus_side_menu_bar
         FluPaneItem {
@@ -150,9 +243,11 @@ FluWindow {
                 function onContact_ready_S() {
                     contact_map = Define.contact_json
                     for (let key in Define.contact_json) {
-                        var newPane = Qt.createQmlObject(
-                                    "import FluentUI 1.0; FluPaneItem{temp_id:'del';title:'del';onTap:{tap_contact_S(temp_id)}}",
-                                    inner_expander)
+                        var newCompnt = Qt.createComponent(
+                                    "qrc:/qml/global/cusFluPaneItem.qml")
+                        if (newCompnt.status === Component.Ready) {
+                            var newPane = newCompnt.createObject(inner_expander)
+                        }
                         if (key !== "flag") {
                             //spawn FluPaneItem by contacts
                             newPane.temp_id = key
@@ -167,6 +262,7 @@ FluWindow {
                     }
                 }
             }
+            //tap contact
             Connections {
                 property var parent
                 property var idx
@@ -177,41 +273,18 @@ FluWindow {
                         "Model": contact_map[contact]
                     }
                     nav_view.push("qrc:/qml/page/CusChatPage.qml")
+                    pop_menu.close()
                 }
             }
-        }
-    }
-    FluNavigationView {
-        id: nav_view
-        title: Define.account + " online"
-        anchors.fill: parent
-        items: cus_side_menu_bar
-        z: 11
-        displayMode: FluNavigationView.Open
-        //TODO icon
-        logo: "qrc:/res/icon/msg_ballon.png"
-        Component.onCompleted: {
-            nav_view.setCurrentIndex(0)
-        }
-    }
-    SystemTrayIcon {
-        id: system_tray
-        visible: true
-        //TODO icon
-        tooltip: "chat"
-        menu: Menu {
-            MenuItem {
-                text: "Quit"
-                onTriggered: {
-                    window.destoryWindow()
-                    FluApp.closeApp()
+            //double click contact
+            Connections {
+                property var parent
+                property var idx
+                target: window
+                function onEdit_contact_S(contact) {
+                    pop_menu.popup()
                 }
             }
-        }
-        onActivated: {
-            window.show()
-            window.raise()
-            window.requestActivate()
         }
     }
 }

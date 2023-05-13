@@ -32,8 +32,8 @@ int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer
 bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list);
 bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vector<string> &reject_contact);
 bool Get_Contact_List(DB &db,const char *account,map<string,string> &contact_list);
-int Set_Nickname(DB &db,const char *account,const char *contact,const char *nickname);
-int Del_Contact(DB &db,const char *account,const char *contact);
+bool Set_Nickname(DB &db,const char *account,const char *contact,const char *nickname);
+bool Del_Contact(DB &db,const char *account,const char *contact);
 
 //message
 

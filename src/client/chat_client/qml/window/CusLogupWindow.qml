@@ -51,6 +51,7 @@ FluWindow {
             placeholderText: "Input your account"
             Layout.preferredWidth: 260
             Layout.alignment: Qt.AlignHCenter
+            focus: true
         }
         FluTextBox {
             id: textbox_name

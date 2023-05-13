@@ -173,7 +173,7 @@ bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vec
     return false;
 }
 
-int Set_Nickname(DB &db,const char *account,const char *contact,const char *nickname){
+bool Set_Nickname(DB &db,const char *account,const char *contact,const char *nickname){
     if(!get_Connection(db)){
         exit(-1);
     }
@@ -182,13 +182,13 @@ int Set_Nickname(DB &db,const char *account,const char *contact,const char *nick
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Set_Nickname:update error"<<mysql_error(db.mysql)<<endl;
         mysql_close(db.mysql);
-        return SQL_FALSE;
+        return false;
     }else{
         mysql_close(db.mysql);
-        return SQL_TRUE;
+        return true;
     }
 }
-int Del_Contact(DB &db,const char *account,const char *contact){
+bool Del_Contact(DB &db,const char *account,const char *contact){
     if(!get_Connection(db)){
         exit(-1);
     }
@@ -202,11 +202,11 @@ int Del_Contact(DB &db,const char *account,const char *contact){
     if(ret==0 && ret1==0){
         mysql_commit(db.mysql);
         mysql_close(db.mysql);
-        return SQL_TRUE;
+        return true;
     }else{
         mysql_rollback(db.mysql);
         mysql_close(db.mysql);
-        return SQL_FALSE;
+        return false;
     }
 
 }
