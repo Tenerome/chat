@@ -199,12 +199,21 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     string account=temp_json["account"];
     temp_json.clear();
     bool ret=false;
-    vector<string> contact_add_list;
+    //get profile
+    string uid;
+    string name;
+    if(get_Profile(db,account.c_str(),uid,name)){
+            temp_json["flag"]=SOCKET_GET_RPOFILE;
+            temp_json["uid"]=uid;
+            temp_json["name"]=name;
+            Send(session_socket,temp_json.dump().c_str());
+    }
     //get add request
+    vector<string> contact_add_list;
     if(get_Add_Flag(db,account.c_str(),contact_add_list)){
         for(auto it=contact_add_list.begin();it!=contact_add_list.end();++it){
             // sleep(1);
-            cout<<*it<<endl;
+            cout<<*it<<endl;//TODEL
             temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
             temp_json["contact"]=*it;
             Send(session_socket,temp_json.dump().c_str());
@@ -265,6 +274,7 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         }
         Send(session_socket,temp_json.dump().c_str());
     }
+    //get chatroom history
     ret=true;
     return ret;
 }
@@ -287,24 +297,35 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
     string contact=temp_json["contact"];
     string message=temp_json["message"];
     temp_json.clear();
-    bool ret=false;
     string contact_socket;
-    switch (stoi(message_flag)){
-        case SERVER_TEXT_MESSAGE:
-            switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),0)){
-                case SQL_ACCOUNT_ONLINE:
-                    contact_socket=get_Route(db,contact.c_str());
-                    temp_json["flag"]=SERVER_TEXT_MESSAGE;
-                    temp_json["message"]=message;
-                    temp_json["contact"]=account;
-                    ret=true;
-                    break;
-                case SQL_BUFFER_SEND_MESSAGE:
-                    ret=false;
-                    break;
+    if(strcmp(contact.c_str(),"$chatroom")){
+        vector<string> online_account_list;
+        if(Send_Group_Message(db,account.c_str(),message.c_str(),online_account_list)){
+            for(auto it=online_account_list.begin();it!=online_account_list.end();it++){
+                contact_socket=get_Route(db,(*it).c_str());
+                temp_json["flag"]=SERVER_GROUP_MESSAGE;
+                temp_json["contact"]=account;
+                temp_json["message"]=message;
+                Send(route_socket[contact_socket],temp_json.dump().c_str());
             }
+        }
+        return true;
+    }else{
+        switch (stoi(message_flag)){
+            case SERVER_TEXT_MESSAGE:
+                switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),0)){
+                    case SQL_ACCOUNT_ONLINE:
+                        contact_socket=get_Route(db,contact.c_str());
+                        temp_json["flag"]=SERVER_TEXT_MESSAGE;
+                        temp_json["message"]=message;
+                        temp_json["contact"]=account;
+                        Send(route_socket[contact_socket],temp_json.dump().c_str());
+                        return true;
+                    case SQL_BUFFER_SEND_MESSAGE:
+                        return false;
+                }
             break;
-        //TODO image message
+            //TODO image message
         // case SERVER_IMAGE_MESSAGE:
         //     switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),1)){
         //         case SQL_ACCOUNT_ONLINE:
@@ -319,16 +340,8 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
         //             break;
         //     }
         //     break;
-
-
+        }
     }
-    if(temp_json.empty()){
-        return ret;
-    }else{
-        Send(route_socket[contact_socket],temp_json.dump().c_str());
-        return ret;
-    }
-
 }
 void parseJson(const char *json_string,int session_socket){
     char out[16];

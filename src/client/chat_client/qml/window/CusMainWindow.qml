@@ -13,7 +13,7 @@ FluWindow {
     signal tap_contact_S(string contact)
     signal edit_contact_S(string contact)
     property var contact_map
-
+    property var chatroom_model
     id: window
     title: "chat"
     width: 1200
@@ -133,10 +133,28 @@ FluWindow {
             contact = recv_json["contact"]
             message = recv_json["message"]
             contact_map[contact].append({
-                                            "detail": message,
+                                            "detail": Qt.formatDateTime(
+                                                          new Date(),
+                                                          "MM.dd HH:mm:ss ")
+                                                      + contact + "\n" + message,
                                             "position": 1
                                         })
             system_tray.showMessage(contact, message)
+            break
+        case Define.SOCKET_GET_PROFILE:
+            Define.uid = recv_json["uid"]
+            Define.name = recv_json["name"]
+            break
+        case Define.CLIENT_GROUP_MESSAGE:
+            contact = recv_json["contact"]
+            message = recv_json["message"]
+            chatroom_model.append({
+                                      "detail": Qt.formatDateTime(
+                                                    new Date(),
+                                                    "MM.dd HH:mm:ss ") + contact + "\n" + message,
+                                      "position": contact === Define.account ? 0 : 1
+                                  })
+            system_tray.showMessage("chatroom:" + contact, message)
             break
         }
     }
@@ -147,6 +165,11 @@ FluWindow {
                     "import QtQuick 2.9;ListModel{ListElement{contact:'';flag:''}}",
                     window)
         Define.add_page_listmodel.clear()
+        //create chatroom model
+        chatroom_model = Qt.createQmlObject(
+                    "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
+                    window)
+        chatroom_model.clear()
         //select when start
         var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
                 + '","account":"' + Define.account + '"}'
@@ -273,6 +296,12 @@ FluWindow {
     FluObject {
         id: cus_side_menu_bar
         FluPaneItem {
+            title: "Profile"
+            onTap: {
+                nav_view.push("qrc:/qml/page/CusProfile.qml")
+            }
+        }
+        FluPaneItem {
             title: "Add Contact"
             onTap: {
                 nav_view.push("qrc:/qml/page/CusAddContactPage.qml")
@@ -282,8 +311,7 @@ FluWindow {
             title: "Flush Contact"
             onTap: {
                 window.closeDestory = true
-                window.closeFunc = function (event) {//                    event.accepted = true
-                }
+                window.closeFunc = function () {}
                 window.close()
                 FluApp.navigate("/main")
             }
@@ -322,10 +350,10 @@ FluWindow {
                 property var parent
                 property var idx
                 target: window
-                function onTap_contact_S(contact) {
+                function onTap_contact_S(temp_id) {
                     Define.load_model = {
-                        "contact": contact,
-                        "Model": contact_map[contact]
+                        "contact": temp_id,
+                        "Model": contact_map[temp_id]
                     }
                     nav_view.push("qrc:/qml/page/CusChatPage.qml")
                     pop_menu.close()
@@ -342,8 +370,13 @@ FluWindow {
             }
         }
         FluPaneItem {
+            temp_id: $chatroom
             title: "Chat Room"
             onTap: {
+                Define.load_model = {
+                    "contact": temp_id,
+                    "Model": chatroom_model
+                }
                 nav_view.push("qrc:/qml/page/CusChatPage.qml")
             }
         }

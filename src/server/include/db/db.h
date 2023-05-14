@@ -19,6 +19,7 @@ bool check_Existed(DB &db,const char *account);
 bool check_Online(DB &db,const char *account);
 string getName_by_account(DB &db,const char *account);
 string get_Route(DB &db,const char *account);
+bool get_Profile(DB &db,const char *account,string &uid,string &name);
 //user
 
 int Log_UP(DB &db,const char *account,const char *password,const char *name);
@@ -40,4 +41,6 @@ bool Del_Contact(DB &db,const char *account,const char *contact);
 int Send_Message(DB &db,const char *from_account,const char *to_account,const char *message,int message_type);
 bool Get_Message_Buffer(DB &db,const char *account,map<string,string> &message_list);
 bool Get_Image_Buffer(DB &db,const char *account,map<string,string> &image_list);
+bool Send_Group_Message(DB &db,const char *account,const char *message,vector<string> &online_account_list);
+bool Get_Group_Message(DB &db,map<string,string> &group_message_list);
 #endif 

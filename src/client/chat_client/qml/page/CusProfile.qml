@@ -11,9 +11,65 @@ FluContentPage {
     height: parent.height
     Rectangle {
         id: inner
-        width: page.width - 200
-        height: page.height - 200
-        anchors.topMargin: 80
+        width: page.width - 50
+        height: page.height - 150
         border.color: "gray"
+        radius: 10
+        ColumnLayout {
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+            spacing: 10
+            RowLayout {
+                spacing: 5
+                FluText {
+                    text: "uid:"
+                    pixelSize: 20
+                }
+                FluText {
+                    text: Define.uid
+                    pixelSize: 20
+                }
+            }
+            RowLayout {
+                spacing: 5
+                FluText {
+                    text: "name:"
+                    pixelSize: 20
+                }
+                FluText {
+                    text: Define.name
+                    pixelSize: 20
+                }
+            }
+            RowLayout {
+                FluTextBox {
+                    id: set_name
+                    placeholderText: "Input new name"
+                    Layout.preferredWidth: 260
+                    Layout.alignment: Qt.AlignHCenter
+                    focus: true
+                    Keys.enabled: true
+                    Keys.onPressed: {
+                        if (event.key === Qt.Key_Enter - 1) {
+                            setname_btn.clicked()
+                        }
+                    }
+                }
+                FluFilledButton {
+                    id: setname_btn
+                    text: "set name"
+                    onClicked: {
+                        var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
+                                + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME
+                                + '","account":"' + Define.account + '","contact":"'
+                                + Define.account + '","nickname":"' + set_name.text + '"}'
+                        $Client.sendMessage(send_json)
+                        set_name.text = ""
+                        showSuccess("Set Succeed,Please Flush")
+                    }
+                }
+            }
+        }
     }
 }

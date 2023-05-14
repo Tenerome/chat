@@ -58,6 +58,7 @@ FluContentPage {
                             radius: 20
                             x: position < 1 ? listview.width
                                               - width : 0 //control the position of message ballon
+
                             Text {
                                 id: label
                                 width: label.text.length <= 10 ? label.text.length * 12 : 250

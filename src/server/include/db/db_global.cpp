@@ -93,8 +93,8 @@ string getName_by_account(DB &db,const char *account){
 }
 
 //return account socket
-//complete function with getConnection and close mysql,dont 
-//use if there is another sql event below
+//complete function with getConnection and close mysql
+//don't use if there is another sql event below
 string get_Route(DB &db,const char *account){
     if(!get_Connection(db)){
         exit(-1);
@@ -118,4 +118,34 @@ string get_Route(DB &db,const char *account){
     mysql_free_result(res);
     mysql_close(db.mysql);
     return row[0];
+}
+
+//transmit uid and name
+//complete function with getConnection and close mysql
+//don't use if there is another sql event below
+bool get_Profile(DB &db,const char *account,string &uid,string &name){
+    if(!get_Connection(db)){
+        exit(-1);
+    }
+    char query[250];
+    sprintf(query,"select uid,name from user where account='%s'",account);
+    if(mysql_query(db.mysql,query)){
+       cerr<<"db-get_Route:get route error:"<<mysql_error(db.mysql)<<endl;
+       exit(-1); 
+    }
+    MYSQL_RES *res=mysql_store_result(db.mysql);
+    if(res==NULL){
+        cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
+        exit(-1);
+    }
+    if(mysql_num_rows(res)==0){
+        cerr<<"no log in information"<<endl;
+        exit(-1);
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    uid=row[0];
+    name=row[1];
+    mysql_free_result(res);
+    mysql_close(db.mysql);
+    return true;
 }

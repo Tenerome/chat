@@ -178,7 +178,12 @@ bool Set_Nickname(DB &db,const char *account,const char *contact,const char *nic
         exit(-1);
     }
     char query[250];
-    sprintf(query,"update contacts set nickname='%s' where account='%s' and contact='%s'",nickname,account,contact);
+    if(strcmp(account,contact)==0){
+        sprintf(query,"update user set name='%s' where account='%s'",nickname,account);
+
+    }else{
+        sprintf(query,"update contacts set nickname='%s' where account='%s' and contact='%s'",nickname,account,contact);
+    }
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Set_Nickname:update error"<<mysql_error(db.mysql)<<endl;
         mysql_close(db.mysql);

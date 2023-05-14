@@ -123,6 +123,7 @@ FluContentPage {
                                         agree_add.enabled = false
                                         reject_add.visible = false
                                         agree_add.normalColor = "black"
+                                        showSuccess("Add Contact,Please Flush")
                                     }
                                 }
                             }

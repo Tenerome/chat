@@ -7,6 +7,7 @@ const SOCKET_ANSWER_ADD = 3
 const SOCKET_SELECT_WHEN_START = 4
 const SOCKET_MESSAGE = 5
 const SOCKET_EDIT_CONTACT = 6
+const SOCKET_GET_PROFILE = 7
 //CLIENT signale
 const CLIENT_FALSE = 0
 const CLIENT_TRUE = 1
@@ -25,8 +26,13 @@ const CLIENT_CONTACT_LIST = 13
 const CLIENT_TEXT_MESSAGE = 14
 const CLIENT_EDIT_NICKNAME = 15
 const CLIENT_DELETE_CONTACT = 16
+const CLIENT_GROUP_MESSAGE = 17
 //global variable
-var account
+var account = ""
+var uid = ""
+var name = ""
+//transmit variable
 var add_page_listmodel
 var contact_json
+var chatroom_listmodel
 var load_model
