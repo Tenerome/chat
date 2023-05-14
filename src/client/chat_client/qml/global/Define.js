@@ -23,6 +23,8 @@ const CLIENT_ANSWER_YES = 11
 const CLIENT_ANSWER_NO = 12
 const CLIENT_CONTACT_LIST = 13
 const CLIENT_TEXT_MESSAGE = 14
+const CLIENT_EDIT_NICKNAME = 15
+const CLIENT_DELETE_CONTACT = 16
 //global variable
 var account
 var add_page_listmodel

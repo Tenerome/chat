@@ -176,11 +176,13 @@ FluWindow {
         RowLayout {
             spacing: 10
             Rectangle {
+                id: text_box
+                property alias text: new_nickname.text
                 border.color: "gray"
                 radius: 10
                 width: 350
                 height: 45
-                TextEdit {
+                TextInput {
                     id: new_nickname
                     anchors.fill: parent
                     Layout.preferredHeight: 45
@@ -190,19 +192,62 @@ FluWindow {
                     selectByMouse: true
                     cursorVisible: true
                     selectionColor: "#66B3FF"
+                    focus: true
+                    Keys.enabled: true
+                    Keys.onPressed: {
+                        if (event.key === Qt.Key_Enter - 1) {
+                            confirm_btn.clicked()
+                        }
+                        if (event.key === Qt.Key_Escape) {
+                            cancel_btn.clicked()
+                        }
+                    }
                 }
             }
             FluFilledButton {
-                text: "edit"
+                id: confirm_btn
+                text: "confirm"
                 height: 50
+                onClicked: {
+                    var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
+                            + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME
+                            + '","account":"' + Define.account + '","contact":"'
+                            + Define.load_model["contact"] + '","nickname":"' + text_box.text + '"}'
+                    $Client.sendMessage(send_json)
+                    text_box.text = ""
+                    edit_window.visible = false
+                    showSuccess("Modify Succeed!")
+                }
             }
             FluFilledButton {
+                id: cancel_btn
                 text: "cancel"
                 height: 50
                 onClicked: {
+                    text_box.text = ""
                     edit_window.visible = false
                 }
             }
+        }
+    }
+
+    FluContentDialog {
+        id: del_contact
+        title: "Sure to delete your friend?"
+        message: "Please think over before operation"
+        negativeText: "Cancel"
+        positiveText: "Confirm"
+        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
+        onPositiveClicked: {
+            var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT + '","edit_flag":"'
+                    + Define.CLIENT_DELETE_CONTACT + '","account":"' + Define.account
+                    + '","contact":"' + Define.load_model["contact"] + '"}'
+            $Client.sendMessage(send_json)
+            del_contact.close()
+            showSuccess("Delete Contact Succeed")
+        }
+        onNegativeClicked: {
+            del_contact.close()
         }
     }
 
@@ -220,7 +265,7 @@ FluWindow {
         FluMenuItem {
             text: "delete contact"
             onClicked: {
-
+                del_contact.open()
             }
         }
     }
@@ -231,6 +276,16 @@ FluWindow {
             title: "Add Contact"
             onTap: {
                 nav_view.push("qrc:/qml/page/CusAddContactPage.qml")
+            }
+        }
+        FluPaneItem {
+            title: "Flush Contact"
+            onTap: {
+                window.closeDestory = true
+                window.closeFunc = function (event) {//                    event.accepted = true
+                }
+                window.close()
+                FluApp.navigate("/main")
             }
         }
         FluPaneItemExpander {
@@ -284,6 +339,12 @@ FluWindow {
                 function onEdit_contact_S(contact) {
                     pop_menu.popup()
                 }
+            }
+        }
+        FluPaneItem {
+            title: "Chat Room"
+            onTap: {
+                nav_view.push("qrc:/qml/page/CusChatPage.qml")
             }
         }
     }

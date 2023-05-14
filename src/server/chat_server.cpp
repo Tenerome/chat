@@ -172,6 +172,28 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
     }
 }
 
+bool mid_Edit_Contact(DB db,const char *json_string,int session_socket){
+    json temp_json=json::parse(json_string);
+    string edit_flag=temp_json["edit_flag"];
+    string account=temp_json["account"];
+    string contact=temp_json["contact"];
+    string nickname;
+    bool ret=false;
+    switch(stoi(edit_flag)){
+        case SERVER_EDIT_NICKNAME:
+            nickname=temp_json["nickname"];
+            if(Set_Nickname(db,account.c_str(),contact.c_str(),nickname.c_str())){
+                ret=true;
+            }
+            break;
+        case SERVER_DELETE_CONTACT:
+            if(Del_Contact(db,account.c_str(),contact.c_str())){
+                ret=true;
+            }
+            break;
+    }
+    return ret;
+}
 bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     json temp_json=json::parse(json_string);
     string account=temp_json["account"];
@@ -358,6 +380,13 @@ void parseJson(const char *json_string,int session_socket){
                 cout<<session_socket<<" send message succeed"<<endl;
             }else{
                 cerr<<session_socket<<" send message failed"<<endl;
+            }
+            break;
+        case SOCKET_EDIT_CONTACT:
+            if(mid_Edit_Contact(db,json_string,session_socket)){
+                cout<<session_socket<<" edit contact succeed"<<endl;
+            }else{
+                cerr<<session_socket<<" edit contact failed"<<endl;
             }
             break;
         default:

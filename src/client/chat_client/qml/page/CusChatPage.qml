@@ -113,25 +113,6 @@ FluContentPage {
                 id: image_btn
                 text: "image"
             }
-            FluFilledButton {
-                id: operations
-                text: "operations"
-                onClicked: {
-                    pop_menu.popup()
-                }
-            }
-            FluMenu {
-                id: pop_menu
-                FluMenuItem {
-                    text: "edit nickname"
-                }
-                FluMenuItem {
-                    text: "delete contact"
-                    onClicked: {
-
-                    }
-                }
-            }
         }
     }
 }

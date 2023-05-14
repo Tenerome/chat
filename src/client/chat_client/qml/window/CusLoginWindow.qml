@@ -102,8 +102,8 @@ FluWindow {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
-                FluApp.navigate("/logup")
                 window.close()
+                FluApp.navigate("/logup")
             }
         }
     }
