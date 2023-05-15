@@ -22,6 +22,7 @@ FluContentPage {
         }
     }
     ColumnLayout {
+        spacing: 10
         FluScrollablePage {
             id: textscroll
             width: page.width - 50
@@ -32,7 +33,7 @@ FluContentPage {
                 height: textscroll.height
                 border.color: "#a3bfc2"
                 radius: 10
-
+                color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
                 //message ballon
                 ListView {
                     id: listview
@@ -65,7 +66,7 @@ FluContentPage {
                                 width: label.text.length <= 10 ? label.text.length * 12 : 250
                                 font.pixelSize: 20
                                 anchors.centerIn: parent
-                                //                                anchors.leftMargin: 10
+                                color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"
                                 wrapMode: Text.Wrap
                                 text: detail
                             }
@@ -74,22 +75,6 @@ FluContentPage {
                     model: chat_model
                 }
             }
-
-            //            Image {
-            //                id: image
-            //                source: ""
-            //                sourceSize: width < 400 ? Qt.size(width,
-            //                                                  height) : Qt.size(400, 400)
-            //                MouseArea {
-            //                    anchors.fill: parent
-            //                    acceptedButtons: Qt.RightButton | Qt.LeftButton
-            //                    onClicked: {
-            //                        if (mouse.button === Qt.RightButton) {
-            //                            image_popmenu.popup()
-            //                        }
-            //                    }
-            //                }
-            //            }
         }
 
         FluMultilineTextBox {
@@ -99,15 +84,6 @@ FluContentPage {
             Keys.enabled: true
             Keys.onPressed: {
                 if (event.key === Qt.Key_Enter - 1) {
-                    send_btn.clicked()
-                }
-            }
-        }
-        RowLayout {
-            FluFilledButton {
-                id: send_btn
-                text: "send"
-                onClicked: {
                     if (multi_textbox.text !== "") {
                         chat_model.append({
                                               "detail": Qt.formatDateTime(
@@ -126,30 +102,6 @@ FluContentPage {
                     }
                 }
             }
-            spacing: 50
-            FluFilledButton {
-                id: image_btn
-                text: "image"
-                onClicked: {
-                    image_select.open()
-                }
-            }
         }
     }
-    //    FileDialog {
-    //        id: image_select
-    //        title: "Select one Image"
-    //        folder: "/home/"
-    //        nameFilters: ["Image files(*.jpg *.png *.bmp *.gif *.jpeg)"]
-    //        fileMode: FileDialog.OpenFiles
-    //        onAccepted: {
-    //            image.source = image_select.file
-    //        }
-    //    }
-    //    FluMenu {
-    //        id: image_popmenu
-    //        FluMenuItem {
-    //            text: "save in"
-    //        }
-    //    }
 }

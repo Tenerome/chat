@@ -45,7 +45,7 @@ FluContentPage {
                 id: recarea
                 width: scroll_page.width
                 height: scroll_page.height
-                color: "white"
+                color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
                 radius: 10
                 ListView {
                     id: listview

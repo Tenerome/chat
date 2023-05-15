@@ -14,11 +14,11 @@ FluContentPage {
         width: page.width - 50
         height: page.height - 150
         border.color: "gray"
+        color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
         radius: 10
         ColumnLayout {
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-            }
+            x: 50
+            y: 50
             spacing: 10
             RowLayout {
                 spacing: 5

@@ -6,7 +6,6 @@ import "qrc:/qml/global"
 import "../global/Define.js" as Define
 
 FluWindow {
-
     id: window
     title: "chat:login"
     width: 800

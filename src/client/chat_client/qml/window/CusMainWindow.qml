@@ -16,10 +16,6 @@ FluWindow {
     title: "chat"
     width: 1200
     height: 900
-    minimumWidth: 1200
-    minimumHeight: 900
-    maximumWidth: 1200
-    maximumHeight: 900
     //close event
     closeDestory: false
     closeFunc: function (event) {
@@ -174,6 +170,7 @@ FluWindow {
         title: Define.account + " online"
         anchors.fill: parent
         items: cus_side_menu_bar
+        footerItems: footer
         z: 11
         displayMode: FluNavigationView.Open
         //TODO icon
@@ -366,7 +363,16 @@ FluWindow {
                 nav_view.push("qrc:/qml/page/CusChatPage.qml")
             }
         }
+    }
+    FluObject {
+        id: footer
         FluPaneItemSeparator {}
+        FluPaneItem {
+            title: "Settings"
+            onTap: {
+                nav_view.push("qrc:/qml/page/CusSetting.qml")
+            }
+        }
         FluPaneItem {
             title: "Flush"
             onTap: {
