@@ -7,7 +7,7 @@ FluPaneItem {
     onTap: {
         tap_contact_S(temp_id)
     }
-    onDoubleClick: {
+    onRclicked: {
         edit_contact_S(temp_id)
     }
 }

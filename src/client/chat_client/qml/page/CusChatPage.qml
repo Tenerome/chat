@@ -2,6 +2,7 @@ import QtQuick 2.9
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.5
+import Qt.labs.platform 1.1
 import FluentUI 1.0
 import "../global/Define.js" as Define
 
@@ -73,6 +74,22 @@ FluContentPage {
                     model: chat_model
                 }
             }
+
+            //            Image {
+            //                id: image
+            //                source: ""
+            //                sourceSize: width < 400 ? Qt.size(width,
+            //                                                  height) : Qt.size(400, 400)
+            //                MouseArea {
+            //                    anchors.fill: parent
+            //                    acceptedButtons: Qt.RightButton | Qt.LeftButton
+            //                    onClicked: {
+            //                        if (mouse.button === Qt.RightButton) {
+            //                            image_popmenu.popup()
+            //                        }
+            //                    }
+            //                }
+            //            }
         }
 
         FluMultilineTextBox {
@@ -113,7 +130,26 @@ FluContentPage {
             FluFilledButton {
                 id: image_btn
                 text: "image"
+                onClicked: {
+                    image_select.open()
+                }
             }
         }
     }
+    //    FileDialog {
+    //        id: image_select
+    //        title: "Select one Image"
+    //        folder: "/home/"
+    //        nameFilters: ["Image files(*.jpg *.png *.bmp *.gif *.jpeg)"]
+    //        fileMode: FileDialog.OpenFiles
+    //        onAccepted: {
+    //            image.source = image_select.file
+    //        }
+    //    }
+    //    FluMenu {
+    //        id: image_popmenu
+    //        FluMenuItem {
+    //            text: "save in"
+    //        }
+    //    }
 }
