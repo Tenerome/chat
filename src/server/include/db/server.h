@@ -30,6 +30,7 @@ using std::stoi;//string to int
 using std::to_string;//int to  string
 using std::vector;
 using std::map;
+using std::multimap;
 using std::pair;
 using json=nlohmann::json;
 #endif//SERVER_H

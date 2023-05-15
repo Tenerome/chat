@@ -41,6 +41,19 @@ FluWindow {
     }
 
     ColumnLayout {
+        FluProgressRing {
+            //progress ring
+            id: progress_ring
+            Layout.alignment: Qt.AlignHCenter
+            Timer {
+                interval: 1000
+                repeat: false
+                running: true
+                onTriggered: {
+                    progress_ring.destroy()
+                }
+            }
+        }
         anchors {
             left: parent.left
             right: parent.right

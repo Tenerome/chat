@@ -21,7 +21,7 @@ int Send_Message(DB &db,const char *from_account,const char *to_account,const ch
         return SQL_BUFFER_SEND_MESSAGE;
     }
 }
-bool Get_Message_Buffer(DB &db,const char *account,map<string,string> &message_list){
+bool Get_Message_Buffer(DB &db,const char *account,multimap<string,string> &message_list){
     if(!get_Connection(db)){
         exit(-1);
     }
@@ -56,7 +56,7 @@ bool Get_Message_Buffer(DB &db,const char *account,map<string,string> &message_l
         return true;
     }
 }
-bool Get_Image_Buffer(DB &db,const char *account,map<string,string> &image_list){
+bool Get_Image_Buffer(DB &db,const char *account,multimap<string,string> &image_list){
     if(!get_Connection(db)){
         exit(-1);
     }
@@ -129,7 +129,7 @@ bool Send_Group_Message(DB &db,const char *account,const char *message,vector<st
         return true;
     }
 }
-bool Get_Group_Message(DB &db,map<string,string> &group_message_list){
+bool Get_Group_Message(DB &db,vector<pair<string,string>> &group_message_list){
     if(!get_Connection(db)){
         exit(-1);
     }
@@ -152,7 +152,8 @@ bool Get_Group_Message(DB &db,map<string,string> &group_message_list){
     }else{
         MYSQL_ROW row;
         while((row=mysql_fetch_row(res))!=NULL){
-            group_message_list.insert(pair<string,string>(row[0],row[1]));
+            group_message_list.push_back(pair<string,string>(row[0],row[1]));
+            cout<<row[0]<<endl;//TODEL
         }
         mysql_free_result(res);
         mysql_close(db.mysql);

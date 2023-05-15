@@ -12,8 +12,6 @@ FluWindow {
     signal contact_ready_S
     signal tap_contact_S(string contact)
     signal edit_contact_S(string contact)
-    property var contact_map
-    property var chatroom_model
     id: window
     title: "chat"
     width: 1200
@@ -132,13 +130,10 @@ FluWindow {
         case Define.CLIENT_TEXT_MESSAGE:
             contact = recv_json["contact"]
             message = recv_json["message"]
-            contact_map[contact].append({
-                                            "detail": Qt.formatDateTime(
-                                                          new Date(),
-                                                          "MM.dd HH:mm:ss ")
-                                                      + contact + "\n" + message,
-                                            "position": 1
-                                        })
+            Define.contact_map[contact].append({
+                                                   "detail": "====" + contact + "====\n" + message,
+                                                   "position": 1
+                                               })
             system_tray.showMessage(contact, message)
             break
         case Define.SOCKET_GET_PROFILE:
@@ -148,13 +143,11 @@ FluWindow {
         case Define.CLIENT_GROUP_MESSAGE:
             contact = recv_json["contact"]
             message = recv_json["message"]
-            chatroom_model.append({
-                                      "detail": Qt.formatDateTime(
-                                                    new Date(),
-                                                    "MM.dd HH:mm:ss ") + contact + "\n" + message,
-                                      "position": contact === Define.account ? 0 : 1
-                                  })
-            system_tray.showMessage("chatroom:" + contact, message)
+            Define.chatroom_model.append({
+                                             "detail": "====" + contact + "====\n" + message,
+                                             "position": contact === Define.account ? 0 : 1
+                                         })
+            //            system_tray.showMessage("chatroom:" + contact, message)
             break
         }
     }
@@ -166,10 +159,10 @@ FluWindow {
                     window)
         Define.add_page_listmodel.clear()
         //create chatroom model
-        chatroom_model = Qt.createQmlObject(
+        Define.chatroom_model = Qt.createQmlObject(
                     "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
                     window)
-        chatroom_model.clear()
+        Define.chatroom_model.clear()
         //select when start
         var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
                 + '","account":"' + Define.account + '"}'
@@ -307,15 +300,6 @@ FluWindow {
                 nav_view.push("qrc:/qml/page/CusAddContactPage.qml")
             }
         }
-        FluPaneItem {
-            title: "Flush Contact"
-            onTap: {
-                window.closeDestory = true
-                window.closeFunc = function () {}
-                window.close()
-                FluApp.navigate("/main")
-            }
-        }
         FluPaneItemExpander {
             id: inner_expander
             title: "Contact"
@@ -324,23 +308,25 @@ FluWindow {
                 property var idx
                 target: window
                 function onContact_ready_S() {
-                    contact_map = Define.contact_json
+                    //format contact_map
+                    Define.contact_map = Define.contact_json
+                    //spawn flupaneitem
                     for (let key in Define.contact_json) {
                         var newCompnt = Qt.createComponent(
                                     "qrc:/qml/global/cusFluPaneItem.qml")
                         if (newCompnt.status === Component.Ready) {
                             var newPane = newCompnt.createObject(inner_expander)
-                        }
-                        if (key !== "flag") {
-                            //spawn FluPaneItem by contacts
-                            newPane.temp_id = key
-                            newPane.title = Define.contact_json[key]
-                            inner_expander.children.push(newPane)
-                            //fill contact_map
-                            contact_map[key] = Qt.createQmlObject(
-                                        "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
-                                        parent)
-                            contact_map[key].clear()
+                            if (key !== "flag") {
+                                //spawn FluPaneItem by contacts
+                                newPane.temp_id = key
+                                newPane.title = Define.contact_json[key]
+                                inner_expander.children.push(newPane)
+                                //fill contact_map
+                                Define.contact_map[key] = Qt.createQmlObject(
+                                            "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
+                                            parent)
+                                Define.contact_map[key].clear()
+                            }
                         }
                     }
                 }
@@ -353,7 +339,7 @@ FluWindow {
                 function onTap_contact_S(temp_id) {
                     Define.load_model = {
                         "contact": temp_id,
-                        "Model": contact_map[temp_id]
+                        "Model": Define.contact_map[temp_id]
                     }
                     nav_view.push("qrc:/qml/page/CusChatPage.qml")
                     pop_menu.close()
@@ -370,14 +356,42 @@ FluWindow {
             }
         }
         FluPaneItem {
-            temp_id: $chatroom
+            temp_id: "$chatroom"
             title: "Chat Room"
             onTap: {
                 Define.load_model = {
                     "contact": temp_id,
-                    "Model": chatroom_model
+                    "Model": Define.chatroom_model
                 }
                 nav_view.push("qrc:/qml/page/CusChatPage.qml")
+            }
+        }
+        FluPaneItemSeparator {}
+        FluPaneItem {
+            title: "Flush"
+            onTap: {
+                window.closeDestory = true
+                window.closeFunc = function (event) {
+                    event.accepted = true
+                }
+                window.destoryWindow()
+                FluApp.navigate("/main")
+            }
+        }
+    }
+    //flush progress ring
+    FluProgressRing {
+        //progress ring
+        id: progress_ring
+        z: 999
+        anchors.centerIn: parent
+        Layout.alignment: Qt.AlignHCenter
+        Timer {
+            interval: 1000
+            repeat: false
+            running: true
+            onTriggered: {
+                progress_ring.destroy()
             }
         }
     }

@@ -1,8 +1,7 @@
 #include "chat_server.h"
-
-void Send(int socket,const char *buffer){
+void Send(int socket,const char *buffer){ 
     cout<<"<Send>"<<socket<<"buffer:"<<buffer<<endl;//TODEL
-    usleep(500000);
+    usleep(150000);
     send(socket,buffer,SOCKET_SIZE,0);
 }
 int Recv(int socket,string &recv_string){
@@ -198,7 +197,6 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     json temp_json=json::parse(json_string);
     string account=temp_json["account"];
     temp_json.clear();
-    bool ret=false;
     //get profile
     string uid;
     string name;
@@ -208,6 +206,7 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
             temp_json["name"]=name;
             Send(session_socket,temp_json.dump().c_str());
     }
+    temp_json.clear();
     //get add request
     vector<string> contact_add_list;
     if(get_Add_Flag(db,account.c_str(),contact_add_list)){
@@ -220,9 +219,10 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         }
     }
     temp_json.clear();
-    vector<string> agree_contact;
-    vector<string> reject_contact;
     //get answer add
+    auto &agree_contact=contact_add_list;//recycle
+    agree_contact.clear();
+    vector<string> reject_contact;
     if(get_Answer_Add(db,account.c_str(),agree_contact,reject_contact)){
         if(!agree_contact.empty()){
             for(auto it=agree_contact.begin();it!=agree_contact.end();++it){
@@ -242,8 +242,8 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
             }
         }
     }
-    //getlist
     temp_json.clear();
+    //getlist
     map<string,string> contact_list;
     if(Get_Contact_List(db,account.c_str(),contact_list)){
         temp_json["flag"]=SERVER_CONTACT_LIST;
@@ -252,17 +252,19 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         }
         Send(session_socket,temp_json.dump().c_str());
     }
+    temp_json.clear();
     //get chat buffer
-    auto &message_list=contact_list;//recycle map memory
-    message_list.clear();
+    multimap<string,string> message_list;
     if(Get_Message_Buffer(db,account.c_str(),message_list)){
         temp_json["flag"]=SERVER_TEXT_MESSAGE;
         for(auto it=message_list.begin();it!=message_list.end();++it){
             temp_json["contact"]=it->first;
             temp_json["message"]=it->second;
+            Send(session_socket,temp_json.dump().c_str());
         }
-        Send(session_socket,temp_json.dump().c_str());
+        
     }
+    temp_json.clear();
     //get image buffer
     auto &image_list=message_list;//recycle map memory
     image_list.clear();
@@ -271,12 +273,29 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         for(auto it=image_list.begin();it!=image_list.end();++it){
             temp_json["contact"]=it->first;
             temp_json["message"]=it->second;
+            Send(session_socket,temp_json.dump().c_str());
         }
-        Send(session_socket,temp_json.dump().c_str());
+        
     }
+    temp_json.clear();
     //get chatroom history
-    ret=true;
-    return ret;
+    vector<pair<string,string>> group_list;
+    if(Get_Group_Message(db,group_list)){
+        temp_json["flag"]=SERVER_GROUP_MESSAGE;
+        // for(auto it=group_list.begin();it!=group_list.end();++it){
+        //     temp_json["contact"]=it->first;
+        //     temp_json["message"]=it->second;
+        //     lock_guard<mutex> send_lock(send_mutex); 
+        //     Send(session_socket,temp_json.dump().c_str());
+        // }
+        for(auto it=group_list.begin();it!=group_list.end();++it){
+            temp_json["contact"]=it->first;
+            temp_json["message"]=it->second;
+            Send(session_socket,temp_json.dump().c_str());
+        }
+    }
+    temp_json.clear();
+    return true;
 }
 
 void mid_Log_OUT(int session_socket){
@@ -298,7 +317,7 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
     string message=temp_json["message"];
     temp_json.clear();
     string contact_socket;
-    if(strcmp(contact.c_str(),"$chatroom")){
+    if(strcmp(contact.c_str(),"$chatroom")==0){
         vector<string> online_account_list;
         if(Send_Group_Message(db,account.c_str(),message.c_str(),online_account_list)){
             for(auto it=online_account_list.begin();it!=online_account_list.end();it++){
@@ -324,7 +343,8 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
                     case SQL_BUFFER_SEND_MESSAGE:
                         return false;
                 }
-            break;
+                break;
+        }
             //TODO image message
         // case SERVER_IMAGE_MESSAGE:
         //     switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),1)){
@@ -340,7 +360,8 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
         //             break;
         //     }
         //     break;
-        }
+
+        return true;
     }
 }
 void parseJson(const char *json_string,int session_socket){
