@@ -62,7 +62,8 @@ FluContentPage {
                                 height: parent.height
                                 z: 1
                                 radius: [10, 10, 10, 10]
-                                color: "#BD29B6F6"
+                                color: FluTheme.darkMode
+                                       === FluDarkMode.Dark ? "#707B7C" : "#486FC3"
                             }
                             Row {
                                 z: 2
@@ -104,7 +105,7 @@ FluContentPage {
                                         $Client.sendMessage(send_json)
                                         reject_add.enabled = false
                                         agree_add.visible = false
-                                        reject_add.normalColor = "black"
+                                        reject_add.normalColor = "#486FC3"
                                     }
                                 }
                                 FluFilledButton {
@@ -122,7 +123,7 @@ FluContentPage {
                                         $Client.sendMessage(send_json)
                                         agree_add.enabled = false
                                         reject_add.visible = false
-                                        agree_add.normalColor = "black"
+                                        agree_add.normalColor = "#486FC3"
                                         showSuccess("Add Contact,Please Flush")
                                     }
                                 }

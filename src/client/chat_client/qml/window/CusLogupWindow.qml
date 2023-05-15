@@ -38,6 +38,8 @@ FluWindow {
         id: appbar
         title: "Log up"
         width: parent.width
+        showDark: true
+        darkText: "Dark"
     }
 
     ColumnLayout {

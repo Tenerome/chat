@@ -25,7 +25,7 @@ FluScrollablePage {
                 left: parent.left
             }
             FluText {
-                text: lang.dark_mode
+                text: "Dark Mode"
                 fontStyle: FluText.BodyStrong
                 Layout.bottomMargin: 4
             }

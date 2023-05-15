@@ -195,6 +195,7 @@ FluWindow {
                 radius: 10
                 width: 350
                 height: 45
+                color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
                 TextInput {
                     id: new_nickname
                     anchors.fill: parent
@@ -205,6 +206,7 @@ FluWindow {
                     selectByMouse: true
                     cursorVisible: true
                     selectionColor: "#66B3FF"
+                    color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"
                     focus: true
                     Keys.enabled: true
                     Keys.onPressed: {

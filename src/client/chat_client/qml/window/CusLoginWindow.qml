@@ -43,6 +43,8 @@ FluWindow {
         id: appbar
         title: "Log in"
         width: parent.width
+        showDark: true
+        darkText: "Dark"
     }
     ColumnLayout {
         anchors {
