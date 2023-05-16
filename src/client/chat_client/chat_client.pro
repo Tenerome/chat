@@ -7,6 +7,8 @@ QT += quick
 SOURCES += \
         main.cpp \
         src/Socket/Socket.cpp \
+    src/md5/md5.cpp \
+    src/md5/useMD5.cpp
 
 RESOURCES += qml.qrc
 
@@ -22,5 +24,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/Socket/Socket.h \
+    src/md5/md5.h \
+    src/md5/useMD5.h
 
 DISTFILES +=

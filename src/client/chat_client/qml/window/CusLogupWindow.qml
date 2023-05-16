@@ -112,11 +112,32 @@ FluWindow {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
-                var send_json = '{"flag":"' + Define.SOCKET_LOG_UP + '","account":"'
-                        + textbox_account.text + '","name":"' + textbox_name.text
-                        + '","password":"' + textbox_password.text + '"}'
-                $Client.sendMessage(send_json)
+                if (!isEmpty()) {
+                    showError("content can't be null")
+                } else if (!verifyPasssword()) {
+                    showError("the tow passwords is not same")
+                } else {
+                    var send_json = '{"flag":"' + Define.SOCKET_LOG_UP
+                            + '","account":"' + textbox_account.text + '","name":"'
+                            + textbox_name.text + '","password":"' + $UseMD5.toStr(
+                                textbox_password.text) + '"}'
+                    $Client.sendMessage(send_json)
+                }
             }
         }
+    }
+    function isEmpty() {
+        if (textbox_account.text === "" || textbox_name.text === ""
+                || textbox_password.text === ""
+                || textbox_verify_password.text === "") {
+            return false
+        }
+        return true
+    }
+    function verifyPasssword() {
+        if (textbox_password.text === textbox_verify_password.text) {
+            return true
+        }
+        return false
     }
 }

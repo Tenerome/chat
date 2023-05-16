@@ -9,8 +9,10 @@ g++ -shared -fPIC ./include/encode/base64.c ./include/encode/md5.cpp  -o ./lib/l
 libpath="-L./lib/ -lmysqlclient -lencode -ldb"
 #set runtime lib path
 rlibpath="-Wl,-rpath=./lib/"
+#set source files
 #compile
-g++ chat_server.cpp -o chat_server $includepath $libpath $rlibpath $1
+
+g++ chat_server*.cpp -o chat_server $includepath $libpath $rlibpath $1
 echo "compiled chat_server"
 if [ -n "$1" ];
 then
