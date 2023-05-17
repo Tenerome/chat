@@ -18,12 +18,13 @@
 #include<map>//stl
 //include
 #include<Signal&Macro.h>
-#include<encode/base64.h>
+#include<base64.h>
 #include<json.hpp>
-#include<encode/md5.h>
 
 //namespace
-using std::cout,std::endl,std::cerr;
+using std::cout;
+using std::endl;
+using std::cerr;
 using std::ifstream;
 using std::string;
 using std::stoi;//string to int

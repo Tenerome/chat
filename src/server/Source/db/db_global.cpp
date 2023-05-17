@@ -1,4 +1,4 @@
-#include"db.h"
+#include <db.h>
 //==================构造和析构=======================
 
 DB::DB(const char *pass):DB(pass,"127.0.0.1","root","chat",3306){}
