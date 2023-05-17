@@ -23,7 +23,7 @@ bool get_Password(const char *path,char *out){
 }
 void parseJson(const char *json_string,int session_socket){
     char out[16];
-    if(!get_Password("pass.dat",out)){
+    if(!get_Password(SQL_PASS_PATH,out)){
         exit(-1);
     }
     DB db(out);

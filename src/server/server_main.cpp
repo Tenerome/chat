@@ -18,24 +18,25 @@ int main(){
     }
     int epoll_fd=epoll_create(10);
     epoll_event socket_event,listen_event[MAX_LISTEN];
-    socket_event.events=EPOLLIN; //TODO  LT/ET?  //高版本没有EPOLLLT,默认水平触发，一旦发现客户端的连接请求就持续建立连接
+    socket_event.events=EPOLLIN; //defalut:LT, use ET: EPOLLET|EPOLLIN
     socket_event.data.fd=server_socket;
     epoll_ctl(epoll_fd,EPOLL_CTL_ADD,server_socket,&socket_event);
     while(1){
         cout<<"waiting for connection..."<<endl;
-        int event_num=epoll_wait(epoll_fd,listen_event,MAX_LISTEN,-1); 
+        int event_num=epoll_wait(epoll_fd,listen_event,MAX_LISTEN,-1); //get the event number
         if(event_num<-1){                               
-            break;  //无连接则继续循环等待                                    
+            break;  //if <0 then continue                                    
         }
-        for(int i=0;i<event_num;i++){   //遍历返回事件,这里就是epoll和poll，select的区别，poll/select是遍历所有socket,而epoll返回的是有变化的socket
+        for(int i=0;i<event_num;i++){   //check all active event
             if(!(listen_event[i].events & EPOLLIN)){
                 continue;
             }
-            if(listen_event[i].data.fd==server_socket){ //如果是server socket,说明有客户端发起连接请求，就建立新的连接
+            //if the event socket==server_socket, it is a new connection from one client
+            if(listen_event[i].data.fd==server_socket){
                 sockaddr_in client_addr;
                 socklen_t clinet_size=sizeof(sockaddr_in);
                 int client_socket=accept(server_socket,(sockaddr *)&client_addr,&clinet_size);
-                if(client_socket<0){    //连接建立失败,则跳过重连
+                if(client_socket<0){    //if connect failed,then pass this client,dicard the socket
                     continue;
                 }else{
                     cout<<client_addr.sin_addr.s_addr<<":"<<client_addr.sin_port<<" connected"<<endl;
@@ -45,25 +46,25 @@ int main(){
                 if(epoll_ctl(epoll_fd,EPOLL_CTL_ADD,client_socket,&socket_event)==-1){
                     cerr<<"client epoll_ctl error"<<endl;
                     exit(-1);
-                } //将获取到的新连接加入到epoll实例中
+                } //add new the connected socket to epoll events
+                //insert route_socket,use hash value obain the client_socket
                 route_socket.insert(pair<string,int>(to_string(client_socket),client_socket));
-            }else{//如果不是fd，说明是客户端发送了数据
-                int session_socket=listen_event[i].data.fd; 	//获取连接，建立通信
-                // char buff[SOCKET_SIZE];
+            }else{//if the active event!=server_socket，it must be client send one message 
+                int session_socket=listen_event[i].data.fd; 	//get client_socket
                 string recv_string;
-                // int ret = recv(session_socket,buff,SOCKET_SIZE,0); //非阻塞如果没有数据那么就返回-1
                 int ret=Recv(session_socket,recv_string);
-                if(ret==0){//读到0,说明客户端关闭,从epoll实例中删除客户端socket,并删除ip_socket键值对
+                if(ret==0){
+                //if return 0,that is client close the connection ,delete client socket from epoll events,and delete the route_ip key-value
                     epoll_ctl(epoll_fd,EPOLL_CTL_DEL,session_socket,NULL);
                     route_socket.erase(to_string(session_socket));//删除键值对
                     mid_Log_OUT(session_socket);//db log out
                     close(session_socket);
                     cout<<session_socket<<" client closed connection"<<endl;
-                }else if(ret<0){//出错,删除，报错
+                }else if(ret<0){//if ret<0,cerr
                     epoll_ctl(epoll_fd,EPOLL_CTL_DEL,session_socket,NULL);
                     close(session_socket);
                     cerr<<session_socket<<" client recv error"<<endl;
-                }else{//最后一种情况就只能是读到了数据
+                }else{//the last must be recv one message:
                     cout<<"<Recv>:"<<recv_string<<endl;//TODEL
                     try{
                         parseJson(recv_string.c_str(),session_socket);

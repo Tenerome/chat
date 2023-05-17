@@ -1,7 +1,7 @@
 #include <db.h>
-//==================构造和析构=======================
+//==================DB constructors=======================
 
-DB::DB(const char *pass):DB(pass,"127.0.0.1","root","chat",3306){}
+DB::DB(const char *pass):DB(pass,SQL_HOST,SQL_USER,SQL_DATABASE,SQL_PORT){}
 DB::DB(const char *pass,const char *host,const char *user,const char *database,unsigned int port){
     this->password=pass;
     this->host=host;
@@ -10,7 +10,6 @@ DB::DB(const char *pass,const char *host,const char *user,const char *database,u
     this->port=port;
 }
 
-//=======================inline，复用的函数=============
 
 //connect to mysql
 bool get_Connection(DB &db){
@@ -44,7 +43,7 @@ bool check_Existed(DB &db,const char *account){
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
-    //typeid(row[0])name 输出Pc，也就是一个字符型指针 char*
+    //typeid(row[0])name==Pc，it's a char pointer type: char*
     if(strcmp(row[0],"1")==0){
         return true;
     }else{

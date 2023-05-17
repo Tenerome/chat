@@ -1,12 +1,12 @@
 #ifndef SERVER_H
     #define SERVER_H
 //cmake configure file
-#define SERVER_PORT 8888
-#define SQL_HOST "127.0.0.1"
-#define SQL_USER "root"
-#define SQL_DATABASE "chat"
-#define SQL_PORT 3306
-#define SQL_PASS_PATH "/home/tenerome/Documents/chat/src/server/build/pass.dat"
+#define SERVER_PORT @SERVER_PORT@
+#define SQL_HOST "@SQL_HOST@"
+#define SQL_USER "@SQL_USER@"
+#define SQL_DATABASE "@SQL_DATABASE@"
+#define SQL_PORT @SQL_PORT@
+#define SQL_PASS_PATH "@SQL_PASS_PATH@"
 //system
 #include<iostream>
 #include<fstream>

@@ -65,12 +65,26 @@ FluWindow {
                 }
             }
         }
+        FluTooltip {
+            id: tool_tip
+        }
         FluTextBox {
             id: textbox_account
             placeholderText: "Input your account"
             Layout.preferredWidth: 260
             Layout.alignment: Qt.AlignHCenter
             focus: true
+            validator: RegExpValidator {
+                regExp: /[1-9]([0-9]{7,10})/
+            }
+            onTextChanged: {
+                tool_tip.show("8-10 numbers", 2000)
+            }
+            onFocusChanged: {
+                if (!activeFocus) {
+                    tool_tip.hide()
+                }
+            }
         }
         FluTextBox {
             id: textbox_password
@@ -79,6 +93,17 @@ FluWindow {
             placeholderText: "Input your password"
             echoMode: TextInput.Password
             Layout.alignment: Qt.AlignHCenter
+            validator: RegExpValidator {
+                regExp: /[A-Za-z]{2}([0-9]{6,8})/
+            }
+            onTextChanged: {
+                tool_tip.show("tow letters with 6-8 numbers", 2000)
+            }
+            onFocusChanged: {
+                if (!activeFocus) {
+                    tool_tip.hide()
+                }
+            }
             Keys.enabled: true
             Keys.onPressed: {
                 if (event.key === Qt.Key_Enter - 1) {
@@ -94,8 +119,11 @@ FluWindow {
             onClicked: {
                 //TODO format control
                 var send_json = '{"flag":"' + Define.SOCKET_LOG_IN + '","account":"'
-                        + textbox_account.text + '","password":"' + textbox_password.text + '"}'
-                $Client.sendMessage(send_json)
+                        + textbox_account.text + '","password":"' + $UseMD5.toStr(
+                            textbox_password.text) + '"}'
+                if (verifyValid()) {
+                    $Client.sendMessage(send_json)
+                }
             }
         }
         FluFilledButton {
@@ -107,5 +135,15 @@ FluWindow {
                 FluApp.navigate("/logup")
             }
         }
+    }
+    function verifyValid() {
+        if (textbox_account.text.length < 8) {
+            showError("account is too short")
+            return false
+        } else if (textbox_password.text.length < 8) {
+            showError("password is too short")
+            return false
+        } else
+            return true
     }
 }

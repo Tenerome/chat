@@ -43,12 +43,26 @@ FluContentPage {
                 }
             }
             RowLayout {
+                FluTooltip {
+                    id: tool_tip
+                }
                 FluTextBox {
                     id: set_name
                     placeholderText: "Input new name"
                     Layout.preferredWidth: 260
                     Layout.alignment: Qt.AlignHCenter
                     focus: true
+                    validator: RegExpValidator {
+                        regExp: /([A-Za-z]{5,10})/
+                    }
+                    onTextChanged: {
+                        tool_tip.show("5-10 letters", 2000)
+                    }
+                    onFocusChanged: {
+                        if (!activeFocus) {
+                            tool_tip.hide()
+                        }
+                    }
                     Keys.enabled: true
                     Keys.onPressed: {
                         if (event.key === Qt.Key_Enter - 1) {
@@ -60,13 +74,17 @@ FluContentPage {
                     id: setname_btn
                     text: "set name"
                     onClicked: {
-                        var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
-                                + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME
-                                + '","account":"' + Define.account + '","contact":"'
-                                + Define.account + '","nickname":"' + set_name.text + '"}'
-                        $Client.sendMessage(send_json)
-                        set_name.text = ""
-                        showSuccess("Set Succeed,Please Flush")
+                        if (set_name.text.length < 5) {
+                            showError("name is too short")
+                        } else {
+                            var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
+                                    + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME
+                                    + '","account":"' + Define.account + '","contact":"'
+                                    + Define.account + '","nickname":"' + set_name.text + '"}'
+                            $Client.sendMessage(send_json)
+                            set_name.text = ""
+                            showSuccess("Set Succeed,Please Flush")
+                        }
                     }
                 }
             }

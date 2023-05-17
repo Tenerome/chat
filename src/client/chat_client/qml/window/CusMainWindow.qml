@@ -149,6 +149,7 @@ FluWindow {
     }
     //==========================when start=======================
     Component.onCompleted: {
+        showSuccess("log succeed")
         //create add listmodel
         Define.add_page_listmodel = Qt.createQmlObject(
                     "import QtQuick 2.9;ListModel{ListElement{contact:'';flag:''}}",
@@ -196,6 +197,9 @@ FluWindow {
                 width: 350
                 height: 45
                 color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
+                FluTooltip {
+                    id: tool_tip
+                }
                 TextInput {
                     id: new_nickname
                     anchors.fill: parent
@@ -208,6 +212,17 @@ FluWindow {
                     selectionColor: "#66B3FF"
                     color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"
                     focus: true
+                    validator: RegExpValidator {
+                        regExp: /([A-Za-z]{5,10})/
+                    }
+                    onTextChanged: {
+                        tool_tip.show("5-10 letters", 2000)
+                    }
+                    onFocusChanged: {
+                        if (!activeFocus) {
+                            tool_tip.hide()
+                        }
+                    }
                     Keys.enabled: true
                     Keys.onPressed: {
                         if (event.key === Qt.Key_Enter - 1) {
@@ -228,10 +243,14 @@ FluWindow {
                             + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME
                             + '","account":"' + Define.account + '","contact":"'
                             + Define.load_model["contact"] + '","nickname":"' + text_box.text + '"}'
-                    $Client.sendMessage(send_json)
-                    text_box.text = ""
-                    edit_window.visible = false
-                    showSuccess("Modify Succeed!")
+                    if (text_box.text.length < 5) {
+                        showError("name is too short")
+                    } else {
+                        $Client.sendMessage(send_json)
+                        text_box.text = ""
+                        edit_window.visible = false
+                        showSuccess("Modify Succeed!")
+                    }
                 }
             }
             FluFilledButton {

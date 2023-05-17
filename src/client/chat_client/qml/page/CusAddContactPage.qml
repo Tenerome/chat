@@ -15,16 +15,35 @@ FluContentPage {
         Row {
             leftPadding: 200
             spacing: 5
+            FluTooltip {
+                id: tool_tip
+            }
             FluTextBox {
                 id: textbox_contact
+                validator: RegExpValidator {
+                    regExp: /[1-9]([0-9]{7,10})/
+                }
+                onTextChanged: {
+                    tool_tip.show("8-10 numbers", 2000)
+                }
+                onFocusChanged: {
+                    if (!activeFocus) {
+                        tool_tip.hide()
+                    }
+                }
             }
             FluFilledButton {
                 height: textbox_contact.height
                 text: "Add"
                 onClicked: {
-                    var send_json = '{"flag":"' + Define.SOCKET_ADD_CONTACT + '","account":"'
-                            + Define.account + '","contact":"' + textbox_contact.text + '"}'
-                    $Client.sendMessage(send_json)
+                    if (textbox_contact.text.length < 8) {
+                        showError("account is too short")
+                    } else {
+                        var send_json = '{"flag":"' + Define.SOCKET_ADD_CONTACT
+                                + '","account":"' + Define.account
+                                + '","contact":"' + textbox_contact.text + '"}'
+                        $Client.sendMessage(send_json)
+                    }
                 }
             }
             FluFilledButton {

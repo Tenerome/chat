@@ -61,18 +61,44 @@ FluWindow {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
+        FluTooltip {
+            id: tool_tip
+        }
         FluTextBox {
             id: textbox_account
             placeholderText: "Input your account"
             Layout.preferredWidth: 260
             Layout.alignment: Qt.AlignHCenter
             focus: true
+            validator: RegExpValidator {
+                regExp: /[1-9]([0-9]{7,10})/
+            }
+            onTextChanged: {
+                tool_tip.show("8-10 numbers", 2000)
+            }
+            onFocusChanged: {
+                if (!activeFocus) {
+                    tool_tip.hide()
+                }
+            }
         }
         FluTextBox {
             id: textbox_name
+            Layout.topMargin: 20
             placeholderText: "Input your name"
             Layout.preferredWidth: 260
             Layout.alignment: Qt.AlignHCenter
+            validator: RegExpValidator {
+                regExp: /([A-Za-z]{5,10})/
+            }
+            onTextChanged: {
+                tool_tip.show("5-10 letters", 2000)
+            }
+            onFocusChanged: {
+                if (!activeFocus) {
+                    tool_tip.hide()
+                }
+            }
         }
         FluTextBox {
             id: textbox_password
@@ -81,6 +107,17 @@ FluWindow {
             placeholderText: "Input your password"
             echoMode: TextInput.Password
             Layout.alignment: Qt.AlignHCenter
+            validator: RegExpValidator {
+                regExp: /[A-Za-z]{2}([0-9]{6,8})/
+            }
+            onTextChanged: {
+                tool_tip.show("tow letters with 6-8 numbers", 2000)
+            }
+            onFocusChanged: {
+                if (!activeFocus) {
+                    tool_tip.hide()
+                }
+            }
         }
         FluTextBox {
             id: textbox_verify_password
@@ -89,6 +126,17 @@ FluWindow {
             placeholderText: "verify your password"
             echoMode: TextInput.Password
             Layout.alignment: Qt.AlignHCenter
+            validator: RegExpValidator {
+                regExp: /[A-Za-z]{2}([0-9]{6,8})/
+            }
+            onTextChanged: {
+                tool_tip.show("tow letters with 6-8 numbers", 2000)
+            }
+            onFocusChanged: {
+                if (!activeFocus) {
+                    tool_tip.hide()
+                }
+            }
             Keys.enabled: true
             Keys.onPressed: {
                 if (event.key === Qt.Key_Enter - 1) {
@@ -112,32 +160,44 @@ FluWindow {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
-                if (!isEmpty()) {
-                    showError("content can't be null")
-                } else if (!verifyPasssword()) {
-                    showError("the tow passwords is not same")
-                } else {
+                if (verifyValid()) {
                     var send_json = '{"flag":"' + Define.SOCKET_LOG_UP
                             + '","account":"' + textbox_account.text + '","name":"'
                             + textbox_name.text + '","password":"' + $UseMD5.toStr(
                                 textbox_password.text) + '"}'
                     $Client.sendMessage(send_json)
+                    console.log("log up succeed")
+                    setNull()
                 }
             }
         }
     }
-    function isEmpty() {
-        if (textbox_account.text === "" || textbox_name.text === ""
-                || textbox_password.text === ""
-                || textbox_verify_password.text === "") {
+    function verifyValid() {
+        if (textbox_account.text.length < 8) {
+            showError("account is too short")
             return false
-        }
-        return true
+        } else if (textbox_name.text.length < 5) {
+            showError("name is too short")
+            return false
+        } else if (textbox_password.text.length < 8) {
+            showError("password is too short")
+            return false
+        } else if (!verifyPasssword()) {
+            showError("the two password are not same")
+            return false
+        } else
+            return true
     }
     function verifyPasssword() {
         if (textbox_password.text === textbox_verify_password.text) {
             return true
         }
         return false
+    }
+    function setNull() {
+        textbox_account.text = ""
+        textbox_name.text = ""
+        textbox_password.text = ""
+        textbox_verify_password.text = ""
     }
 }

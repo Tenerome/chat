@@ -16,7 +16,7 @@ int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
     if(check_Online(db,contact)){
         mysql_close(db.mysql);
         return SQL_ACCOUNT_ONLINE;
-    }else{//缓存申请记录
+    }else{//buffer
         char query[250];
         sprintf(query,"insert into message(from_account,to_account,add_flag) values('%s','%s','%d')",account,contact,1);
         if(mysql_query(db.mysql,query)){
@@ -39,9 +39,8 @@ int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer
     if(check_Online(db,contact)){
         mysql_close(db.mysql);
         return SQL_ACCOUNT_ONLINE;
-    }else{//缓存
+    }else{//buffer
         char query[250];
-        //contact=from,account=to
         sprintf(query,"insert into message(from_account,to_account,answer_add) values('%s','%s','%d')",contact,account,answer);
         if(mysql_query(db.mysql,query)){
             cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
