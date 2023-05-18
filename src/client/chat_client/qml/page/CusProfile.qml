@@ -76,6 +76,8 @@ FluContentPage {
                     onClicked: {
                         if (set_name.text.length < 5) {
                             showError("name is too short")
+                        } else if (set_name.text === Define.name) {
+                            showError("please use a new name")
                         } else {
                             var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
                                     + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME

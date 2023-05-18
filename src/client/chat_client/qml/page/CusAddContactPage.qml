@@ -38,6 +38,10 @@ FluContentPage {
                 onClicked: {
                     if (textbox_contact.text.length < 8) {
                         showError("account is too short")
+                    } else if (textbox_contact.text === Define.account) {
+                        showError("you can't add yourself")
+                    } else if (alreadyContact()) {
+                        showError("this account has been your contact")
                     } else {
                         var send_json = '{"flag":"' + Define.SOCKET_ADD_CONTACT
                                 + '","account":"' + Define.account
@@ -153,5 +157,13 @@ FluContentPage {
                 }
             }
         }
+    }
+    function alreadyContact() {
+        for (let key in Define.contact_map)
+            if (textbox_contact.text === key) {
+                return true
+            } else {
+                return false
+            }
     }
 }
