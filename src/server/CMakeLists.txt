@@ -29,6 +29,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/include/mysql/
     ${PROJECT_SOURCE_DIR}/include/tcpserver/
     ${PROJECT_SOURCE_DIR}/include/json/
+    ${PROJECT_SOURCE_DIR}/include/threadpool/
 )
 
 #build start
@@ -37,6 +38,7 @@ message("build chat_server: \n")
 #libTcpServer.so
 add_library(TcpServer SHARED 
     ./Source/encode/base64.cpp
+    ./Source/encode/md5.cpp
     ./Source/db/db_contact.cpp
     ./Source/db/db_global.cpp
     ./Source/db/db_log.cpp

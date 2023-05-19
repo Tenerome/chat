@@ -1,8 +1,23 @@
 #include <tcpserver.h>
-map<string,int> route_socket;
+#include <ThreadPool.h>
+#include <csignal>
 
+map<string,int> route_socket;
+int server_socket;
+int epoll_fd;
+void signalHandler(int signum){
+    cout<<"signal:"<<signum<<endl;
+    cout<<"catch interactive attention signal,exit normally"<<endl;
+    cout<<"close epoll sockets"<<endl;
+    close(epoll_fd);
+    cout<<"close server socket"<<endl;
+    close(server_socket);
+    cout<<"server exit completely"<<endl;
+    exit(0);
+
+}
 int main(){
-    int server_socket=socket(AF_INET, SOCK_STREAM, 0);
+    server_socket=socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(sockaddr_in));
     server_addr.sin_family=AF_INET;
@@ -16,12 +31,13 @@ int main(){
         cerr<<"chat_server: main: server listen error"<<endl;
         exit(-1);        
     }
-    int epoll_fd=epoll_create(10);
+    epoll_fd=epoll_create(10);
     epoll_event socket_event,listen_event[MAX_LISTEN];
     socket_event.events=EPOLLIN; //defalut:LT, use ET: EPOLLET|EPOLLIN
     socket_event.data.fd=server_socket;
     epoll_ctl(epoll_fd,EPOLL_CTL_ADD,server_socket,&socket_event);
     while(1){
+        signal(SIGINT,signalHandler);//if catch Ctrl C
         cout<<"waiting for connection..."<<endl;
         int event_num=epoll_wait(epoll_fd,listen_event,MAX_LISTEN,-1); //get the event number
         if(event_num<-1){                               
@@ -66,20 +82,17 @@ int main(){
                     cerr<<session_socket<<" client recv error"<<endl;
                 }else{//the last must be recv one message:
                     cout<<"<Recv>:"<<recv_string<<endl;//TODEL
-                    try{
+                    ThreadPool pool(10);
+                    pool.enqueue([recv_string,session_socket] {
                         parseJson(recv_string.c_str(),session_socket);
-                    }
-                    catch(const std::exception& e){
-                        std::cerr << e.what() << '\n';
-                    }
-                    //clear buff
-
+                        }
+                    );
                 }
                 
                 }
             }
         }
-    close(epoll_fd);
-    close(server_socket);
+    // close(epoll_fd);
+    // close(server_socket);
 }
 

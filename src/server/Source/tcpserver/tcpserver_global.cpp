@@ -18,7 +18,7 @@ bool get_Password(const char *path,char *out){
         cerr<<"base64 decode failed,maybe you need to run as root or check other configure"<<endl;
         return false;
     }
-    out[strlen((char*)out)-1]='\0';//
+    out[strlen((char*)out)-1]='\0';//add end tag 
     return true;
 }
 void parseJson(const char *json_string,int session_socket){

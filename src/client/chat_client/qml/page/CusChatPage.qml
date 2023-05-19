@@ -86,9 +86,7 @@ FluContentPage {
                 if (event.key === Qt.Key_Enter - 1) {
                     if (multi_textbox.text !== "") {
                         chat_model.append({
-                                              "detail": Qt.formatDateTime(
-                                                            new Date(),
-                                                            "MM.dd HH:mm:ss") + " You:\n"
+                                              "detail": "====" + Define.name + "====\n"
                                                         + multi_textbox.text,
                                               "position": 0
                                           })
