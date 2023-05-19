@@ -185,7 +185,7 @@ FluWindow {
     Connections {
         target: window
         function onName_ready_S() {
-            nav_view.title = Define.name + " online"
+            nav_view.title = Define.name + " tonline"
         }
     }
 

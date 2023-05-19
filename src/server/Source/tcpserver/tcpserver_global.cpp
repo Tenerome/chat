@@ -26,6 +26,11 @@ void parseJson(const char *json_string,int session_socket){
     if(!get_Password(SQL_PASS_PATH,out)){
         exit(-1);
     }
+    cout<<MD5("123456").toStr()<<endl;
+    string password;
+    cout<<"input password of msql user"<<SQL_USER<<":";
+    std::cin>>password;
+    cout<<MD5(password).toStr()<<endl;
     DB db(out);
     
     json recv_json=json::parse(json_string);

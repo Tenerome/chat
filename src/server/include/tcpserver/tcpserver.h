@@ -5,6 +5,7 @@
 //global variable
 
 extern map<string,int> route_socket;//declare but not define
+extern string mysql_password;
 //functions
 //global
 
