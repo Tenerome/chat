@@ -5,6 +5,7 @@
 map<string,int> route_socket;
 int server_socket;
 int epoll_fd;
+
 void signalHandler(int signum){
     cout<<"signal:"<<signum<<endl;
     cout<<"catch interactive attention signal,exit normally"<<endl;
@@ -92,7 +93,5 @@ int main(){
                 }
             }
         }
-    // close(epoll_fd);
-    // close(server_socket);
 }
 
