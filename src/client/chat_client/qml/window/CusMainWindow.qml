@@ -53,7 +53,7 @@ FluWindow {
     SystemTrayIcon {
         id: system_tray
         visible: true
-        //TODO icon
+        icon.source: "qrc:/res/icon/w_menu.png"
         tooltip: "chat"
         menu: Menu {
             MenuItem {
@@ -170,14 +170,13 @@ FluWindow {
     //==========================FluNavigationView==================
     FluNavigationView {
         id: nav_view
-        //        title: Define.account + " online"
         anchors.fill: parent
         items: cus_side_menu_bar
         footerItems: footer
         z: 11
         displayMode: FluNavigationView.Open
-        //TODO icon
-        logo: "qrc:/res/icon/msg_ballon.png"
+        logo: FluTheme.darkMode
+              === FluDarkMode.Dark ? "qrc:/res/icon/w_menu.png" : "qrc:/res/icon/b_menu.png"
         Component.onCompleted: {
             nav_view.setCurrentIndex(0)
         }
@@ -316,12 +315,23 @@ FluWindow {
         id: cus_side_menu_bar
         FluPaneItem {
             title: "Profile"
+            cusIcon: Image {
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_profile.png" : "qrc:/res/icon/b_profile.png"
+                width: 20
+                height: 20
+            }
             onTap: {
                 nav_view.push("qrc:/qml/page/CusProfile.qml")
             }
         }
         FluPaneItem {
             title: "Add Contact"
+            cusIcon: Image {
+                source: FluTheme.darkMode
+                        === FluDarkMode.Dark ? "qrc:/res/icon/w_add.png" : "qrc:/res/icon/b_add.png"
+                width: 20
+                height: 20
+            }
             onTap: {
                 nav_view.push("qrc:/qml/page/CusAddContactPage.qml")
             }
@@ -329,6 +339,7 @@ FluWindow {
         FluPaneItemExpander {
             id: inner_expander
             title: "Contact"
+            icon: FluentIcons.ContactSolid
             Connections {
                 property var parent
                 property var idx
@@ -384,6 +395,11 @@ FluWindow {
         FluPaneItem {
             temp_id: "$chatroom"
             title: "Chat Room"
+            cusIcon: Image {
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_chatroom.png" : "qrc:/res/icon/b_chatroom.png"
+                width: 20
+                height: 20
+            }
             onTap: {
                 Define.load_model = {
                     "contact": temp_id,
@@ -398,12 +414,22 @@ FluWindow {
         FluPaneItemSeparator {}
         FluPaneItem {
             title: "Settings"
+            cusIcon: Image {
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_setting.png" : "qrc:/res/icon/b_setting.png"
+                width: 20
+                height: 20
+            }
             onTap: {
                 nav_view.push("qrc:/qml/page/CusSetting.qml")
             }
         }
         FluPaneItem {
             title: "Flush"
+            cusIcon: Image {
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_flush.png" : "qrc:/res/icon/b_flush.png"
+                width: 20
+                height: 20
+            }
             onTap: {
                 window.closeDestory = true
                 window.closeFunc = function (event) {

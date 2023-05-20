@@ -6,11 +6,30 @@
         <file>qml/window/CusLogupWindow.qml</file>
         <file>qml/window/CusMainWindow.qml</file>
         <file>qml/page/CusChatPage.qml</file>
-        <file>res/icon/msg_ballon.png</file>
         <file>qml/global/Define.js</file>
         <file>qml/page/CusAddContactPage.qml</file>
         <file>qml/page/CusProfile.qml</file>
         <file>qml/global/cusFluPaneItem.qml</file>
         <file>qml/page/CusSetting.qml</file>
+        <file>res/icon/w_account.png</file>
+        <file>res/icon/w_add.png</file>
+        <file>res/icon/w_chatroom.png</file>
+        <file>res/icon/w_contact.png</file>
+        <file>res/icon/w_flush.png</file>
+        <file>res/icon/w_menu.png</file>
+        <file>res/icon/w_password.png</file>
+        <file>res/icon/w_profile.png</file>
+        <file>res/icon/w_setting.png</file>
+        <file>res/icon/b_account.png</file>
+        <file>res/icon/b_add.png</file>
+        <file>res/icon/b_chatroom.png</file>
+        <file>res/icon/b_contact.png</file>
+        <file>res/icon/b_flush.png</file>
+        <file>res/icon/b_menu.png</file>
+        <file>res/icon/b_password.png</file>
+        <file>res/icon/b_profile.png</file>
+        <file>res/icon/b_setting.png</file>
+        <file>res/icon/b_name.png</file>
+        <file>res/icon/w_name.png</file>
     </qresource>
 </RCC>

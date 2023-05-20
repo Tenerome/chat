@@ -64,83 +64,119 @@ FluWindow {
         FluTooltip {
             id: tool_tip
         }
-        FluTextBox {
-            id: textbox_account
-            placeholderText: "Input your account"
-            Layout.preferredWidth: 260
+        RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            focus: true
-            validator: RegExpValidator {
-                regExp: /[1-9]([0-9]{7,10})/
+            Image {
+                Layout.alignment: Qt.AlignBottom
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_account.png" : "qrc:/res/icon/b_account.png"
+                sourceSize.width: textbox_account.height - 5
+                sourceSize.height: textbox_account.height - 5
             }
-            onTextChanged: {
-                tool_tip.show("8-10 numbers", 2000)
-            }
-            onFocusChanged: {
-                if (!activeFocus) {
-                    tool_tip.hide()
+            FluTextBox {
+                id: textbox_account
+                placeholderText: "Input your account"
+                Layout.preferredWidth: 260
+                Layout.alignment: Qt.AlignHCenter
+                focus: true
+                validator: RegExpValidator {
+                    regExp: /[1-9]([0-9]{7,10})/
+                }
+                onTextChanged: {
+                    tool_tip.show("8-10 numbers", 2000)
+                }
+                onFocusChanged: {
+                    if (!activeFocus) {
+                        tool_tip.hide()
+                    }
                 }
             }
         }
-        FluTextBox {
-            id: textbox_name
-            Layout.topMargin: 20
-            placeholderText: "Input your name"
-            Layout.preferredWidth: 260
+        RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            validator: RegExpValidator {
-                regExp: /([A-Za-z]{5,10})/
+            Image {
+                Layout.alignment: Qt.AlignBottom
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_name.png" : "qrc:/res/icon/b_name.png"
+                sourceSize.width: textbox_name.height - 5
+                sourceSize.height: textbox_name.height - 5
             }
-            onTextChanged: {
-                tool_tip.show("5-10 letters", 2000)
-            }
-            onFocusChanged: {
-                if (!activeFocus) {
-                    tool_tip.hide()
+            FluTextBox {
+                id: textbox_name
+                Layout.topMargin: 20
+                placeholderText: "Input your name"
+                Layout.preferredWidth: 260
+                Layout.alignment: Qt.AlignHCenter
+                validator: RegExpValidator {
+                    regExp: /([A-Za-z]{5,10})/
+                }
+                onTextChanged: {
+                    tool_tip.show("5-10 letters", 2000)
+                }
+                onFocusChanged: {
+                    if (!activeFocus) {
+                        tool_tip.hide()
+                    }
                 }
             }
         }
-        FluTextBox {
-            id: textbox_password
-            Layout.topMargin: 20
-            Layout.preferredWidth: 260
-            placeholderText: "Input your password"
-            echoMode: TextInput.Password
+        RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            validator: RegExpValidator {
-                regExp: /[A-Za-z]{2}([0-9]{6,8})/
+            Image {
+                Layout.alignment: Qt.AlignBottom
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_password.png" : "qrc:/res/icon/b_password.png"
+                sourceSize.width: textbox_password.height - 5
+                sourceSize.height: textbox_password.height - 5
             }
-            onTextChanged: {
-                tool_tip.show("tow letters with 6-8 numbers", 2000)
-            }
-            onFocusChanged: {
-                if (!activeFocus) {
-                    tool_tip.hide()
+            FluTextBox {
+                id: textbox_password
+                Layout.topMargin: 20
+                Layout.preferredWidth: 260
+                placeholderText: "Input your password"
+                echoMode: TextInput.Password
+                Layout.alignment: Qt.AlignHCenter
+                validator: RegExpValidator {
+                    regExp: /[A-Za-z]{2}([0-9]{6,8})/
+                }
+                onTextChanged: {
+                    tool_tip.show("tow letters with 6-8 numbers", 2000)
+                }
+                onFocusChanged: {
+                    if (!activeFocus) {
+                        tool_tip.hide()
+                    }
                 }
             }
         }
-        FluTextBox {
-            id: textbox_verify_password
-            Layout.topMargin: 20
-            Layout.preferredWidth: 260
-            placeholderText: "verify your password"
-            echoMode: TextInput.Password
+        RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            validator: RegExpValidator {
-                regExp: /[A-Za-z]{2}([0-9]{6,8})/
+            Image {
+                Layout.alignment: Qt.AlignBottom
+                source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_password.png" : "qrc:/res/icon/b_password.png"
+                sourceSize.width: textbox_password.height - 5
+                sourceSize.height: textbox_password.height - 5
             }
-            onTextChanged: {
-                tool_tip.show("tow letters with 6-8 numbers", 2000)
-            }
-            onFocusChanged: {
-                if (!activeFocus) {
-                    tool_tip.hide()
+            FluTextBox {
+                id: textbox_verify_password
+                Layout.topMargin: 20
+                Layout.preferredWidth: 260
+                placeholderText: "verify your password"
+                echoMode: TextInput.Password
+                Layout.alignment: Qt.AlignHCenter
+                validator: RegExpValidator {
+                    regExp: /[A-Za-z]{2}([0-9]{6,8})/
                 }
-            }
-            Keys.enabled: true
-            Keys.onPressed: {
-                if (event.key === Qt.Key_Enter - 1) {
-                    logup_btn.clicked()
+                onTextChanged: {
+                    tool_tip.show("tow letters with 6-8 numbers", 2000)
+                }
+                onFocusChanged: {
+                    if (!activeFocus) {
+                        tool_tip.hide()
+                    }
+                }
+                Keys.enabled: true
+                Keys.onPressed: {
+                    if (event.key === Qt.Key_Enter - 1) {
+                        logup_btn.clicked()
+                    }
                 }
             }
         }
