@@ -11,18 +11,29 @@ FluScrollablePage {
     rightPadding: 10
     bottomPadding: 20
     spacing: 0
-
     FluArea {
         Layout.fillWidth: true
         Layout.topMargin: 20
-        height: 136
+        height: 400
         paddings: 10
-
         ColumnLayout {
             spacing: 10
             anchors {
                 top: parent.top
                 left: parent.left
+            }
+            FluText {
+                text: "Opacity"
+                fontStyle: FluText.BodyStrong
+                Layout.bottomMargin: 4
+            }
+            FluSlider {
+                id: opacity_slider
+                value: 25
+                maxValue: 25
+                onValueChanged: {
+                    window.opacity = (value + 75) / 100
+                }
             }
             FluText {
                 text: "Dark Mode"

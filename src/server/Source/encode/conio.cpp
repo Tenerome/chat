@@ -521,7 +521,7 @@ void c_setcursortype(int cur_t)
     printf("\x1b[?25h");
     break;
 
-  case _SOLIDCURSOR://TODO
+  case _SOLIDCURSOR:
     printf("\x1b[?25h");
     break;
   }

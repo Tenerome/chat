@@ -100,7 +100,6 @@ FluWindow {
             break
         case Define.CLIENT_ADD_CONTACT_REQUEST:
             contact = recv_json["contact"]
-            console.log(contact)
             Define.add_page_listmodel.append({
                                                  "contact": contact,
                                                  "flag": "0"
@@ -431,13 +430,27 @@ FluWindow {
                 height: 20
             }
             onTap: {
-                window.closeDestory = true
-                window.closeFunc = function (event) {
-                    event.accepted = true
-                }
-                window.destoryWindow()
-                FluApp.navigate("/main")
+                flush_dialog.open()
             }
+        }
+    }
+    FluContentDialog {
+        id: flush_dialog
+        title: "Sure to flush?"
+        message: "Message with contact will lost"
+        negativeText: "Cancel"
+        positiveText: "Confirm"
+        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
+        onPositiveClicked: {
+            window.closeDestory = true
+            window.closeFunc = function (event) {
+                event.accepted = true
+            }
+            window.destoryWindow()
+            FluApp.navigate("/main")
+        }
+        onNegativeClicked: {
+            flush_dialog.close()
         }
     }
     //flush progress ring

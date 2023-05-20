@@ -18,8 +18,6 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     vector<string> contact_add_list;
     if(get_Add_Flag(db,account.c_str(),contact_add_list)){
         for(auto it=contact_add_list.begin();it!=contact_add_list.end();++it){
-            // sleep(1);
-            cout<<*it<<endl;//TODEL
             temp_json["flag"]=SERVER_ADD_CONTACT_REQUEST;
             temp_json["contact"]=*it;
             Send(session_socket,temp_json.dump().c_str());

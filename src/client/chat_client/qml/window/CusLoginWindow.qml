@@ -10,7 +10,6 @@ FluWindow {
     title: "chat:login"
     width: 800
     height: 600
-
     maximumWidth: 800
     maximumHeight: 600
     minimumWidth: 800
@@ -135,7 +134,6 @@ FluWindow {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
-                //TODO format control
                 var send_json = '{"flag":"' + Define.SOCKET_LOG_IN + '","account":"'
                         + textbox_account.text + '","password":"' + $UseMD5.toStr(
                             textbox_password.text) + '"}'

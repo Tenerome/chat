@@ -185,7 +185,6 @@ FluWindow {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
-                //TODO format control
                 FluApp.navigate("/login")
                 window.close()
             }

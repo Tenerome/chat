@@ -153,7 +153,6 @@ bool Get_Group_Message(DB &db,vector<pair<string,string>> &group_message_list){
         MYSQL_ROW row;
         while((row=mysql_fetch_row(res))!=NULL){
             group_message_list.push_back(pair<string,string>(row[0],row[1]));
-            cout<<row[0]<<endl;//TODEL
         }
         mysql_free_result(res);
         mysql_close(db.mysql);

@@ -51,7 +51,6 @@ FluContentPage {
                 }
             }
             FluFilledButton {
-                //TODEL
                 height: textbox_contact.height
                 text: "Clear history"
                 onClicked: {
