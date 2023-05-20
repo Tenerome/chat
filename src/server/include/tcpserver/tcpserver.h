@@ -11,7 +11,7 @@ extern string mysql_password;
 
 void Send(int socket,const char *buffer);
 int Recv(int socket,string &recv_string);
-bool get_Password(const char *path,char *out);
+bool check_Password(const char *path);
 //log
 
 bool mid_Log_UP(DB db,const char *json_string,int session_socket);

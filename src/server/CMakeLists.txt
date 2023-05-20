@@ -39,6 +39,7 @@ message("build chat_server: \n")
 add_library(TcpServer SHARED 
     ./Source/encode/base64.cpp
     ./Source/encode/md5.cpp
+    ./Source/encode/conio.cpp
     ./Source/db/db_contact.cpp
     ./Source/db/db_global.cpp
     ./Source/db/db_log.cpp

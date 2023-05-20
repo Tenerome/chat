@@ -11,28 +11,27 @@ int Recv(int socket,string &recv_string){
     recv_string=buff;
     return ret;
 }
-bool get_Password(const char *path,char *out){
-    char in[16];
+bool check_Password(const char *path){
+    char in[250];
+    char out[250];
     ifstream(path)>>in;
     if(base64_decode(in,strlen(in),(unsigned char*)out)==0){
         cerr<<"base64 decode failed,maybe you need to run as root or check other configure"<<endl;
         return false;
     }
-    out[strlen((char*)out)-1]='\0';//add end tag 
-    return true;
+    out[strlen((char*)out)]='\0';//add end tag 
+    if(strcmp(MD5(mysql_password).toStr().c_str(),out)==0){
+        return true;
+    }else{
+        return false;
+    }
 }
 void parseJson(const char *json_string,int session_socket){
-    char out[16];
-    if(!get_Password(SQL_PASS_PATH,out)){
+    if(!check_Password(SQL_PASS_PATH)){
+        cerr<<"mysql password wrong"<<endl;
         exit(-1);
     }
-    cout<<MD5("123456").toStr()<<endl;
-    string password;
-    cout<<"input password of msql user"<<SQL_USER<<":";
-    std::cin>>password;
-    cout<<MD5(password).toStr()<<endl;
-    DB db(out);
-    
+    DB db(mysql_password.c_str());
     json recv_json=json::parse(json_string);
     string flag=recv_json["flag"];
     switch(stoi(flag)){

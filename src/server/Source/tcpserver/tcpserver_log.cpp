@@ -18,9 +18,6 @@ bool mid_Log_UP(DB db,const char *json_string,int session_socket){
             temp_json["flag"]=SERVER_TRUE;
             ret=true;
             break;
-        default:
-            cerr<<"chat_server:log up error"<<endl;
-            exit(-1);
     }
     if(temp_json.empty()){
         return ret;
@@ -52,9 +49,6 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
             temp_json["flag"]=SERVER_TRUE;
             ret=true;
             break;
-        default:
-            cerr<<"chat_server:log in error"<<endl;
-            exit(-1);
     }
     if(temp_json.empty()){
         return ret;
@@ -65,11 +59,11 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
 
 }
 void mid_Log_OUT(int session_socket){
-    char out[16];
-    if(get_Password("pass.dat",out)){
-        cout<<"base64 decode succeed"<<endl;
+    if(!check_Password(SQL_PASS_PATH)){
+        cout<<"check mysql password wrong"<<endl;
+        exit(-1);
     }
-    DB db(out);
+    DB db(mysql_password.c_str());
     if(Log_OUT(db,session_socket)==SQL_TRUE){
         cout<<session_socket<<" log out succeed"<<endl;
     }

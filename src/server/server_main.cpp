@@ -1,11 +1,41 @@
 #include <tcpserver.h>
 #include <ThreadPool.h>
 #include <csignal>
-
+#include <conio.h>
 map<string,int> route_socket;
 int server_socket;
 int epoll_fd;
+string mysql_password;
 
+//input password hiddenly
+void setMysqlPassword(string &mysql_password){
+    char pass[20]={0};
+    int i=0;
+    char c;//getchar
+    while(1){
+        c=c_getch();
+        if (c == '\x0A') { //if Enter break
+            break;
+        }
+        if (c == '\x7f') { //if BackSapce,delete one *
+            if(i>0){
+                cout<<"\b \b";
+                --i;
+            }
+            
+        }else {
+            pass[i] = c;
+            cout<<"*";
+            if(i<20){
+                i++;
+            }
+               
+        }
+    }
+    mysql_password=pass;
+}
+
+//handle interacive attention signal
 void signalHandler(int signum){
     cout<<"signal:"<<signum<<endl;
     cout<<"catch interactive attention signal,exit normally"<<endl;
@@ -15,7 +45,6 @@ void signalHandler(int signum){
     close(server_socket);
     cout<<"server exit completely"<<endl;
     exit(0);
-
 }
 int main(){
     server_socket=socket(AF_INET, SOCK_STREAM, 0);
@@ -32,11 +61,17 @@ int main(){
         cerr<<"chat_server: main: server listen error"<<endl;
         exit(-1);        
     }
+    //epoll events
     epoll_fd=epoll_create(10);
     epoll_event socket_event,listen_event[MAX_LISTEN];
     socket_event.events=EPOLLIN; //defalut:LT, use ET: EPOLLET|EPOLLIN
     socket_event.data.fd=server_socket;
     epoll_ctl(epoll_fd,EPOLL_CTL_ADD,server_socket,&socket_event);
+
+    //set mysql_password
+    cout<<"input the password of "<<SQL_USER<<":";
+    setMysqlPassword(mysql_password);
+    cout<<endl;
     while(1){
         signal(SIGINT,signalHandler);//if catch Ctrl C
         cout<<"waiting for connection..."<<endl;
