@@ -442,12 +442,10 @@ FluWindow {
         positiveText: "Confirm"
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
         onPositiveClicked: {
-            window.closeDestory = true
-            window.closeFunc = function (event) {
-                event.accepted = true
-            }
-            window.destoryWindow()
-            FluApp.navigate("/main")
+            inner_expander.children = []
+            var send_json = '{"flag":"' + Define.SOCKET_SELECT_WHEN_START
+                    + '","account":"' + Define.account + '"}'
+            $Client.sendMessage(send_json)
         }
         onNegativeClicked: {
             flush_dialog.close()
