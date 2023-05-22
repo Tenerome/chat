@@ -141,7 +141,7 @@ FluWindow {
             contact = recv_json["contact"]
             message = recv_json["message"]
             Define.chatroom_model.append({
-                                             "detail": "====" + contact + "====\n" + message,
+                                             "detail": "====" + (contact === Define.account ? "You" : contact) + "====\n" + message,
                                              "position": contact === Define.account ? 0 : 1
                                          })
             //            system_tray.showMessage("chatroom:" + contact, message)
@@ -202,7 +202,7 @@ FluWindow {
                 radius: 10
                 width: 350
                 height: 45
-                color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
+                color: FluTheme.darkMode === FluDarkMode.Dark ? "#454545" : "white"
                 FluTooltip {
                     id: tool_tip
                 }
@@ -216,7 +216,7 @@ FluWindow {
                     selectByMouse: true
                     cursorVisible: true
                     selectionColor: "#66B3FF"
-                    color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"
+                    color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "#454545"
                     focus: true
                     validator: RegExpValidator {
                         regExp: /([A-Za-z]{5,10})/
@@ -337,7 +337,7 @@ FluWindow {
         }
         FluPaneItemExpander {
             id: inner_expander
-            title: "Contact"
+            title: "Contacts"
             icon: FluentIcons.ContactSolid
             Connections {
                 property var parent
@@ -355,7 +355,7 @@ FluWindow {
                             if (key !== "flag") {
                                 //spawn FluPaneItem by contacts
                                 newPane.temp_id = key
-                                newPane.title = Define.contact_json[key]
+                                newPane.title = "     " + Define.contact_json[key]
                                 inner_expander.children.push(newPane)
                                 //fill contact_map
                                 Define.contact_map[key] = Qt.createQmlObject(

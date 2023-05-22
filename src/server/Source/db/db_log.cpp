@@ -12,7 +12,7 @@ int Log_UP(DB &db, const char *account, const char *password, const char *name){
         return SQL_ACCOUNT_REGISTED;
     }
     char query[250];
-    sprintf(query,"insert into user(account,password,name) values('%s','%s','%s')",account,password,name);
+    sprintf(query,"insert into user(account,password,name,status,route) values('%s','%s','%s','%d','%d')",account,password,name,0,-1);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Log_UP:insert error:"<<mysql_error(db.mysql)<<endl;
         mysql_close(db.mysql);

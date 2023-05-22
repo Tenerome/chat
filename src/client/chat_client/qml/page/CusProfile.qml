@@ -14,7 +14,7 @@ FluContentPage {
         width: page.width - 50
         height: page.height - 150
         border.color: "gray"
-        color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
+        color: FluTheme.darkMode === FluDarkMode.Dark ? "#454545" : "white"
         radius: 10
         ColumnLayout {
             x: 50

@@ -1,7 +1,9 @@
 import QtQuick 2.9
+import QtQuick.Window 2.12
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.5
 import FluentUI 1.0
+import Qt.labs.platform 1.1
 import "qrc:/qml/global"
 import "../global/Define.js" as Define
 
@@ -29,6 +31,7 @@ FluWindow {
                                       break
                                       case Define.CLIENT_TRUE:
                                       showSuccess("Log up succeed")
+                                      //                                      setNull()
                                       break
                                   }
                               }
@@ -164,14 +167,14 @@ FluWindow {
                 validator: RegExpValidator {
                     regExp: /[A-Za-z]{2}([0-9]{6,8})/
                 }
-                onTextChanged: {
-                    tool_tip.show("tow letters with 6-8 numbers", 2000)
-                }
-                onFocusChanged: {
-                    if (!activeFocus) {
-                        tool_tip.hide()
-                    }
-                }
+                //                onTextChanged: {
+                //                    tool_tip.show("tow letters with 6-8 numbers", 2000)
+                //                }
+                //                onFocusChanged: {
+                //                    if (!activeFocus) {
+                //                        tool_tip.hide()
+                //                    }
+                //                }
                 Keys.enabled: true
                 Keys.onPressed: {
                     if (event.key === Qt.Key_Enter - 1) {
@@ -201,8 +204,6 @@ FluWindow {
                             + textbox_name.text + '","password":"' + $UseMD5.toStr(
                                 textbox_password.text) + '"}'
                     $Client.sendMessage(send_json)
-                    console.log("log up succeed")
-                    setNull()
                 }
             }
         }

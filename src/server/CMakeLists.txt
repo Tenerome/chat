@@ -49,6 +49,14 @@ add_library(TcpServer SHARED
     ./Source/tcpserver/tcpserver_log.cpp
     ./Source/tcpserver/tcpserver_message.cpp
 )
+
+#===============debug release==============
+
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+
+#==========================================
 #set executable object
 add_executable(server_main server_main.cpp)
 #link libs

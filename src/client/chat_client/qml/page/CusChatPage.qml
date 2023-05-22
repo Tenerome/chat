@@ -33,7 +33,7 @@ FluContentPage {
                 height: textscroll.height
                 border.color: "#a3bfc2"
                 radius: 10
-                color: FluTheme.darkMode === FluDarkMode.Dark ? "black" : "white"
+                color: FluTheme.darkMode === FluDarkMode.Dark ? "#454545" : "white"
                 //message ballon
                 ListView {
                     id: listview
@@ -61,13 +61,16 @@ FluContentPage {
                             x: position < 1 ? listview.width
                                               - width : 0 //control the position of message ballon
 
-                            Text {
+                            TextEdit {
                                 id: label
                                 width: label.text.length <= 10 ? label.text.length * 12 : 250
                                 font.pixelSize: 20
                                 anchors.centerIn: parent
                                 color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"
                                 wrapMode: Text.Wrap
+                                readOnly: true
+                                selectByMouse: true
+                                selectedTextColor: Qt.rgba(51, 153, 255, 1)
                                 text: detail
                             }
                         }
