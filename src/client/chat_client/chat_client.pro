@@ -6,8 +6,8 @@ QT += core
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp \
-        src/Socket/Socket.cpp \
+    main.cpp \
+    src/Socket/Socket.cpp \
     src/ftp/ftp.cpp \
     src/info/AppInfo.cpp \
     src/info/lang/En.cpp \
@@ -29,14 +29,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    src/Socket/Socket.h \
-    src/ftp/ftp.h \
-    src/info/AppInfo.h \
-    src/info/lang/En.h \
-    src/info/lang/Lang.h \
-    src/info/lang/Zh.h \
-    src/info/stdafx.h \
-    src/md5/md5.h \
-    src/md5/useMD5.h
+        src/Socket/Socket.h \
+        src/ftp/ftp.h \
+        src/info/AppInfo.h \
+        src/info/lang/En.h \
+        src/info/lang/Lang.h \
+        src/info/lang/Zh.h \
+        src/info/stdafx.h \
+        src/md5/md5.h \
+        src/md5/useMD5.h
 
 DISTFILES +=

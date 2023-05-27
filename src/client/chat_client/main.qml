@@ -5,7 +5,6 @@ import FluentUI 1.0
 
 Window {
     id: mainWin
-
     Component.onCompleted: {
         FluApp.init(mainWin)
         FluApp.routes = {

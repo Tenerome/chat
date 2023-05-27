@@ -85,23 +85,21 @@ FluContentPage {
             Layout.preferredWidth: recarea.width
             Layout.preferredHeight: 150
             Keys.enabled: true
-            Keys.onPressed: {
-                if (event.key === Qt.Key_Enter - 1) {
-                    if (multi_textbox.text !== "") {
-                        chat_model.append({
-                                              "detail": "====" + Define.name + "====\n"
-                                                        + multi_textbox.text,
-                                              "position": 0
-                                          })
+            Keys.onReturnPressed: {
+                if (multi_textbox.text !== "") {
+                    chat_model.append({
+                                          "detail": "====" + Define.name + "====\n"
+                                                    + multi_textbox.text,
+                                          "position": 0
+                                      })
 
-                        var send_json = '{"flag":"' + Define.SOCKET_MESSAGE + '","message_flag":"'
-                                + Define.CLIENT_TEXT_MESSAGE + '","account":"'
-                                + Define.account + '","contact":"' + contact
-                                + '","message":"' + multi_textbox.text + '"}'
-                        $Client.sendMessage(send_json)
-                        multi_textbox.text = ""
-                    }
+                    var send_json = '{"flag":"' + Define.SOCKET_MESSAGE
+                            + '","message_flag":"' + Define.CLIENT_TEXT_MESSAGE
+                            + '","account":"' + Define.account + '","contact":"'
+                            + contact + '","message":"' + multi_textbox.text + '"}'
+                    $Client.sendMessage(send_json)
                 }
+                multi_textbox.clear()
             }
         }
     }

@@ -25,10 +25,10 @@ FluWindow {
                                   var flag = recv_json["flag"]
                                   switch (flag) {
                                       case Define.CLIENT_ACCOUNT_NOT_REGISTED:
-                                      showError("This account does not exist")
+                                      showError(lang.account_not_exist)
                                       break
                                       case Define.CLIENT_WRONG_PASSWORD:
-                                      showError("The password is wrong")
+                                      showError(lang.wrong_password)
                                       break
                                       case Define.CLIENT_TRUE:
                                       Define.account = textbox_account.text
@@ -41,10 +41,10 @@ FluWindow {
     }
     FluAppBar {
         id: appbar
-        title: "Log in"
+        title: lang.login
         width: parent.width
         showDark: true
-        darkText: "Dark"
+        darkText: lang.darkmode
     }
     ColumnLayout {
         anchors {
@@ -77,7 +77,7 @@ FluWindow {
             }
             FluTextBox {
                 id: textbox_account
-                placeholderText: "Input your account"
+                placeholderText: lang.input_account
                 Layout.preferredWidth: 260
                 Layout.alignment: Qt.AlignHCenter
                 focus: true
@@ -85,7 +85,7 @@ FluWindow {
                     regExp: /[1-9]([0-9]{7,10})/
                 }
                 onTextChanged: {
-                    tool_tip.show("8-10 numbers", 2000)
+                    tool_tip.show(lang.account_format, 2000)
                 }
                 onFocusChanged: {
                     if (!activeFocus) {
@@ -106,14 +106,14 @@ FluWindow {
                 id: textbox_password
                 Layout.topMargin: 20
                 Layout.preferredWidth: 260
-                placeholderText: "Input your password"
+                placeholderText: lang.input_password
                 echoMode: TextInput.Password
                 Layout.alignment: Qt.AlignHCenter
                 validator: RegExpValidator {
                     regExp: /[A-Za-z]{2}([0-9]{6,8})/
                 }
                 onTextChanged: {
-                    tool_tip.show("tow letters with 6-8 numbers", 2000)
+                    tool_tip.show(lang.password_format, 2000)
                 }
                 onFocusChanged: {
                     if (!activeFocus) {
@@ -130,7 +130,7 @@ FluWindow {
         }
         FluFilledButton {
             id: login_btn
-            text: "log in"
+            text: lang.login
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
@@ -143,7 +143,7 @@ FluWindow {
             }
         }
         FluFilledButton {
-            text: "log up"
+            text: lang.logup
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 20
             onClicked: {
@@ -154,10 +154,10 @@ FluWindow {
     }
     function verifyValid() {
         if (textbox_account.text.length < 8) {
-            showError("account is too short")
+            showError(lang.account_short)
             return false
         } else if (textbox_password.text.length < 8) {
-            showError("password is too short")
+            showError(lang.account_short)
             return false
         } else
             return true

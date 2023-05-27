@@ -23,7 +23,7 @@ FluContentPage {
             RowLayout {
                 spacing: 5
                 FluText {
-                    text: "uid:"
+                    text: lang.uid + ":"
                     pixelSize: 20
                 }
                 FluText {
@@ -34,7 +34,7 @@ FluContentPage {
             RowLayout {
                 spacing: 5
                 FluText {
-                    text: "name:"
+                    text: lang.name + ":"
                     pixelSize: 20
                 }
                 FluText {
@@ -48,7 +48,7 @@ FluContentPage {
                 }
                 FluTextBox {
                     id: set_name
-                    placeholderText: "Input new name"
+                    placeholderText: lang.input_name
                     Layout.preferredWidth: 260
                     Layout.alignment: Qt.AlignHCenter
                     focus: true
@@ -56,7 +56,7 @@ FluContentPage {
                         regExp: /([A-Za-z]{5,10})/
                     }
                     onTextChanged: {
-                        tool_tip.show("5-10 letters", 2000)
+                        tool_tip.show(lang.name_format, 2000)
                     }
                     onFocusChanged: {
                         if (!activeFocus) {
@@ -72,12 +72,13 @@ FluContentPage {
                 }
                 FluFilledButton {
                     id: setname_btn
-                    text: "set name"
+                    text: lang.set_name
                     onClicked: {
                         if (set_name.text.length < 5) {
-                            showError("name is too short")
+                            showError(lang.name_short)
                         } else if (set_name.text === Define.name) {
-                            showError("please use a new name")
+                            showError(appInfo.lang.objectName
+                                      === "En" ? "please use a new name" : "输入一个新昵称")
                         } else {
                             var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
                                     + '","edit_flag":"' + Define.CLIENT_EDIT_NICKNAME
@@ -85,7 +86,8 @@ FluContentPage {
                                     + Define.account + '","nickname":"' + set_name.text + '"}'
                             $Client.sendMessage(send_json)
                             set_name.text = ""
-                            showSuccess("Set Succeed,Please Flush")
+                            showSuccess(appInfo.lang.objectName
+                                        === "En" ? "Set Succeed,Please Flush" : "修改成功，请刷新")
                         }
                     }
                 }

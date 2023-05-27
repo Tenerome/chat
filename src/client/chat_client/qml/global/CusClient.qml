@@ -46,17 +46,17 @@ Item {
     signal close_by_Dialog
     FluContentDialog {
         id: client_dialog
-        title: "client error"
-        message: "Connection failed"
-        negativeText: "Quit"
+        title: appInfo.lang.objectName === "En" ? "client error" : "错误"
+        message: appInfo.lang.objectName === "En" ? "Connection failed" : "连接断开"
+        negativeText: lang.quit
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
         onNegativeClicked: {
             client_timer.stop()
             close_by_Dialog()
         }
-        positiveText: "Retry"
+        positiveText: lang.retry
         onPositiveClicked: {
-            showInfo("retry to connect")
+            showInfo(appInfo.lang.objectName === "En" ? "retry to connect" : "重新连接")
         }
     }
 }

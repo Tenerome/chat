@@ -5,7 +5,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QFile>
-#include <QFileDialog>
 #include <QDir>
 #include <QNetworkReply>
 #include <QDebug>

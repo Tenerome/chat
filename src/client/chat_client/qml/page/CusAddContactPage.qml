@@ -24,7 +24,7 @@ FluContentPage {
                     regExp: /[1-9]([0-9]{7,10})/
                 }
                 onTextChanged: {
-                    tool_tip.show("8-10 numbers", 2000)
+                    tool_tip.show(lang.account_format, 2000)
                 }
                 onFocusChanged: {
                     if (!activeFocus) {
@@ -34,14 +34,18 @@ FluContentPage {
             }
             FluFilledButton {
                 height: textbox_contact.height
-                text: "Add"
+                text: lang.add
                 onClicked: {
                     if (textbox_contact.text.length < 8) {
-                        showError("account is too short")
+                        showError(lang.account_short)
                     } else if (textbox_contact.text === Define.account) {
-                        showError("you can't add yourself")
+                        showError(appInfo.lang.objectName
+                                  === "En" ? "you can't add yourself" : "不能添加自已
+")
                     } else if (alreadyContact()) {
-                        showError("this account has been your contact")
+                        showError(appInfo.lang.objectName
+                                  === "En" ? "this account has been your contact" : "已经是好友了
+")
                     } else {
                         var send_json = '{"flag":"' + Define.SOCKET_ADD_CONTACT
                                 + '","account":"' + Define.account
@@ -52,7 +56,7 @@ FluContentPage {
             }
             FluFilledButton {
                 height: textbox_contact.height
-                text: "Clear history"
+                text: lang.clear_history
                 onClicked: {
                     listmodel.clear()
                 }
@@ -85,7 +89,7 @@ FluContentPage {
                                 z: 1
                                 radius: [10, 10, 10, 10]
                                 color: FluTheme.darkMode
-                                       === FluDarkMode.Dark ? "#707B7C" : "#486FC3"
+                                       === FluDarkMode.Dark ? "#707B7C" : "#ECF0F1"
                             }
                             Row {
                                 z: 2
@@ -98,24 +102,27 @@ FluContentPage {
                                     pixelSize: add_frame.height - 20
                                 }
                                 FluText {
-                                    text: " request to be your friend:"
+                                    text: appInfo.lang.objectName
+                                          === "En" ? " request to be your friend:" : " 申请添加好友："
                                     visible: flag === "0" ? true : false
                                     pixelSize: add_frame.height - 20
                                 }
                                 FluText {
-                                    text: " agree to be your friend"
+                                    text: appInfo.lang.objectName
+                                          === "En" ? " agree to be your friend" : " 同意添加好友"
                                     visible: flag === "1" ? true : false
                                     pixelSize: add_frame.height - 20
                                 }
                                 FluText {
-                                    text: " reject to be your friend"
+                                    text: appInfo.lang.objectName
+                                          === "En" ? " reject to be your friend" : " 拒绝添加好友"
                                     visible: flag === "2" ? true : false
                                     pixelSize: add_frame.height - 20
                                 }
                                 FluFilledButton {
                                     id: reject_add
                                     anchors.verticalCenter: label.verticalCenter
-                                    text: "Reject"
+                                    text: appInfo.lang.objectName === "En" ? "Reject" : "拒绝"
                                     normalColor: "orange"
                                     height: add_frame.height - 20
                                     visible: flag === "0" ? true : false //control diff
@@ -133,7 +140,7 @@ FluContentPage {
                                 FluFilledButton {
                                     id: agree_add
                                     anchors.verticalCenter: label.verticalCenter
-                                    text: "Agree"
+                                    text: appInfo.lang.objectName === "En" ? "Agree" : "同意"
                                     normalColor: "green"
                                     height: add_frame.height - 20
                                     visible: flag === "0" ? true : false
@@ -146,7 +153,7 @@ FluContentPage {
                                         agree_add.enabled = false
                                         reject_add.visible = false
                                         agree_add.normalColor = "#486FC3"
-                                        showSuccess("Add Contact,Please Flush")
+                                        showSuccess(appInfo.lang.objectName === "En" ? "Add Contact,Please Flush" : "添加成功，请刷新")
                                     }
                                 }
                             }

@@ -14,7 +14,7 @@ FluWindow {
     signal tap_contact_S(string contact)
     signal edit_contact_S(string contact)
     id: window
-    title: "chat"
+    title: lang.chat
     width: 1200
     height: 900
     //close event
@@ -26,9 +26,10 @@ FluWindow {
     //========================system tray,bar,dialog================
     FluContentDialog {
         id: close_app
-        title: "Sure to Quit?"
-        message: "All activity won't be retained"
-        negativeText: "Minimize"
+        title: appInfo.lang.objectName === "En" ? "Sure to quit?" : "确定要退出吗？"
+        message: appInfo.lang.objectName
+                 === "En" ? "All activity won't be retained" : "所有的活动都不会被保留！"
+        negativeText: lang.mini
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
                      | FluContentDialog.NeutralButton
         onPositiveClicked: {
@@ -36,12 +37,14 @@ FluWindow {
             FluApp.closeApp()
         }
         onNegativeClicked: {
-            system_tray.showMessage("Chat Notifications",
-                                    "Chat has been hide in the system tray")
+            system_tray.showMessage(
+                        appInfo.lang.objectName === "En" ? "Chat Notifications" : "聊通知：",
+                        appInfo.lang.objectName
+                        === "En" ? "Chat has been hide in the system tray" : "聊已经隐藏到系统托盘")
             window.hide()
         }
-        positiveText: "Quit"
-        neutralText: "Cancle"
+        positiveText: lang.confirm
+        neutralText: lang.cancel
     }
 
     FluAppBar {
@@ -54,10 +57,10 @@ FluWindow {
         id: system_tray
         visible: true
         icon.source: "qrc:/res/icon/w_menu.png"
-        tooltip: "chat"
+        tooltip: Define.account
         menu: Menu {
             MenuItem {
-                text: "Quit"
+                text: lang.quit
                 onTriggered: {
                     window.destoryWindow()
                     FluApp.closeApp()
@@ -90,13 +93,13 @@ FluWindow {
         var message
         switch (flag) {
         case Define.CLIENT_ACCOUNT_NOT_REGISTED:
-            showError("This account does not exist")
+            showError(lang.account_not_exist)
             break
         case Define.CLIENT_ACCOUNT_ONLINE:
-            showSuccess("Send add request")
+            showSuccess(appInfo.lang.objectName === "En" ? "Send add request" : "已发送添加申请")
             break
         case Define.CLIENT_BUFFER_ADD_CONTACT:
-            showSuccess("Send add request")
+            showSuccess(appInfo.lang.objectName === "En" ? "Send add request" : "已发送添加申请")
             break
         case Define.CLIENT_ADD_CONTACT_REQUEST:
             contact = recv_json["contact"]
@@ -150,7 +153,7 @@ FluWindow {
     }
     //==========================when start=======================
     Component.onCompleted: {
-        showSuccess("log succeed")
+        showSuccess(appInfo.lang.objectName === "En" ? "log succeed" : "登陆成功")
         //create add listmodel
         Define.add_page_listmodel = Qt.createQmlObject(
                     "import QtQuick 2.9;ListModel{ListElement{contact:'';flag:''}}",
@@ -183,7 +186,7 @@ FluWindow {
     Connections {
         target: window
         function onName_ready_S() {
-            nav_view.title = Define.name + " tonline"
+            nav_view.title = Define.name + lang.online
         }
     }
 
@@ -222,7 +225,7 @@ FluWindow {
                         regExp: /([A-Za-z]{5,10})/
                     }
                     onTextChanged: {
-                        tool_tip.show("5-10 letters", 2000)
+                        tool_tip.show(lang.name_format, 2000)
                     }
                     onFocusChanged: {
                         if (!activeFocus) {
@@ -242,7 +245,7 @@ FluWindow {
             }
             FluFilledButton {
                 id: confirm_btn
-                text: "confirm"
+                text: lang.confirm
                 height: 50
                 onClicked: {
                     var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT
@@ -250,18 +253,19 @@ FluWindow {
                             + '","account":"' + Define.account + '","contact":"'
                             + Define.load_model["contact"] + '","nickname":"' + text_box.text + '"}'
                     if (text_box.text.length < 5) {
-                        showError("name is too short")
+                        showError(lang.name_short)
                     } else {
                         $Client.sendMessage(send_json)
                         text_box.text = ""
                         edit_window.visible = false
-                        showSuccess("Modify Succeed!")
+                        showSuccess(appInfo.lang.objectName
+                                    === "En" ? "Modify Succeed!" : "修改成功，请刷新")
                     }
                 }
             }
             FluFilledButton {
                 id: cancel_btn
-                text: "cancel"
+                text: lang.cancel
                 height: 50
                 onClicked: {
                     text_box.text = ""
@@ -273,10 +277,10 @@ FluWindow {
 
     FluContentDialog {
         id: del_contact
-        title: "Sure to delete your friend?"
-        message: "Please think over before operation"
-        negativeText: "Cancel"
-        positiveText: "Confirm"
+        title: appInfo.lang.objectName === "En" ? "Sure to delete your friend?" : "确定删除该好友?"
+        message: appInfo.lang.objectName === "En" ? "Please think over before operation" : "请慎重考虑"
+        negativeText: lang.cancel
+        positiveText: lang.confirm
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
         onPositiveClicked: {
             var send_json = '{"flag":"' + Define.SOCKET_EDIT_CONTACT + '","edit_flag":"'
@@ -284,7 +288,8 @@ FluWindow {
                     + '","contact":"' + Define.load_model["contact"] + '"}'
             $Client.sendMessage(send_json)
             del_contact.close()
-            showSuccess("Delete Contact Succeed")
+            showSuccess(appInfo.lang.objectName === "En" ? "Delete Contact Succeed" : "删除成功
+")
         }
         onNegativeClicked: {
             del_contact.close()
@@ -294,16 +299,16 @@ FluWindow {
     FluMenu {
         id: pop_menu
         FluMenuItem {
-            text: "cancel"
+            text: lang.cancel
         }
         FluMenuItem {
-            text: "edit nickname"
+            text: lang.edit_nickname
             onClicked: {
                 edit_window.visible = true
             }
         }
         FluMenuItem {
-            text: "delete contact"
+            text: lang.delete_contact
             onClicked: {
                 del_contact.open()
             }
@@ -313,7 +318,7 @@ FluWindow {
     FluObject {
         id: cus_side_menu_bar
         FluPaneItem {
-            title: "Profile"
+            title: lang.profile
             cusIcon: Image {
                 source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_profile.png" : "qrc:/res/icon/b_profile.png"
                 width: 20
@@ -324,7 +329,7 @@ FluWindow {
             }
         }
         FluPaneItem {
-            title: "Add Contact"
+            title: lang.add_contact
             cusIcon: Image {
                 source: FluTheme.darkMode
                         === FluDarkMode.Dark ? "qrc:/res/icon/w_add.png" : "qrc:/res/icon/b_add.png"
@@ -337,7 +342,7 @@ FluWindow {
         }
         FluPaneItemExpander {
             id: inner_expander
-            title: "Contacts"
+            title: lang.contacts
             icon: FluentIcons.ContactSolid
             Connections {
                 property var parent
@@ -393,7 +398,7 @@ FluWindow {
         }
         FluPaneItem {
             temp_id: "$chatroom"
-            title: "Chat Room"
+            title: lang.chatroom
             cusIcon: Image {
                 source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_chatroom.png" : "qrc:/res/icon/b_chatroom.png"
                 width: 20
@@ -412,7 +417,7 @@ FluWindow {
         id: footer
         FluPaneItemSeparator {}
         FluPaneItem {
-            title: "Settings"
+            title: lang.settings
             cusIcon: Image {
                 source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_setting.png" : "qrc:/res/icon/b_setting.png"
                 width: 20
@@ -423,7 +428,7 @@ FluWindow {
             }
         }
         FluPaneItem {
-            title: "Flush"
+            title: lang.flush
             cusIcon: Image {
                 source: FluTheme.darkMode === FluDarkMode.Dark ? "qrc:/res/icon/w_flush.png" : "qrc:/res/icon/b_flush.png"
                 width: 20
@@ -436,10 +441,10 @@ FluWindow {
     }
     FluContentDialog {
         id: flush_dialog
-        title: "Sure to flush?"
-        message: "Message with contact will lost"
-        negativeText: "Cancel"
-        positiveText: "Confirm"
+        title: appInfo.lang.objectName === "En" ? "Sure to flush?" : "确定要刷新？"
+        message: appInfo.lang.objectName === "En" ? "Message with contact will lost" : "所有的消息都会丢失！"
+        negativeText: lang.cancel
+        positiveText: lang.confirm
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
         onPositiveClicked: {
             inner_expander.children = []

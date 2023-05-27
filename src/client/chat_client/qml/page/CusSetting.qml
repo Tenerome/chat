@@ -23,7 +23,7 @@ FluScrollablePage {
                 left: parent.left
             }
             FluText {
-                text: "Opacity"
+                text: lang.opacity
                 fontStyle: FluText.BodyStrong
                 Layout.bottomMargin: 4
             }
@@ -35,20 +35,21 @@ FluScrollablePage {
                     window.opacity = (value + 75) / 100
                 }
             }
+
             FluText {
-                text: "Dark Mode"
+                text: lang.darkmode
                 fontStyle: FluText.BodyStrong
                 Layout.bottomMargin: 4
             }
             Repeater {
                 model: [{
-                        "title": "System",
+                        "title": lang.system,
                         "mode": FluDarkMode.System
                     }, {
-                        "title": "Light",
+                        "title": lang.light,
                         "mode": FluDarkMode.Light
                     }, {
-                        "title": "Dark",
+                        "title": lang.dark,
                         "mode": FluDarkMode.Dark
                     }]
                 delegate: FluRadioButton {
@@ -56,6 +57,26 @@ FluScrollablePage {
                     text: modelData.title
                     onClicked: {
                         FluTheme.darkMode = modelData.mode
+                    }
+                }
+            }
+
+            FluText {
+                text: lang.locale
+                fontStyle: FluText.BodyStrong
+                Layout.bottomMargin: 4
+            }
+
+            Flow {
+                spacing: 5
+                Repeater {
+                    model: ["Zh", "En"]
+                    delegate: FluRadioButton {
+                        selected: appInfo.lang.objectName === modelData
+                        text: modelData
+                        onClicked: {
+                            appInfo.changeLang(modelData)
+                        }
                     }
                 }
             }
