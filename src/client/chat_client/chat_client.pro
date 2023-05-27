@@ -1,5 +1,6 @@
 QT += quick
-
+QT += widgets
+QT += core
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
@@ -7,6 +8,11 @@ QT += quick
 SOURCES += \
         main.cpp \
         src/Socket/Socket.cpp \
+    src/ftp/ftp.cpp \
+    src/info/AppInfo.cpp \
+    src/info/lang/En.cpp \
+    src/info/lang/Lang.cpp \
+    src/info/lang/Zh.cpp \
     src/md5/md5.cpp \
     src/md5/useMD5.cpp
 
@@ -24,6 +30,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/Socket/Socket.h \
+    src/ftp/ftp.h \
+    src/info/AppInfo.h \
+    src/info/lang/En.h \
+    src/info/lang/Lang.h \
+    src/info/lang/Zh.h \
+    src/info/stdafx.h \
     src/md5/md5.h \
     src/md5/useMD5.h
 

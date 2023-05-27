@@ -31,5 +31,6 @@
         <file>res/icon/b_setting.png</file>
         <file>res/icon/b_name.png</file>
         <file>res/icon/w_name.png</file>
+        <file>test.qml</file>
     </qresource>
 </RCC>

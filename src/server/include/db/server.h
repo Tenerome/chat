@@ -10,10 +10,10 @@
 //system
 #include<iostream>
 #include<fstream>
-// #include<stdio.h>
-#include<unistd.h>//IO and system
 
-// #include<cstring>
+#include<unistd.h>//IO and system
+#include <csignal>
+
 #include<string.h>//string
 
 #include<mysql/mysql.h>

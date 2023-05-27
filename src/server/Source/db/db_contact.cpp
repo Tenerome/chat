@@ -6,7 +6,7 @@
 //SQL_BUFFER_ADD_CONTACT
 int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     if(!check_Existed(db,contact)){
         cout<<contact<<"does not exist"<<endl;
@@ -21,7 +21,7 @@ int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
         sprintf(query,"insert into message(from_account,to_account,add_flag) values('%s','%s','%d')",account,contact,1);
         if(mysql_query(db.mysql,query)){
             cerr<<"db-Send_Add_Contact_Request:insert error:"<<mysql_error(db.mysql)<<endl;
-            exit(-1);
+            raise(SIGINT);
         }
         mysql_close(db.mysql);
         return SQL_BUFFER_ADD_CONTACT;
@@ -34,7 +34,7 @@ int Send_Add_Contact_Request(DB &db,const char *account,const char *contact){
 //SQL_BUFFER_ADD_CONTACT
 int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer){
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     if(check_Online(db,contact)){
         mysql_close(db.mysql);
@@ -44,7 +44,7 @@ int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer
         sprintf(query,"insert into message(from_account,to_account,answer_add) values('%s','%s','%d')",contact,account,answer);
         if(mysql_query(db.mysql,query)){
             cerr<<"db-Before_Add_Contact:insert error:"<<mysql_error(db.mysql)<<endl;
-            exit(-1);
+            raise(SIGINT);
         }
         mysql_close(db.mysql);
         return SQL_BUFFER_ADD_CONTACT;
@@ -55,7 +55,7 @@ int Answer_Add_Contact(DB &db,const char *account,const char *contact,int answer
 //SQL_FALSE / SQL_TRUE
 int Add_Contact(DB &db,const char *account,const char *contact){
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     string account_name=getName_by_account(db,account);
     string contact_name=getName_by_account(db,contact);
@@ -80,18 +80,18 @@ int Add_Contact(DB &db,const char *account,const char *contact){
 //if true contact_add_list=add list
 bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){//account=to
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     char query[250];
     sprintf(query,"select add_flag,from_account from message where to_account='%s' and add_flag is not null",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     MYSQL_ROW row;
     try{
@@ -110,7 +110,8 @@ bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){/
             sprintf(query,"delete from message where to_account='%s' and add_flag=1 ",account);
             if(mysql_query(db.mysql,query)){
                 cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-                exit(-1);
+                raise(SIGINT);
+
             }
             mysql_close(db.mysql);
             return true;
@@ -125,18 +126,18 @@ bool get_Add_Flag(DB &db,const char *account,vector<string> &contact_add_list){/
 //if true agree_contact=agree list,reject_contact=reject list
 bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vector<string> &reject_contact){//account=from
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     char query[250];
     sprintf(query,"select answer_add,to_account from message where from_account='%s' and answer_add is not null",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-Get_Add_Buffer:store result error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     try{
         if(mysql_num_rows(res)==0){
@@ -159,7 +160,7 @@ bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vec
             sprintf(query,"delete from message where from_account='%s' and answer_add is not null ",account);
             if(mysql_query(db.mysql,query)){
                 cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-                exit(-1);
+                raise(SIGINT);
             }
             mysql_close(db.mysql);
             return true;
@@ -174,7 +175,7 @@ bool get_Answer_Add(DB &db,const char *account,vector<string> &agree_contact,vec
 
 bool Set_Nickname(DB &db,const char *account,const char *contact,const char *nickname){
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     char query[250];
     if(strcmp(account,contact)==0){
@@ -194,7 +195,7 @@ bool Set_Nickname(DB &db,const char *account,const char *contact,const char *nic
 }
 bool Del_Contact(DB &db,const char *account,const char *contact){
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     char query[250];
     char query1[250];
@@ -216,18 +217,18 @@ bool Del_Contact(DB &db,const char *account,const char *contact){
 }
 bool Get_Contact_List(DB &db,const char *account,map<string,string> &contact_list){
     if(!get_Connection(db)){
-        exit(-1);
+        raise(SIGINT);
     }
     char query[250];
     sprintf(query,"select contact,nickname from contacts where account='%s'",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Contact_List:select error"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-Get_Contact_List:mysql store result error:"<<mysql_error(db.mysql)<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     if(mysql_num_rows(res)==0){
         mysql_free_result(res);

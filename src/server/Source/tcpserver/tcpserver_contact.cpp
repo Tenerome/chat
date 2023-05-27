@@ -21,7 +21,7 @@ bool mid_Add_Contact(DB db,const char *json_string,int session_socket){//send ad
             break;
         default:
             cerr<<"chat_server:add contact error"<<endl;
-            exit(-1);
+            raise(SIGINT);
     }
     if(temp_json.empty()){
         return true;
@@ -43,7 +43,7 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
             case SQL_ACCOUNT_ONLINE:
                 if(!Add_Contact(db,account.c_str(),contact.c_str())){
                     cerr<<"chat_server:line 129 error"<<endl;
-                    exit(-1);
+                    raise(SIGINT);
                 }
                 contact_socket=get_Route(db,contact.c_str());
                 temp_json["flag"]=SERVER_ANSWER_YES;
@@ -64,7 +64,7 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
         }
     }else{
         cerr<<"chat_server:mid_answer_add_contact error"<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     if(temp_json.empty()){
         return true;

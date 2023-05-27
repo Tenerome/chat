@@ -1,6 +1,5 @@
 #include <tcpserver.h>
 #include <ThreadPool.h>
-#include <csignal>
 #include <conio.h>
 map<string,int> route_socket;
 int server_socket;
@@ -97,7 +96,7 @@ int main(){
                 socket_event.data.fd=client_socket;
                 if(epoll_ctl(epoll_fd,EPOLL_CTL_ADD,client_socket,&socket_event)==-1){
                     cerr<<"client epoll_ctl error"<<endl;
-                    exit(-1);
+                    raise(SIGINT);
                 } //add new the connected socket to epoll events
                 //insert route_socket,use hash value obain the client_socket
                 route_socket.insert(pair<string,int>(to_string(client_socket),client_socket));

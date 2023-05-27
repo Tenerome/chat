@@ -29,7 +29,7 @@ bool check_Password(const char *path){
 void parseJson(const char *json_string,int session_socket){
     if(!check_Password(SQL_PASS_PATH)){
         cerr<<"mysql password wrong"<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     DB db(mysql_password.c_str());
     json recv_json=json::parse(json_string);

@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include "src/Socket/Socket.h"
 #include "src/md5/useMD5.h"
+#include "src/info/AppInfo.h"
 int main(int argc, char *argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -23,6 +24,14 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("$Client",&the_Client);
     useMD5 usemd5;
     engine.rootContext()->setContextProperty("$UseMD5",&usemd5);
+    AppInfo* appInfo = new AppInfo();
+    QQmlContext * context = engine.rootContext();
+    Lang* lang = appInfo->lang();
+    context->setContextProperty("lang",lang);
+    QObject::connect(appInfo,&AppInfo::langChanged,&app,[context,appInfo]{
+        context->setContextProperty("lang",appInfo->lang());
+    });
+    context->setContextProperty("appInfo",appInfo);
     engine.load(url);
     return app.exec();
 }

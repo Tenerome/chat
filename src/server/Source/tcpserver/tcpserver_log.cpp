@@ -61,7 +61,7 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
 void mid_Log_OUT(int session_socket){
     if(!check_Password(SQL_PASS_PATH)){
         cout<<"check mysql password wrong"<<endl;
-        exit(-1);
+        raise(SIGINT);
     }
     DB db(mysql_password.c_str());
     if(Log_OUT(db,session_socket)==SQL_TRUE){

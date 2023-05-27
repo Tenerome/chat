@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 10.0.0, 2023-05-23T00:23:35. -->
+<!-- Written by QtCreator 10.0.0, 2023-05-27T11:43:47. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -164,10 +164,72 @@
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.BuildSteps.Clean</value>
     </valuemap>
     <value type="int" key="ProjectExplorer.BuildConfiguration.BuildStepListCount">2</value>
-    <value type="bool" key="ProjectExplorer.BuildConfiguration.ClearSystemEnvironment">false</value>
+    <value type="bool" key="ProjectExplorer.BuildConfiguration.ClearSystemEnvironment">true</value>
     <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.CustomParsers"/>
     <value type="bool" key="ProjectExplorer.BuildConfiguration.ParseStandardOutput">false</value>
-    <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.UserEnvironmentChanges"/>
+    <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.UserEnvironmentChanges">
+     <value type="QString">SHELL=/bin/bash</value>
+     <value type="QString">SESSION_MANAGER=local/tenerome-S2-Air-Series:@/tmp/.ICE-unix/4400,unix/tenerome-S2-Air-Series:/tmp/.ICE-unix/4400</value>
+     <value type="QString">QT_ACCESSIBILITY=1</value>
+     <value type="QString">COLORTERM=truecolor</value>
+     <value type="QString">XDG_CONFIG_DIRS=/etc/xdg/xdg-cinnamon2d:/etc/xdg</value>
+     <value type="QString">XDG_SESSION_PATH=/org/freedesktop/DisplayManager/Session0</value>
+     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
+     <value type="QString">GTK_IM_MODULE=fcitx</value>
+     <value type="QString">LANGUAGE=en_US</value>
+     <value type="QString">LC_ADDRESS=zh_CN.UTF-8</value>
+     <value type="QString">LC_NAME=zh_CN.UTF-8</value>
+     <value type="QString">SSH_AUTH_SOCK=/home/tenerome/Qt/5.15.2/openssllibs</value>
+     <value type="QString">XMODIFIERS=@im=fcitx</value>
+     <value type="QString">DESKTOP_SESSION=cinnamon2d</value>
+     <value type="QString">LC_MONETARY=zh_CN.UTF-8</value>
+     <value type="QString">GTK_MODULES=gail:atk-bridge</value>
+     <value type="QString">XDG_SEAT=seat0</value>
+     <value type="QString">PWD=/home/tenerome</value>
+     <value type="QString">LOGNAME=tenerome</value>
+     <value type="QString">XDG_SESSION_DESKTOP=cinnamon2d</value>
+     <value type="QString">XDG_SESSION_TYPE=x11</value>
+     <value type="QString">MANPATH=/home/tenerome/Qt/5.15.2/gcc_64/man:/home/tenerome/Qt/5.15.2/gcc_64/man:</value>
+     <value type="QString">GPG_AGENT_INFO=/run/user/1000/gnupg/S.gpg-agent:0:1</value>
+     <value type="QString">XAUTHORITY=/home/tenerome/.Xauthority</value>
+     <value type="QString">XDG_GREETER_DATA_DIR=/var/lib/lightdm-data/tenerome</value>
+     <value type="QString">GDM_LANG=en_US</value>
+     <value type="QString">HOME=/home/tenerome</value>
+     <value type="QString">LC_PAPER=zh_CN.UTF-8</value>
+     <value type="QString">LANG=en_US.UTF-8</value>
+     <value type="QString">LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:</value>
+     <value type="QString">LDLIBRARYPATH=/home/tenerome/Qt/5.15.2/gcc_64/lib</value>
+     <value type="QString">XDG_CURRENT_DESKTOP=X-Cinnamon</value>
+     <value type="QString">VTE_VERSION=6800</value>
+     <value type="QString">XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0</value>
+     <value type="QString">GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/017b7ac7_7924_4bc2_a51f_0e75a710cdb0</value>
+     <value type="QString">CLUTTER_IM_MODULE=fcitx</value>
+     <value type="QString">LESSCLOSE=/usr/bin/lesspipe %s %s</value>
+     <value type="QString">XDG_SESSION_CLASS=user</value>
+     <value type="QString">TERM=xterm-256color</value>
+     <value type="QString">LC_IDENTIFICATION=zh_CN.UTF-8</value>
+     <value type="QString">GTK_OVERLAY_SCROLLING=1</value>
+     <value type="QString">LESSOPEN=| /usr/bin/lesspipe %s</value>
+     <value type="QString">USER=tenerome</value>
+     <value type="QString">GNOME_TERMINAL_SERVICE=:1.154</value>
+     <value type="QString">DISPLAY=:0</value>
+     <value type="QString">SHLVL=1</value>
+     <value type="QString">LC_TELEPHONE=zh_CN.UTF-8</value>
+     <value type="QString">QT_IM_MODULE=fcitx</value>
+     <value type="QString">LC_MEASUREMENT=zh_CN.UTF-8</value>
+     <value type="QString">XDG_VTNR=7</value>
+     <value type="QString">DESKTOP_AUTOSTART_ID=10ce11b7eb5bedb07e168506719857448000000044000048</value>
+     <value type="QString">XDG_SESSION_ID=c2</value>
+     <value type="QString">QML2_IMPORT_PATH=/home/tenerome/Qt/5.15.2/gcc_64/qml</value>
+     <value type="QString">XDG_RUNTIME_DIR=/run/user/1000</value>
+     <value type="QString">QTDIR=/home/tenerome/Qt/5.15.2/gcc_64</value>
+     <value type="QString">GTK3_MODULES=xapp-gtk3-module</value>
+     <value type="QString">XDG_DATA_DIRS=/usr/share/cinnamon2d:/usr/share/gnome:/home/tenerome/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share</value>
+     <value type="QString">PATH=/home/tenerome/Qt/5.15.2/gcc_64/bin:/home/tenerome/Qt/5.15.2/gcc_64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin</value>
+     <value type="QString">GDMSESSION=cinnamon2d</value>
+     <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus</value>
+     <value type="QString">LC_NUMERIC=zh_CN.UTF-8</value>
+    </valuelist>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Release</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value type="int" key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration">0</value>
@@ -235,7 +297,9 @@
     <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
-    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes">
+     <value type="QString">LD_LIBRARY_PATH=+/home/tenerome/Qt/5.15.2/openssllibs</value>
+    </valuelist>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/tenerome/Documents/chat/src/client/chat_client/chat_client.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/tenerome/Documents/chat/src/client/chat_client/chat_client.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
