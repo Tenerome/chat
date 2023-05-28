@@ -5,6 +5,7 @@
 #include "src/md5/useMD5.h"
 #include "src/info/AppInfo.h"
 #include "src/info/lang/Lang.h"
+#include "src/ftp/ftp.h"
 int main(int argc, char *argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -37,8 +38,11 @@ int main(int argc, char *argv[])
     }else{
         appInfo->changeLang("Zh");
     }
+    //ftp
+    FtpClient ftpclient;
+    context->setContextProperty("$ftp",&ftpclient);
     //engine load
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/test.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)

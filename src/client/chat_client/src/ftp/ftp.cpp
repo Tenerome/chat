@@ -1,51 +1,56 @@
 #include "ftp.h"
 
+
 FtpClient::FtpClient(QObject *parent) : QObject(parent){
-    myNetworkManager = new QNetworkAccessManager(this);
-    connect( myNetworkManager,SIGNAL(finished(QNetworkReply*)), this,SLOT(replyFinished(QNetworkReply*)));
+    url.setScheme("ftp");
+    url.setUserName("anonymous");
+    url.setPassword("");
+    url.setHost("127.0.0.1");
+    url.setPort(21);
 }
 
-
-void FtpClient::DownloadFtp(QString ftpurl){
-    QDate date;
-    QString imagepath=date.toString("yyyy-mm-dd-hh-mm");
-    downloadedFile = new QFile("F:/FtpClient/1.png");
-    downloadedFile->open(QIODevice::WriteOnly);
-    QUrl url(ftpurl);
-    url.setPort(21);//设置端口
-    url.setUserName("anonymous");//设置ftp用户名
-    url.setPassword("");//设置密码
-    qDebug()<<url;
-    myNetworkRequest.setUrl(url);
-    myNetworkReply = myNetworkManager->get(myNetworkRequest);
-    connect(myNetworkReply,SIGNAL(readyRead()),this,SLOT(on_Readready()));
+FtpClient::FtpClient(QString scheme,QString host,int port,QString username,QString password,QObject *parent) : QObject(parent){
+    url.setScheme(scheme);
+    url.setHost(host);
+    url.setPort(port);
+    url.setUserName(username);
+    url.setPassword(password);
 }
 
-void FtpClient::UploadFtp(QString path){
-    downloadedFile = new QFile(path);
-    downloadedFile->open(QIODevice::ReadOnly);
-    QByteArray byte_file = downloadedFile->readAll();
-    QUrl url("ftp://127.0.0.1/ASDASD.png");
-    url.setPort(21);//设置端口
-    url.setUserName("anonymous");//设置ftp用户名
-    url.setPassword("");//设置密码
-    qDebug()<<url;
-    myNetworkRequest.setUrl(url);
-    myNetworkManager->put(myNetworkRequest,byte_file);
-}
-
-void FtpClient::replyFinished(QNetworkReply *reply){
-    qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() <<__FILE__<<__LINE__;
-    if(reply->error() == QNetworkReply::NoError)
-    {
-        downloadedFile->close();
+void FtpClient::downLoad(QString ftpurl){
+    printf("get in down ftp\n");
+    url.setPath(ftpurl);
+    QNetworkRequest request(url);
+    QNetworkReply* reply=manager.get(request);
+    QEventLoop eventloop;//loop event until the reply finished
+    QObject::connect(reply,SIGNAL(finished()),&eventloop,SLOT(quit()));
+    eventloop.exec();
+    //finish reply
+    if(reply->error()==QNetworkReply::NoError){
+    //save file to local path
+        QFile localpath("./test.jpg");
+        localpath.open(QIODevice::WriteOnly);
+        localpath.write(reply->readAll());
+        localpath.close();
     }else{
-        qDebug()<<__FUNCTION__<<reply->errorString()<<__FILE__<<__LINE__;
+        qDebug()<<"download ftp error:"<<reply->errorString();
     }
-    reply->deleteLater();
 }
 
-void FtpClient::on_Readready(){
-    downloadedFile->write(myNetworkReply->readAll());
+void FtpClient::upLoad(QString filepath){
+    url.setPath("/pub/test/test.jpg");
+    QFile file(filepath);
+    file.open(QIODevice::ReadOnly);
+    QByteArray data=file.readAll();
+    file.close();
+
+    QNetworkRequest request(url);
+    QNetworkReply* reply=manager.put(request,data);
+    QEventLoop eventloop;//loop event until the reply finished
+    QObject::connect(reply,SIGNAL(finished()),&eventloop,SLOT(quit()));
+    eventloop.exec();
+    if(reply->error()!=QNetworkReply::NoError){
+        qDebug()<<"upload ftp error:"<<reply->errorString();
+    }
 }
 

@@ -7,29 +7,21 @@
 #include <QFile>
 #include <QDir>
 #include <QNetworkReply>
+#include <qeventloop.h>
 #include <QDebug>
 
 class FtpClient : public QObject{
     Q_OBJECT
 public:
+    //default constructor with ftp://localhost :anonymous
     explicit FtpClient(QObject *parent = nullptr);
-
-
-signals:
-
-public slots:
-    void DownloadFtp(QString ftpurl);
-    void UploadFtp(QString path);
-
-private slots:
-    void replyFinished(QNetworkReply*);
-    void on_Readready();
+    explicit FtpClient(QString scheme,QString host,int port,QString username,QString password,QObject *parent = nullptr);
+    Q_INVOKABLE void downLoad(QString ftpurl);
+    Q_INVOKABLE void upLoad(QString filepath);
 
 private:
-    QNetworkAccessManager *myNetworkManager;
-    QNetworkRequest myNetworkRequest;
-    QNetworkReply *myNetworkReply;
-    QFile *downloadedFile;
+    QNetworkAccessManager manager;
+    QUrl url;
 };
 
 #endif // FTPCLIENT_H

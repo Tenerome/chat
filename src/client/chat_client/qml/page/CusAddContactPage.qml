@@ -40,12 +40,10 @@ FluContentPage {
                         showError(lang.account_short)
                     } else if (textbox_contact.text === Define.account) {
                         showError(appInfo.lang.objectName
-                                  === "En" ? "you can't add yourself" : "不能添加自已
-")
+                                  === "En" ? "you can't add yourself" : "不能添加自已")
                     } else if (alreadyContact()) {
                         showError(appInfo.lang.objectName
-                                  === "En" ? "this account has been your contact" : "已经是好友了
-")
+                                  === "En" ? "this account has been your contact" : "已经是好友了")
                     } else {
                         var send_json = '{"flag":"' + Define.SOCKET_ADD_CONTACT
                                 + '","account":"' + Define.account

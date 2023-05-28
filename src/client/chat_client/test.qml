@@ -1,13 +1,22 @@
 import QtQuick 2.9
-import QtQuick.Window 2.3
-import "./qml"
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.5
+import QtQuick.Layouts 1.3
+import Qt.labs.platform 1.1
 import FluentUI 1.0
 
 Window {
     id: window
-    width: Screen.width
-    height: Screen.height
+    maximumWidth: Screen.width
+    maximumHeight: Screen.height
+    minimumWidth: 600
+    minimumHeight: 400
     visible: true
+    Component.onCompleted: {
+
+        $ftp.downLoad("/pub/test/img0.jpg")
+        //        $ftp.upLoad("/home/tenerome/Pictures/img1.jpg")
+    }
     FluAppBar {
         width: parent.width
     }
@@ -16,16 +25,8 @@ Window {
         color: "white"
         Row {
             FluText {
-                text: lang.home
+                text: "test download image"
             }
-            FluTextBox {}
         }
-        //        Image {
-        //            source: "ftp://127.0.0.1/pub/test/img0.jpg"
-        //            sourceSize.width: window.width
-        //            sourceSize.height: window.height
-        //            width: 400
-        //            height: 200
-        //        }
     }
 }
