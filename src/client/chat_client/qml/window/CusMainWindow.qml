@@ -128,7 +128,7 @@ FluWindow {
             Define.contact_json = recv_json
             contact_ready_S()
             break
-        case Define.CLIENT_TEXT_MESSAGE:
+        case Define.CLIENT_MESSAGE:
             account = recv_json["account"]
             contact = recv_json["contact"]
             message = recv_json["message"]
@@ -157,12 +157,25 @@ FluWindow {
         case Define.CLIENT_GROUP_MESSAGE:
             contact = recv_json["contact"]
             message = recv_json["message"]
-            Define.chatroom_model.append({
-                                             "detail": contact === Define.account ? message : ("===" + contact + "===\n" + message),
-                                             "position": contact === Define.account ? 0 : 1,
-                                             "type": 0 //TODO group image message
-                                         })
-            //            system_tray.showMessage("chatroom:" + contact, message)
+            message_flag = Number(recv_json["message_flag"])
+            if (contact === Define.account) {
+                Define.chatroom_model.append({
+                                                 "detail": message,
+                                                 "position": 0,
+                                                 "type": message_flag
+                                                         === Define.CLIENT_TEXT_MESSAGE ? 0 : 1
+                                             })
+                //            system_tray.showMessage("chatroom:" + contact, message)
+            } else {
+                Define.chatroom_model.append({
+                                                 "detail": message,
+                                                 "position": 1,
+                                                 "type": message_flag
+                                                         === Define.CLIENT_TEXT_MESSAGE ? 0 : 1
+                                             })
+                //            system_tray.showMessage("chatroom:" + contact, message)
+            }
+
             break
         }
     }

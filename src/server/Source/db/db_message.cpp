@@ -64,13 +64,13 @@ bool Clear_Message_History(DB &db,const char *account){
     mysql_close(db.mysql);
     return true;
 }
-bool Send_Group_Message(DB &db,const char *account,const char *message,vector<string> &online_account_list){
+bool Send_Group_Message(DB &db,const char *account,const char *message,int message_type,vector<string> &online_account_list){
     if(!get_Connection(db)){
         raise(SIGINT);
     }
     //add message
     char query[1250];
-    sprintf(query,"insert into chatroom(account,message) values('%s','%s')",account,message);
+    sprintf(query,"insert into chatroom(account,message,message_type) values('%s','%s','%d')",account,message,message_type);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Before_Send_Message:insert error"<<mysql_error(db.mysql)<<endl;
         raise(SIGINT);
@@ -102,7 +102,7 @@ bool Send_Group_Message(DB &db,const char *account,const char *message,vector<st
         return true;
     }
 }
-bool Get_Group_Message(DB &db,vector<pair<string,string>> &group_message_list){
+bool Get_Group_Message(DB &db,vector<Message> &group_message_list){
     if(!get_Connection(db)){
         raise(SIGINT);
     }
@@ -125,7 +125,7 @@ bool Get_Group_Message(DB &db,vector<pair<string,string>> &group_message_list){
     }else{
         MYSQL_ROW row;
         while((row=mysql_fetch_row(res))!=NULL){
-            group_message_list.push_back(pair<string,string>(row[0],row[1]));
+            group_message_list.push_back(Message(row[0],"",row[1],row[2]));
         }
         mysql_free_result(res);
         mysql_close(db.mysql);

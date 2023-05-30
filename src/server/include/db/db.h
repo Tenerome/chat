@@ -54,6 +54,6 @@ bool Del_Contact(DB &db,const char *account,const char *contact);
 int Send_Message(DB &db,const char *from_account,const char *to_account,const char *message,int message_type);
 bool Get_Message_Buffer(DB &db,const char *account,vector<Message> &message_list);
 bool Clear_Message_History(DB &db,const char *account);
-bool Send_Group_Message(DB &db,const char *account,const char *message,vector<string> &online_account_list);
-bool Get_Group_Message(DB &db,vector<pair<string,string>> &group_message_list);
+bool Send_Group_Message(DB &db,const char *account,const char *message,int message_type,vector<string> &online_account_list);
+bool Get_Group_Message(DB &db,vector<Message> &group_message_list);
 #endif 
