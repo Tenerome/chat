@@ -49,6 +49,7 @@ Zh::Zh(QObject *parent)
     logup_succeed("注册成功");
     login_succeed("登陆成功");
     same_password("两次密码需相同");
+    clear_message_history("成功清除聊天记录");
     //format
     account_format("8-10位数字");
     password_format("前两位字母+6-8位数字");

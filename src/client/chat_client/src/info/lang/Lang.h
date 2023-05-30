@@ -28,7 +28,7 @@ class Lang : public QObject
     Q_PROPERTY_AUTO(QString,set_name);
     //add page
     Q_PROPERTY_AUTO(QString,add);
-    Q_PROPERTY_AUTO(QString,clear_history);
+    Q_PROPERTY_AUTO(QString,clear_message_history);
     //settings page
     Q_PROPERTY_AUTO(QString,opacity);
     Q_PROPERTY_AUTO(QString,darkmode);
@@ -52,6 +52,7 @@ class Lang : public QObject
     Q_PROPERTY_AUTO(QString,logup_succeed);
     Q_PROPERTY_AUTO(QString,login_succeed);
     Q_PROPERTY_AUTO(QString,same_password);
+    Q_PROPERTY_AUTO(QString,clear_history);
     //format
     Q_PROPERTY_AUTO(QString,account_format);
     Q_PROPERTY_AUTO(QString,password_format);

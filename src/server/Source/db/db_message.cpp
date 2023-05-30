@@ -7,16 +7,16 @@ int Send_Message(DB &db,const char *from_account,const char *to_account,const ch
     if(!get_Connection(db)){
         raise(SIGINT);
     }
+    char query[1250];
+    sprintf(query,"insert into message(from_account,to_account,message_data,message_buffer) values('%s','%s','%s','%d')",from_account,to_account,message,message_type);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Before_Send_Message:insert error"<<mysql_error(db.mysql)<<endl;
+        raise(SIGINT);
+    }
     if(check_Online(db,to_account)){
         mysql_close(db.mysql);
         return SQL_ACCOUNT_ONLINE;
     }else{
-        char query[1250];
-        sprintf(query,"insert into message(from_account,to_account,message_data,message_buffer) values('%s','%s','%s','%d')",from_account,to_account,message,message_type);
-        if(mysql_query(db.mysql,query)){
-            cerr<<"db-Before_Send_Message:insert error"<<mysql_error(db.mysql)<<endl;
-            raise(SIGINT);
-        }
         mysql_close(db.mysql);
         return SQL_BUFFER_SEND_MESSAGE;
     }
@@ -27,7 +27,7 @@ bool Get_Message_Buffer(DB &db,const char *account,vector<Message> &message_list
         raise(SIGINT);
     }
     char query[250];
-    sprintf(query,"select from_account,message_data,message_buffer from message where to_account='%s' and message_buffer is not null",account);
+    sprintf(query,"select from_account,to_account,message_data,message_buffer from message where from_account='%s' or to_account='%s' and message_buffer is not null",account,account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Contact_List:select error"<<mysql_error(db.mysql)<<endl;
         raise(SIGINT);
@@ -44,18 +44,25 @@ bool Get_Message_Buffer(DB &db,const char *account,vector<Message> &message_list
     }else{
         MYSQL_ROW row;
         while((row=mysql_fetch_row(res))!=NULL){
-            message_list.push_back(Message(row[0],row[1],row[2]));
+            message_list.push_back(Message(row[0],row[1],row[2],row[3]));
         }
         mysql_free_result(res);
-        //del buffer
-        sprintf(query,"delete from message where to_account='%s' and message_buffer is not null ",account);
-            if(mysql_query(db.mysql,query)){
-                cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-                raise(SIGINT);
-            }
         mysql_close(db.mysql);
         return true;
     }
+}
+bool Clear_Message_History(DB &db,const char *account){
+    if(!get_Connection(db)){
+        raise(SIGINT);
+    }
+    char query[250];
+    sprintf(query,"delete from message where to_account='%s'  and message_buffer is not null ",account);
+    if(mysql_query(db.mysql,query)){
+        cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
+        raise(SIGINT);
+    }
+    mysql_close(db.mysql);
+    return true;
 }
 bool Send_Group_Message(DB &db,const char *account,const char *message,vector<string> &online_account_list){
     if(!get_Connection(db)){

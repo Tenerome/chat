@@ -26,6 +26,7 @@ bool mid_Edit_Contact(DB db,const char *json_string,int session_socket);
 
 bool mid_Select_When_Start(DB db,const char *json_string,int session_socket);
 bool mid_Send_Message(DB db,const char *json_string,int session_socket);
+bool mid_Clear_Message_History(DB db,const char *json_string,int session_socket);
 //main
 
 void parseJson(const char *json_string,int session_socket);

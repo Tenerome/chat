@@ -84,6 +84,13 @@ void parseJson(const char *json_string,int session_socket){
                 cerr<<session_socket<<" edit contact failed"<<endl;
             }
             break;
+        case SOCKET_CLEAR_MESSAGE_HISTORY:
+            if(mid_Clear_Message_History(db,json_string,session_socket)){
+                cout<<session_socket<<" edit contact succeed"<<endl;
+            }else{
+                cerr<<session_socket<<" edit contact failed"<<endl;
+            }
+            break;
         default:
             cerr<<"chat_server:parseJson error"<<endl;
             break;

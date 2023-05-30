@@ -89,6 +89,7 @@ FluWindow {
     function parseJson(recv) {
         var recv_json = JSON.parse(recv)
         var flag = recv_json["flag"]
+        var account
         var contact
         var message
         var message_flag
@@ -128,16 +129,25 @@ FluWindow {
             contact_ready_S()
             break
         case Define.CLIENT_TEXT_MESSAGE:
+            account = recv_json["account"]
             contact = recv_json["contact"]
             message = recv_json["message"]
             message_flag = Number(recv_json["message_flag"])
-            Define.contact_map[contact].append({
-                                                   "detail": message,
-                                                   "type": message_flag
-                                                           === Define.CLIENT_TEXT_MESSAGE ? 0 : 1,
-                                                   "position": 1
-                                               })
-            system_tray.showMessage(contact, message)
+            if (account === Define.account) {
+                Define.contact_map[contact].append({
+                                                       "detail": message,
+                                                       "type": message_flag === Define.CLIENT_TEXT_MESSAGE ? 0 : 1,
+                                                       "position": 0
+                                                   })
+                //                system_tray.showMessage(contact, message)
+            } else {
+                Define.contact_map[account].append({
+                                                       "detail": message,
+                                                       "type": message_flag === Define.CLIENT_TEXT_MESSAGE ? 0 : 1,
+                                                       "position": 1
+                                                   })
+                //                system_tray.showMessage(account, message)
+            }
             break
         case Define.SOCKET_GET_PROFILE:
             Define.uid = recv_json["uid"]
@@ -300,7 +310,24 @@ FluWindow {
             del_contact.close()
         }
     }
-
+    FluContentDialog {
+        id: clear_message_history
+        title: appInfo.lang.objectName === "En" ? "Sure to clear all message history?" : "确定清空聊天记录?"
+        message: appInfo.lang.objectName === "En" ? "Please think over before operation" : "请慎重考虑"
+        negativeText: lang.cancel
+        positiveText: lang.confirm
+        buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
+        onPositiveClicked: {
+            var send_json = '{"flag":"' + Define.SOCKET_CLEAR_MESSAGE_HISTORY
+                    + '","account":"' + Define.account + '"}'
+            $Client.sendMessage(send_json)
+            del_contact.close()
+            showSuccess(lang.clear_message_history)
+        }
+        onNegativeClicked: {
+            del_contact.close()
+        }
+    }
     FluMenu {
         id: pop_menu
         FluMenuItem {
@@ -310,6 +337,12 @@ FluWindow {
             text: lang.edit_nickname
             onClicked: {
                 edit_window.visible = true
+            }
+        }
+        FluMenuItem {
+            text: lang.clear_history
+            onClicked: {
+                clear_message_history.open()
             }
         }
         FluMenuItem {

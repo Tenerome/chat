@@ -8,13 +8,13 @@
   
   - Server: C++
   
-  - Client: QML with a little QtC++
+  - Client: QML with Qt C++
 
 - Environment and Framework
   
   - FluentUI :for client ui
   
-  - docker :for mysql server, client
+  - docker :for mysql server, vsftpd
 
 - build
 1. pass.dat

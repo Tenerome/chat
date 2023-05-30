@@ -49,6 +49,7 @@ En::En(QObject *parent)
     logup_succeed("log up succeed");
     login_succeed("log in succeed");
     same_password("the two passwords must be same");
+    clear_message_history("clear message history succeed");
     //format
     account_format("8-10 numbers");
     password_format("tow letters with 6-8 numbers");

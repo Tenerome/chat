@@ -62,6 +62,7 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     if(Get_Message_Buffer(db,account.c_str(),message_list)){
         temp_json["flag"]=SERVER_TEXT_MESSAGE;
         for(auto it=message_list.begin();it!=message_list.end();++it){
+            temp_json["account"]=it->account;
             temp_json["contact"]=it->contact;
             temp_json["message"]=it->message;
             temp_json["message_flag"]=strcmp(it->message_flag.c_str(),"0")==0?SERVER_TEXT_MESSAGE:SERVER_IMAGE_MESSAGE;
@@ -139,5 +140,16 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
             break;
         }
         return true;
+    }
+}
+
+bool mid_Clear_Message_History(DB db,const char *json_string,int session_socket){
+    json temp_json=json::parse(json_string);
+    string account=temp_json["account"];
+    temp_json.clear();
+    if(Clear_Message_History(db,account.c_str())){
+        return true;
+    }else{
+        return false;
     }
 }
