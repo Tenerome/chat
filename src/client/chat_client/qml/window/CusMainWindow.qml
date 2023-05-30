@@ -91,6 +91,7 @@ FluWindow {
         var flag = recv_json["flag"]
         var contact
         var message
+        var message_flag
         switch (flag) {
         case Define.CLIENT_ACCOUNT_NOT_REGISTED:
             showError(lang.account_not_exist)
@@ -129,8 +130,11 @@ FluWindow {
         case Define.CLIENT_TEXT_MESSAGE:
             contact = recv_json["contact"]
             message = recv_json["message"]
+            message_flag = Number(recv_json["message_flag"])
             Define.contact_map[contact].append({
-                                                   "detail": "====" + contact + "====\n" + message,
+                                                   "detail": message,
+                                                   "type": message_flag
+                                                           === Define.CLIENT_TEXT_MESSAGE ? 0 : 1,
                                                    "position": 1
                                                })
             system_tray.showMessage(contact, message)
@@ -144,8 +148,9 @@ FluWindow {
             contact = recv_json["contact"]
             message = recv_json["message"]
             Define.chatroom_model.append({
-                                             "detail": "====" + (contact === Define.account ? "You" : contact) + "====\n" + message,
-                                             "position": contact === Define.account ? 0 : 1
+                                             "detail": contact === Define.account ? message : ("===" + contact + "===\n" + message),
+                                             "position": contact === Define.account ? 0 : 1,
+                                             "type": 0 //TODO group image message
                                          })
             //            system_tray.showMessage("chatroom:" + contact, message)
             break
@@ -161,7 +166,7 @@ FluWindow {
         Define.add_page_listmodel.clear()
         //create chatroom model
         Define.chatroom_model = Qt.createQmlObject(
-                    "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
+                    "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0;type:0}}",
                     window)
         Define.chatroom_model.clear()
         //select when start
@@ -364,7 +369,7 @@ FluWindow {
                                 inner_expander.children.push(newPane)
                                 //fill contact_map
                                 Define.contact_map[key] = Qt.createQmlObject(
-                                            "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0}}",
+                                            "import QtQuick 2.5;ListModel{ListElement{detail:'';type:0;position:0}}",
                                             parent)
                                 Define.contact_map[key].clear()
                             }

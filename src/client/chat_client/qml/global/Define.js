@@ -29,6 +29,7 @@ const CLIENT_TEXT_MESSAGE = 44
 const CLIENT_EDIT_NICKNAME = 45
 const CLIENT_DELETE_CONTACT = 46
 const CLIENT_GROUP_MESSAGE = 47
+const CLIENT_IMAGE_MESSAGE = 48
 //global variable
 var account = ""
 var uid = ""

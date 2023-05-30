@@ -12,14 +12,7 @@ Window {
     minimumWidth: 600
     minimumHeight: 400
     visible: true
-    Component.onCompleted: {
 
-        $ftp.downLoad("/pub/test/img0.jpg")
-        //        $ftp.upLoad("/home/tenerome/Pictures/img1.jpg")
-    }
-    FluAppBar {
-        width: parent.width
-    }
     Rectangle {
         anchors.fill: parent
         color: "white"
@@ -27,6 +20,22 @@ Window {
             FluText {
                 text: "test download image"
             }
+            Button {
+                text: "select image"
+                onClicked: {
+                    image_select.open()
+                }
+            }
+        }
+    }
+    FileDialog {
+        id: image_select
+        title: "Select an image"
+        folder: StandardPaths.writableLocation($PicturesLocation)
+        nameFilters: ["Image Files (*.png *.jpg)"]
+        onAccepted: {
+            var path = image_select.file.toString().substring(7)
+            console.log($ftp.upLoad(path))
         }
     }
 }

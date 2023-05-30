@@ -1,7 +1,6 @@
 #include"useMD5.h"
 #include"md5.h"
 useMD5::useMD5(QObject *parent):QObject(parent){
-    printf("use MD5\n");
 }
 QString useMD5::toStr(QString message){
     std::string msg=message.toStdString();

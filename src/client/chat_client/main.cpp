@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QStandardPaths>
 #include "src/Socket/Socket.h"
 #include "src/md5/useMD5.h"
 #include "src/info/AppInfo.h"
@@ -41,8 +42,10 @@ int main(int argc, char *argv[])
     //ftp
     FtpClient ftpclient;
     context->setContextProperty("$ftp",&ftpclient);
+    //Pictures dir
+    context->setContextProperty("$PicturesLocation",QStandardPaths::PicturesLocation);
     //engine load
-    const QUrl url(QStringLiteral("qrc:/test.qml"));
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)

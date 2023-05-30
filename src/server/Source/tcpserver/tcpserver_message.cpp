@@ -134,29 +134,29 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
                         temp_json["flag"]=SERVER_TEXT_MESSAGE;
                         temp_json["message"]=message;
                         temp_json["contact"]=account;
+                        temp_json["message_flag"]=message_flag;
                         Send(route_socket[contact_socket],temp_json.dump().c_str());
                         return true;
                     case SQL_BUFFER_SEND_MESSAGE:
                         return false;
                 }
-                break;
+            break;
+        
+            case SERVER_IMAGE_MESSAGE:
+                switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),1)){
+                    case SQL_ACCOUNT_ONLINE:
+                        contact_socket=get_Route(db,contact.c_str());
+                        temp_json["flag"]=SERVER_TEXT_MESSAGE;
+                        temp_json["message"]=message;
+                        temp_json["contact"]=account;
+                        temp_json["message_flag"]=message_flag;
+                        Send(route_socket[contact_socket],temp_json.dump().c_str());
+                        return true;
+                    case SQL_BUFFER_SEND_MESSAGE:
+                        return false;
+                }
+            break;
         }
-            //TODO image message
-        // case SERVER_IMAGE_MESSAGE:
-        //     switch (Send_Message(db,account.c_str(),contact.c_str(),message.c_str(),1)){
-        //         case SQL_ACCOUNT_ONLINE:
-        //             contact_socket=get_Route(db,contact.c_str());
-        //             temp_json["flag"]=SERVER_TEXT_MESSAGE;
-        //             temp_json["message"]=message;
-        //             temp_json["contact"]=account;
-        //             ret=true;
-        //             break;
-        //         case SQL_BUFFER_SEND_MESSAGE:
-        //             ret=false;
-        //             break;
-        //     }
-        //     break;
-
         return true;
     }
 }

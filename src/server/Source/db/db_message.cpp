@@ -56,6 +56,7 @@ bool Get_Message_Buffer(DB &db,const char *account,multimap<string,string> &mess
         return true;
     }
 }
+//TODO use object to store message,contact,flag: class Message,vector<Message>
 bool Get_Image_Buffer(DB &db,const char *account,multimap<string,string> &image_list){
     if(!get_Connection(db)){
         raise(SIGINT);

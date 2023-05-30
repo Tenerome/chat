@@ -13,6 +13,8 @@ FluContentPage {
     visible: true
     property var contact
     property var chat_model
+    property var downloading_image
+    //shared variable
     Component.onCompleted: {
         for (let key in Define.load_model) {
             if (key === "contact")
@@ -51,16 +53,64 @@ FluContentPage {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
+
                     delegate: Component {
                         Rectangle {
                             id: ballon
-                            width: label.width + 50
-                            height: label.height <= 120 ? 120 : label.height + 20
-                            color: position < 1 ? "#4D10CCEE" : "#4D7B7D7D"
+                            property alias label: label
+                            property alias image_display: image_display
+                            states: [
+                                State {
+                                    name: "txtme"
+                                    PropertyChanges {
+                                        target: ballon
+                                        color: "#4D10CCEE"
+                                        width: label.width + 20
+                                        height: label.height <= 120 ? 120 : label.height + 20
+                                        x: listview.width - ballon.width
+                                        label.visible: true
+                                        image_display.visible: false
+                                    }
+                                },
+                                State {
+                                    name: "txtother"
+                                    PropertyChanges {
+                                        target: ballon
+                                        x: 0
+                                        color: "#4D7B7D7D"
+                                        width: label.width + 20
+                                        height: label.height <= 120 ? 120 : label.height + 20
+                                        label.visible: true
+                                        image_display.visible: false
+                                    }
+                                },
+                                State {
+                                    name: "imageme"
+                                    PropertyChanges {
+                                        target: ballon
+                                        color: "#4D10CCEE"
+                                        x: listview.width - ballon.width
+                                        width: image_display.width + 20
+                                        height: image_display.height + 20
+                                        label.visible: false
+                                        image_display.visible: true
+                                    }
+                                },
+                                State {
+                                    name: "imageother"
+                                    PropertyChanges {
+                                        target: ballon
+                                        color: "#4D7B7D7D"
+                                        x: 0
+                                        width: image_display.width + 20
+                                        height: image_display.height + 20
+                                        label.visible: false
+                                        image_display.visible: true
+                                    }
+                                }
+                            ]
+                            state: type === 0 ? (position === 0 ? "txtme" : "txtother") : (position === 0 ? "imageme" : "imageother")
                             radius: 20
-                            x: position < 1 ? listview.width
-                                              - width : 0 //control the position of message ballon
-
                             TextEdit {
                                 id: label
                                 width: label.text.length <= 10 ? label.text.length * 12 : 250
@@ -73,13 +123,30 @@ FluContentPage {
                                 selectedTextColor: Qt.rgba(51, 153, 255, 1)
                                 text: detail
                             }
+                            Image {
+                                id: image_display
+                                anchors.centerIn: parent
+                                visible: false
+                                source: image_display.visible
+                                        === true ? ("ftp://127.0.0.1" + detail) : ""
+                                fillMode: Image.PreserveAspectFit //keep the width:height
+                                sourceSize.width: 500
+                                width: sourceSize.width
+                                MouseArea {
+                                    anchors.fill: parent
+                                    acceptedButtons: Qt.RightButton
+                                    onClicked: {
+                                        popmenu.popup()
+                                        downloading_image = detail
+                                    }
+                                }
+                            }
                         }
                     }
                     model: chat_model
                 }
             }
         }
-
         FluMultilineTextBox {
             id: multi_textbox
             Layout.preferredWidth: recarea.width
@@ -88,8 +155,8 @@ FluContentPage {
             Keys.onReturnPressed: {
                 if (multi_textbox.text !== "") {
                     chat_model.append({
-                                          "detail": "====" + Define.name + "====\n"
-                                                    + multi_textbox.text,
+                                          "detail": multi_textbox.text,
+                                          "type": 0,
                                           "position": 0
                                       })
 
@@ -101,6 +168,44 @@ FluContentPage {
                 }
                 multi_textbox.clear()
             }
+        }
+        FluFilledButton {
+            text: "send image"
+            onClicked: {
+                image_select.open()
+            }
+        }
+    }
+    FluMenu {
+        id: popmenu
+        FluMenuItem {
+            text: "Cancel"
+        }
+        FluMenuItem {
+            text: "Download"
+            onClicked: {
+                $ftp.downLoad(downloading_image)
+                showSuccess("download succeed,in default Download directory",
+                            3000)
+            }
+        }
+    }
+    FileDialog {
+        id: image_select
+        title: "Select an image"
+        folder: StandardPaths.writableLocation($PicturesLocation)
+        nameFilters: ["Image Files (*.png *.jpg)"]
+        onAccepted: {
+            var path = $ftp.upLoad(image_select.file.toString().substring(7))
+            chat_model.append({
+                                  "detail": path,
+                                  "type": 1,
+                                  "position": 0
+                              })
+            var send_json = '{"flag":"' + Define.SOCKET_MESSAGE + '","message_flag":"'
+                    + Define.CLIENT_IMAGE_MESSAGE + '","account":"' + Define.account
+                    + '","contact":"' + contact + '","message":"' + path + '"}'
+            $Client.sendMessage(send_json)
         }
     }
 }
