@@ -31,7 +31,6 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     if(get_Answer_Add(db,account.c_str(),agree_contact,reject_contact)){
         if(!agree_contact.empty()){
             for(auto it=agree_contact.begin();it!=agree_contact.end();++it){
-                // sleep(1);
                 temp_json["flag"]=SERVER_ANSWER_YES;
                 temp_json["contact"]=*it;
                 Send(session_socket,temp_json.dump().c_str());
@@ -40,7 +39,6 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         temp_json.clear();
         if(!reject_contact.empty()){
             for(auto it=reject_contact.begin();it!=reject_contact.end();++it){
-                // sleep(1);
                 temp_json["flag"]=SERVER_ANSWER_NO;
                 temp_json["contact"]=*it;
                 Send(session_socket,temp_json.dump().c_str());
@@ -58,26 +56,15 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
         Send(session_socket,temp_json.dump().c_str());
     }
     temp_json.clear();
-    //get chat buffer
-    multimap<string,string> message_list;
+
+    //get message buffer
+    vector<Message> message_list;
     if(Get_Message_Buffer(db,account.c_str(),message_list)){
         temp_json["flag"]=SERVER_TEXT_MESSAGE;
         for(auto it=message_list.begin();it!=message_list.end();++it){
-            temp_json["contact"]=it->first;
-            temp_json["message"]=it->second;
-            Send(session_socket,temp_json.dump().c_str());
-        }
-        
-    }
-    temp_json.clear();
-    //get image buffer
-    auto &image_list=message_list;//recycle map memory
-    image_list.clear();
-    if(Get_Image_Buffer(db,account.c_str(),image_list)){
-        temp_json["flag"]=SERVER_TEXT_MESSAGE;
-        for(auto it=image_list.begin();it!=image_list.end();++it){
-            temp_json["contact"]=it->first;
-            temp_json["message"]=it->second;
+            temp_json["contact"]=it->contact;
+            temp_json["message"]=it->message;
+            temp_json["message_flag"]=strcmp(it->message_flag.c_str(),"0")==0?SERVER_TEXT_MESSAGE:SERVER_IMAGE_MESSAGE;
             Send(session_socket,temp_json.dump().c_str());
         }
         
@@ -87,12 +74,6 @@ bool mid_Select_When_Start(DB db,const char *json_string,int session_socket){
     vector<pair<string,string>> group_list;
     if(Get_Group_Message(db,group_list)){
         temp_json["flag"]=SERVER_GROUP_MESSAGE;
-        // for(auto it=group_list.begin();it!=group_list.end();++it){
-        //     temp_json["contact"]=it->first;
-        //     temp_json["message"]=it->second;
-        //     lock_guard<mutex> send_lock(send_mutex); 
-        //     Send(session_socket,temp_json.dump().c_str());
-        // }
         for(auto it=group_list.begin();it!=group_list.end();++it){
             temp_json["contact"]=it->first;
             temp_json["message"]=it->second;

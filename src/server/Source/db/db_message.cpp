@@ -21,12 +21,13 @@ int Send_Message(DB &db,const char *from_account,const char *to_account,const ch
         return SQL_BUFFER_SEND_MESSAGE;
     }
 }
-bool Get_Message_Buffer(DB &db,const char *account,multimap<string,string> &message_list){
+
+bool Get_Message_Buffer(DB &db,const char *account,vector<Message> &message_list){
     if(!get_Connection(db)){
         raise(SIGINT);
     }
     char query[250];
-    sprintf(query,"select from_account,message_data,message_buffer from message where to_account='%s' and message_buffer=0",account);
+    sprintf(query,"select from_account,message_data,message_buffer from message where to_account='%s' and message_buffer is not null",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Get_Contact_List:select error"<<mysql_error(db.mysql)<<endl;
         raise(SIGINT);
@@ -43,47 +44,11 @@ bool Get_Message_Buffer(DB &db,const char *account,multimap<string,string> &mess
     }else{
         MYSQL_ROW row;
         while((row=mysql_fetch_row(res))!=NULL){
-            message_list.insert(pair<string,string>(row[0],row[1]));
-        }
-        mysql_free_result(res);
-        //del buff
-        sprintf(query,"delete from message where to_account='%s' and message_buffer=0 ",account);
-            if(mysql_query(db.mysql,query)){
-                cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
-                raise(SIGINT);
-            }
-        mysql_close(db.mysql);
-        return true;
-    }
-}
-//TODO use object to store message,contact,flag: class Message,vector<Message>
-bool Get_Image_Buffer(DB &db,const char *account,multimap<string,string> &image_list){
-    if(!get_Connection(db)){
-        raise(SIGINT);
-    }
-    char query[250];
-    sprintf(query,"select from_account,message_data,message_buffer from message where to_account='%s' and message_buffer=1",account);
-    if(mysql_query(db.mysql,query)){
-        cerr<<"db-Get_Contact_List:select error"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
-    }
-    MYSQL_RES *res=mysql_store_result(db.mysql);
-    if(res==NULL){
-        cerr<<"db-Get_Contact_List:mysql store result error:"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
-    }
-    if(mysql_num_rows(res)==0){
-        mysql_free_result(res);
-        mysql_close(db.mysql);
-        return false;
-    }else{
-        MYSQL_ROW row;
-        while((row=mysql_fetch_row(res))!=NULL){
-            image_list.insert(pair<string,string>(row[0],row[1]));
+            message_list.push_back(Message(row[0],row[1],row[2]));
         }
         mysql_free_result(res);
         //del buffer
-        sprintf(query,"delete from message where to_account='%s' and message_buffer=1 ",account);
+        sprintf(query,"delete from message where to_account='%s' and message_buffer is not null ",account);
             if(mysql_query(db.mysql,query)){
                 cerr<<"db-Get_Add_Buffer:select error"<<mysql_error(db.mysql)<<endl;
                 raise(SIGINT);

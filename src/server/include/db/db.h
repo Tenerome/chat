@@ -12,6 +12,17 @@ class DB{
         DB(const  char *pass);
         DB(const char *pass,const char *host,const char *user,const char *database,unsigned int port);
 };
+class Message{
+    public:
+        string contact;
+        string message;
+        string message_flag;
+        Message(string contact,string message,string message_flag){
+            this->contact=contact;
+            this->message=message;
+            this->message_flag=message_flag;
+        };
+};
 //global
 
 bool get_Connection(DB &db);
@@ -39,8 +50,7 @@ bool Del_Contact(DB &db,const char *account,const char *contact);
 //message
 
 int Send_Message(DB &db,const char *from_account,const char *to_account,const char *message,int message_type);
-bool Get_Message_Buffer(DB &db,const char *account,multimap<string,string> &message_list);
-bool Get_Image_Buffer(DB &db,const char *account,multimap<string,string> &image_list);
+bool Get_Message_Buffer(DB &db,const char *account,vector<Message> &message_list);
 bool Send_Group_Message(DB &db,const char *account,const char *message,vector<string> &online_account_list);
 bool Get_Group_Message(DB &db,vector<pair<string,string>> &group_message_list);
 #endif 
