@@ -113,7 +113,7 @@ FluContentPage {
                             radius: 20
                             TextEdit {
                                 id: label
-                                width: label.text.length <= 10 ? label.text.length * 12 : 250
+                                width: label.text.length <= 20 ? label.text.length * 12 : 250
                                 font.pixelSize: 20
                                 anchors.centerIn: parent
                                 color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"

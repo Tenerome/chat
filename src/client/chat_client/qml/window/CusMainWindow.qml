@@ -168,7 +168,7 @@ FluWindow {
                 //            system_tray.showMessage("chatroom:" + contact, message)
             } else {
                 Define.chatroom_model.append({
-                                                 "detail": message,
+                                                 "detail": message_flag === Define.CLIENT_TEXT_MESSAGE ? ("===" + contact + "===\n" + message) : message,
                                                  "position": 1,
                                                  "type": message_flag
                                                          === Define.CLIENT_TEXT_MESSAGE ? 0 : 1
