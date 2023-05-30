@@ -36,6 +36,7 @@ Zh::Zh(QObject *parent)
     //pop menu
     edit_nickname("修改昵称");
     delete_contact("删除好友");
+    download("下载");
     //tips
     account_not_exist("账户不存在");
     account_exist("账户已经存在");

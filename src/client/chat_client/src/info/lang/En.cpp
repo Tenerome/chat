@@ -36,6 +36,7 @@ En::En(QObject *parent)
     //pop menu
     edit_nickname("edit nickname");
     delete_contact("delete contact");
+    download("download");
     //tips
     account_not_exist("account does not exist");
     account_exist("account has been existed");

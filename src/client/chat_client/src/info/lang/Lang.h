@@ -39,6 +39,7 @@ class Lang : public QObject
     //pop menu
     Q_PROPERTY_AUTO(QString,edit_nickname);
     Q_PROPERTY_AUTO(QString,delete_contact);
+    Q_PROPERTY_AUTO(QString,download);
     //tips
     Q_PROPERTY_AUTO(QString,account_not_exist);
     Q_PROPERTY_AUTO(QString,account_exist);

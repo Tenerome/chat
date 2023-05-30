@@ -69,6 +69,7 @@ FluContentPage {
                                         height: label.height <= 120 ? 120 : label.height + 20
                                         x: listview.width - ballon.width
                                         label.visible: true
+                                        label.anchors.centerIn: ballon
                                         image_display.visible: false
                                     }
                                 },
@@ -81,6 +82,7 @@ FluContentPage {
                                         width: label.width + 20
                                         height: label.height <= 120 ? 120 : label.height + 20
                                         label.visible: true
+                                        label.anchors.centerIn: ballon
                                         image_display.visible: false
                                     }
                                 },
@@ -102,9 +104,16 @@ FluContentPage {
                                         target: ballon
                                         color: "#4D7B7D7D"
                                         x: 0
-                                        width: image_display.width + 20
-                                        height: image_display.height + 20
-                                        label.visible: false
+                                        width: image_display.width + 50
+                                        height: image_display.height + 50
+                                        label.visible: contact === "$chatroom" ? true : false
+                                        label.text: contact === "$chatroom" ? (contacts + ":") : ""
+                                        label.z: 999
+                                        label.x: 10
+                                        label.width: ballon.width
+                                        label.anchors {
+                                            top: ballon.top
+                                        }
                                         image_display.visible: true
                                     }
                                 }
@@ -115,7 +124,6 @@ FluContentPage {
                                 id: label
                                 width: label.text.length <= 20 ? label.text.length * 12 : 250
                                 font.pixelSize: 20
-                                anchors.centerIn: parent
                                 color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "black"
                                 wrapMode: Text.Wrap
                                 readOnly: true
@@ -130,8 +138,8 @@ FluContentPage {
                                 source: image_display.visible
                                         === true ? ("ftp://127.0.0.1" + detail) : ""
                                 fillMode: Image.PreserveAspectFit //keep the width:height
-                                sourceSize.width: 500
-                                width: sourceSize.width
+                                //                                sourceSize.width: sourceSize.width < 500 ? sourceSize.width : 500
+                                width: sourceSize.width < 500 ? sourceSize.width : 500
                                 MouseArea {
                                     anchors.fill: parent
                                     acceptedButtons: Qt.RightButton
@@ -170,7 +178,7 @@ FluContentPage {
             }
         }
         FluFilledButton {
-            text: "send image"
+            text: appInfo.lang.objectName === "En" ? "send image" : "发送图片"
             onClicked: {
                 image_select.open()
             }
@@ -179,13 +187,13 @@ FluContentPage {
     FluMenu {
         id: popmenu
         FluMenuItem {
-            text: "Cancel"
+            text: lang.cancel
         }
         FluMenuItem {
-            text: "Download"
+            text: lang.download
             onClicked: {
                 $ftp.downLoad(downloading_image)
-                showSuccess("download succeed,in default Download directory",
+                showSuccess(appInfo.lang.objectName === "En" ? "download succeed,in default Download directory" : "下载成功,位于默认下载目录",
                             3000)
             }
         }

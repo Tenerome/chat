@@ -168,8 +168,9 @@ FluWindow {
                 //            system_tray.showMessage("chatroom:" + contact, message)
             } else {
                 Define.chatroom_model.append({
-                                                 "detail": message_flag === Define.CLIENT_TEXT_MESSAGE ? ("===" + contact + "===\n" + message) : message,
+                                                 "detail": message_flag === Define.CLIENT_TEXT_MESSAGE ? (contact + ":\n" + message) : message,
                                                  "position": 1,
+                                                 "contacts": contact,
                                                  "type": message_flag
                                                          === Define.CLIENT_TEXT_MESSAGE ? 0 : 1
                                              })
@@ -189,7 +190,7 @@ FluWindow {
         Define.add_page_listmodel.clear()
         //create chatroom model
         Define.chatroom_model = Qt.createQmlObject(
-                    "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0;type:0}}",
+                    "import QtQuick 2.5;ListModel{ListElement{detail:'';position:0;type:0;contacts:''}}",
                     window)
         Define.chatroom_model.clear()
         //select when start
@@ -493,7 +494,8 @@ FluWindow {
     FluContentDialog {
         id: flush_dialog
         title: appInfo.lang.objectName === "En" ? "Sure to flush?" : "确定要刷新？"
-        message: appInfo.lang.objectName === "En" ? "Message with contact will lost" : "所有的消息都会丢失！"
+        message: appInfo.lang.objectName
+                 === "En" ? "Make sure you backup the message" : "确保消息记录已经备份！"
         negativeText: lang.cancel
         positiveText: lang.confirm
         buttonFlags: FluContentDialog.NegativeButton | FluContentDialog.PositiveButton
