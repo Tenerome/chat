@@ -115,8 +115,8 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
                 contact_socket=get_Route(db,contact.c_str());
                 temp_json["flag"]=SERVER_MESSAGE;
                 temp_json["message"]=message;
-                temp_json["contact"]=account;
-                temp_json["account"]=contact;
+                temp_json["account"]=account;
+                temp_json["contact"]=contact;
                 temp_json["message_flag"]=message_flag;
                 Send(route_socket[contact_socket],temp_json.dump().c_str());
             case SQL_BUFFER_SEND_MESSAGE:

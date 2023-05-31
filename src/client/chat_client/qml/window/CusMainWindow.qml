@@ -353,16 +353,59 @@ FluWindow {
                 edit_window.visible = true
             }
         }
+        //        FluMenuItem {
+        //            text: lang.clear_history
+        //            onClicked: {
+        //                clear_message_history.open()
+        //            }
+        //        }
         FluMenuItem {
-            text: lang.clear_history
+            text: "account number"
             onClicked: {
-                clear_message_history.open()
+                account_number_window.visible = true
+                account_number_label.text = Define.load_model["contact"]
             }
         }
         FluMenuItem {
             text: lang.delete_contact
             onClicked: {
                 del_contact.open()
+            }
+        }
+    }
+    FluWindow {
+        id: account_number_window
+        width: 400
+        height: 55
+        flags: account_number_window | Qt.FramelessWindowHint
+        color: "#BD29B6F7"
+        RowLayout {
+            spacing: 10
+            Rectangle {
+                property alias text: new_nickname.text
+                //                border.color: "gray"
+                radius: 10
+                width: 300
+                height: 45
+                color: FluTheme.darkMode === FluDarkMode.Dark ? "#454545" : "white"
+                TextInput {
+                    id: account_number_label
+                    anchors.fill: parent
+                    verticalAlignment: TextEdit.AlignVCenter
+                    leftPadding: 2
+                    selectByMouse: true
+                    selectionColor: "#66B3FF"
+                    color: FluTheme.darkMode === FluDarkMode.Dark ? "white" : "#454545"
+                    focus: true
+                    readOnly: true
+                    text: ""
+                }
+            }
+            FluFilledButton {
+                text: "Back"
+                onClicked: {
+                    account_number_window.visible = false
+                }
             }
         }
     }
