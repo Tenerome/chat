@@ -159,6 +159,12 @@ FluContentPage {
             id: multi_textbox
             Layout.preferredWidth: recarea.width
             Layout.preferredHeight: 150
+            //max length control
+            onTextChanged: {
+                if (text.length > 2047) {
+                    text = text.substring(0, 2047)
+                }
+            }
             Keys.enabled: true
             Keys.onReturnPressed: {
                 if (multi_textbox.text !== "") {
