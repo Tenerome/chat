@@ -18,6 +18,8 @@ bool mid_Log_UP(DB db,const char *json_string,int session_socket){
             temp_json["flag"]=SERVER_TRUE;
             ret=true;
             break;
+        default:
+            cerr<<"mid log up error"<<endl;
     }
     if(temp_json.empty()){
         return ret;
@@ -49,6 +51,8 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
             temp_json["flag"]=SERVER_TRUE;
             ret=true;
             break;
+        default:
+                cerr<<"mid log in error"<<endl;
     }
     if(temp_json.empty()){
         return ret;
@@ -61,7 +65,9 @@ bool mid_Log_IN(DB db,const char *json_string,int session_socket){
 void mid_Log_OUT(int session_socket){
     if(!check_Password(SQL_PASS_PATH)){
         cout<<"check mysql password wrong"<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_PASSWORD;
+        return;
     }
     DB db(mysql_password.c_str());
     if(Log_OUT(db,session_socket)==SQL_TRUE){

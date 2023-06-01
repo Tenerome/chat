@@ -20,8 +20,8 @@ bool mid_Add_Contact(DB db,const char *json_string,int session_socket){//send ad
             temp_json["flag"]=SERVER_BUFFER_ADD_CONTACT;
             break;
         default:
-            cerr<<"chat_server:add contact error"<<endl;
-            raise(SIGINT);
+            cerr<<"chat_server: mid add contact error"<<endl;
+            // raise(SIGINT);
     }
     if(temp_json.empty()){
         return true;
@@ -42,8 +42,8 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
         switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),1)){
             case SQL_ACCOUNT_ONLINE:
                 if(!Add_Contact(db,account.c_str(),contact.c_str())){
-                    cerr<<"chat_server:line 129 error"<<endl;
-                    raise(SIGINT);
+                    cerr<<"add Contact error"<<endl;
+                    // raise(SIGINT);
                 }
                 contact_socket=get_Route(db,contact.c_str());
                 temp_json["flag"]=SERVER_ANSWER_YES;
@@ -51,6 +51,8 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
                 break;
             case SQL_BUFFER_ADD_CONTACT:
                 break;
+            default:
+                cerr<<"mid Answer add Contact error"<<endl;
         }
     }else if(stoi(answer_flag)==SERVER_REJECT_ADD_CONTACT){
         switch(Answer_Add_Contact(db,account.c_str(),contact.c_str(),0)){
@@ -61,10 +63,12 @@ bool mid_Answer_Add_Contact(DB db,const char *json_string){
                 break;
             case SQL_BUFFER_ADD_CONTACT:
                 break;
+            default:
+                cerr<<"mid Answer add Contact error"<<endl;
         }
     }else{
         cerr<<"chat_server:mid_answer_add_contact error"<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
     }
     if(temp_json.empty()){
         return true;

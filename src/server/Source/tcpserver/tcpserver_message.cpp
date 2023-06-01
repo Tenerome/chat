@@ -121,6 +121,8 @@ bool mid_Send_Message(DB db,const char *json_string,int session_socket){
                 Send(route_socket[contact_socket],temp_json.dump().c_str());
             case SQL_BUFFER_SEND_MESSAGE:
                 return false;
+            default:
+                cerr<<"mid send message error"<<endl;
         }
         return true;
     }

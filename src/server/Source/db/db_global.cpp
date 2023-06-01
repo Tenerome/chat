@@ -34,12 +34,16 @@ bool check_Existed(DB &db,const char *account){
     sprintf(query,"select count(1) from user where account='%s' ",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-Check_Existed:select error:"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_QUERY;
+        return -1;
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-inline_Check_Existed:res error:"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_RES_NULL;
+        return -1;
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
@@ -57,12 +61,16 @@ bool check_Online(DB &db,const char *account){
     sprintf(query,"select status from user where account='%s'",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-check_Online:get status error:"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_QUERY;
+        return -1;
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-Check_Online:res error:"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_RES_NULL;
+        return -1;
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
@@ -79,12 +87,16 @@ string getName_by_account(DB &db,const char *account){
     sprintf(query,"select name from user where account='%s'",account);
     if(mysql_query(db.mysql,query)){
         cerr<<"db-getName_by_account:select error:"<<mysql_error(db.mysql)<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_QUERY;
+        return "";
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-get_Name_by_account:mysql store result error:"<<mysql_error(db.mysql);
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_RES_NULL;
+        return "";
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
@@ -96,22 +108,28 @@ string getName_by_account(DB &db,const char *account){
 //don't use if there is another sql event below
 string get_Route(DB &db,const char *account){
     if(!get_Connection(db)){
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_CONNECTION;
+        return "";
     }
     char query[250];
     sprintf(query,"select route from user where account='%s'",account);
     if(mysql_query(db.mysql,query)){
        cerr<<"db-get_Route:get route error:"<<mysql_error(db.mysql)<<endl;
-       raise(SIGINT); 
+    //    raise(SIGINT); 
+        throw ERROR_SQL_QUERY;
+        return "";
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_RES_NULL;
+        return "";
     }
     if(mysql_num_rows(res)==0){
         cerr<<"no log in information"<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     mysql_free_result(res);
@@ -124,22 +142,28 @@ string get_Route(DB &db,const char *account){
 //don't use if there is another sql event below
 bool get_Profile(DB &db,const char *account,string &uid,string &name){
     if(!get_Connection(db)){
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_CONNECTION;
+        return -1;
     }
     char query[250];
     sprintf(query,"select uid,name from user where account='%s'",account);
     if(mysql_query(db.mysql,query)){
        cerr<<"db-get_Route:get route error:"<<mysql_error(db.mysql)<<endl;
-       raise(SIGINT); 
+    //    raise(SIGINT); 
+        throw ERROR_SQL_QUERY;
+        return -1;
     }
     MYSQL_RES *res=mysql_store_result(db.mysql);
     if(res==NULL){
         cerr<<"db-get_Route:mysql store result error:"<<mysql_error(db.mysql);
-        raise(SIGINT);
+        // raise(SIGINT);
+        throw ERROR_SQL_RES_NULL;
+        return -1;
     }
     if(mysql_num_rows(res)==0){
         cerr<<"no log in information"<<endl;
-        raise(SIGINT);
+        // raise(SIGINT);
     }
     MYSQL_ROW row=mysql_fetch_row(res);
     uid=row[0];

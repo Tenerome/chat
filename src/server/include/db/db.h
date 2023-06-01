@@ -25,6 +25,10 @@ class Message{
             this->message_flag=message_flag;
         };
 };
+enum Exceptions{
+    ERROR_SQL_PASSWORD=1,ERROR_SQL_CONNECTION,ERROR_SQL_QUERY,
+    ERROR_SQL_RES_NULL
+};
 //global
 
 bool get_Connection(DB &db);

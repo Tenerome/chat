@@ -63,7 +63,7 @@ int main(){
     //epoll events
     epoll_fd=epoll_create(10);
     epoll_event socket_event,listen_event[MAX_LISTEN];
-    socket_event.events=EPOLLIN; //defalut:LT, use ET: EPOLLET|EPOLLIN
+    socket_event.events=EPOLLIN | EPOLLET; //defalut:LT, use ET: EPOLLET|EPOLLIN
     socket_event.data.fd=server_socket;
     epoll_ctl(epoll_fd,EPOLL_CTL_ADD,server_socket,&socket_event);
 
@@ -79,7 +79,7 @@ int main(){
             break;  //if <0 then continue                                    
         }
         for(int i=0;i<event_num;i++){   //check all active event
-            if(!(listen_event[i].events & EPOLLIN)){
+            if(!(listen_event[i].events & (EPOLLIN|EPOLLET))){
                 continue;
             }
             //if the event socket==server_socket, it is a new connection from one client
@@ -92,7 +92,7 @@ int main(){
                 }else{
                     cout<<client_addr.sin_addr.s_addr<<":"<<client_addr.sin_port<<" connected"<<endl;
                 }
-                socket_event.events=EPOLLIN;
+                socket_event.events=EPOLLIN|EPOLLET;
                 socket_event.data.fd=client_socket;
                 if(epoll_ctl(epoll_fd,EPOLL_CTL_ADD,client_socket,&socket_event)==-1){
                     cerr<<"client epoll_ctl error"<<endl;
@@ -118,10 +118,28 @@ int main(){
                 }else{//the last must be recv one message:
                     cout<<"<Recv>:"<<recv_string<<endl;//TODEL
                     ThreadPool pool(10);
-                    pool.enqueue([recv_string,session_socket] {
-                        parseJson(recv_string.c_str(),session_socket);
+                    try{
+                        pool.enqueue([recv_string,session_socket] {
+                            parseJson(recv_string.c_str(),session_socket);
                         }
-                    );
+                        );
+                    }catch(int e){
+                        switch(e){
+                            case ERROR_SQL_PASSWORD:
+                                cerr<<"The Sql password is wrong"<<endl;
+                            break;
+                            case ERROR_SQL_CONNECTION:
+                                cerr<<"Connect to MySql failed"<<endl;
+                            break;
+                            case ERROR_SQL_QUERY:
+                                cerr<<"MySql Query failed"<<endl;
+                            break;
+                            case ERROR_SQL_RES_NULL:
+                                cerr<<"MySql Resulst is null"<<endl;
+                            break;
+                        }
+                    }
+                    
                 }
                 
                 }
