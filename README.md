@@ -87,3 +87,26 @@ make
 | ----------- | --------- | ------ | --- |
 | account     | varchar   | 128    | MUL |
 | message     | varchar   | 128    |     |
+
+### Display
+1. format checking  
+![image](https://github.com/Tenerome/chat/assets/62417287/524a0183-fc8d-4d2a-ac78-04cbf3e82cc8)  
+![image](https://github.com/Tenerome/chat/assets/62417287/e5e256ad-9ef1-4cd1-abaa-0548fececc0f)  
+![image](https://github.com/Tenerome/chat/assets/62417287/6b53d5e4-5b51-4b59-8230-318253dc08f6)
+2. chatting  
+![image](https://github.com/Tenerome/chat/assets/62417287/b4c3f39a-f7d9-4f9f-ac3a-d35a02ed4b70)
+![image](https://github.com/Tenerome/chat/assets/62417287/b0050987-1aa4-4809-939a-797a45266022)
+![image](https://github.com/Tenerome/chat/assets/62417287/f6050a07-d449-4d6e-882c-690a5f065127)
+3. settings  
+![image](https://github.com/Tenerome/chat/assets/62417287/ccf8465f-d903-483d-a727-74740822d487)
+4. multi platform  
+![image](https://github.com/Tenerome/chat/assets/62417287/9ffdccaf-1b63-4fb2-8a07-11bcb40710af)
+5. others  
+![image](https://github.com/Tenerome/chat/assets/62417287/44cec885-8398-4669-9738-280a8f67e67e)  
+![image](https://github.com/Tenerome/chat/assets/62417287/57cbdc09-f6a5-45c7-8d63-de7bebb68dcc)  
+![image](https://github.com/Tenerome/chat/assets/62417287/f9612c05-5829-4337-9358-1cee86dd068b)  
+![image](https://github.com/Tenerome/chat/assets/62417287/0f055596-90fb-44a7-bacc-443fde839b78)  
+![image](https://github.com/Tenerome/chat/assets/62417287/0cacf182-f2c0-47b8-b7d4-b413a27a0e33)  
+
+
+
